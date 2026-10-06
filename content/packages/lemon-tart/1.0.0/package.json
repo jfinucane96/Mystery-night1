@@ -1,0 +1,23 @@
+{
+  "package_id": "lemon-tart",
+  "schema_version": "0.1",
+  "content_version": "1.0.0",
+  "metadata": {
+    "title": "The Lemon Tart Affair",
+    "tagline": "A village bake-off. A famous judge. One very bitter tart.",
+    "test_package": true,
+    "notes": "Deliberately small fictional package for development and permission testing. Not the production mystery."
+  },
+  "configuration": {
+    "min_players": 2,
+    "max_players": 4,
+    "investigation_act_ids": ["act_1"]
+  },
+  "references": {
+    "characters": "characters.json",
+    "knowledge": "knowledge.json",
+    "disclosure_rules": "disclosure_rules.json",
+    "timeline": "timeline.json",
+    "solution": "solution.json"
+  }
+}

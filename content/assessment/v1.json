@@ -1,0 +1,133 @@
+{
+  "assessment_version": "assessment-v1",
+  "dimensions": ["spotlight", "performance", "deception", "investigation", "mischief", "commitment"],
+  "scoring_map": { "a": 0, "b": 33, "c": 67, "d": 100 },
+  "involvement_formula": "0.4*commitment + 0.3*max(investigation,mischief) + 0.3*max(spotlight,performance,deception)",
+  "questions": [
+    {
+      "id": "q01", "dimension": "spotlight",
+      "prompt": "The host asks someone to read the opening announcement to the whole room. You…",
+      "options": [
+        { "id": "a", "text": "Quietly hope someone else volunteers." },
+        { "id": "b", "text": "Would do it if nobody else wants to." },
+        { "id": "c", "text": "Happily put your hand up." },
+        { "id": "d", "text": "Are already standing on a chair." }
+      ]
+    },
+    {
+      "id": "q02", "dimension": "spotlight",
+      "prompt": "At a party you most enjoy being…",
+      "options": [
+        { "id": "a", "text": "In a small side conversation." },
+        { "id": "b", "text": "Part of a lively group, not leading it." },
+        { "id": "c", "text": "One of the people keeping the energy up." },
+        { "id": "d", "text": "The person everyone is gathered around." }
+      ]
+    },
+    {
+      "id": "q03", "dimension": "performance",
+      "prompt": "Your character card suggests an accent and a signature catchphrase. You…",
+      "options": [
+        { "id": "a", "text": "Would rather just be myself with a new name." },
+        { "id": "b", "text": "Might try the catchphrase once or twice." },
+        { "id": "c", "text": "Would commit to it for most of the night." },
+        { "id": "d", "text": "Would rehearse it in the car on the way over." }
+      ]
+    },
+    {
+      "id": "q04", "dimension": "performance",
+      "prompt": "Costume instructions arrive. You plan to…",
+      "options": [
+        { "id": "a", "text": "Wear what I'd normally wear." },
+        { "id": "b", "text": "Add one themed item." },
+        { "id": "c", "text": "Put together a proper outfit." },
+        { "id": "d", "text": "Build the full look, props included." }
+      ]
+    },
+    {
+      "id": "q05", "dimension": "deception",
+      "prompt": "Someone asks your character a question your character must not answer truthfully. You'd feel…",
+      "options": [
+        { "id": "a", "text": "Uncomfortable; I'd rather never have to lie." },
+        { "id": "b", "text": "Fine with a small fib if it's written for me." },
+        { "id": "c", "text": "Happy to bluff my way through." },
+        { "id": "d", "text": "Delighted; keeping a straight face is my favourite part." }
+      ]
+    },
+    {
+      "id": "q06", "dimension": "deception",
+      "prompt": "In card games that involve bluffing, you are usually…",
+      "options": [
+        { "id": "a", "text": "Caught out immediately." },
+        { "id": "b", "text": "Okay, if nobody looks at me too closely." },
+        { "id": "c", "text": "Pretty convincing." },
+        { "id": "d", "text": "The one nobody trusts." }
+      ]
+    },
+    {
+      "id": "q07", "dimension": "investigation",
+      "prompt": "A torn letter is found under a cushion. You…",
+      "options": [
+        { "id": "a", "text": "Let someone else deal with it." },
+        { "id": "b", "text": "Have a look if it's passed to me." },
+        { "id": "c", "text": "Try to piece it together." },
+        { "id": "d", "text": "Photograph it, make notes and compare handwriting." }
+      ]
+    },
+    {
+      "id": "q08", "dimension": "investigation",
+      "prompt": "By the end of the night, how much do you care about solving it?",
+      "options": [
+        { "id": "a", "text": "Not much; I'm here for the company." },
+        { "id": "b", "text": "It'd be nice to guess right." },
+        { "id": "c", "text": "I really want to work it out." },
+        { "id": "d", "text": "I will not rest until I've cracked it." }
+      ]
+    },
+    {
+      "id": "q09", "dimension": "mischief",
+      "prompt": "You learn a juicy secret about another character. You…",
+      "options": [
+        { "id": "a", "text": "Keep it to myself." },
+        { "id": "b", "text": "Mention it to one trusted person." },
+        { "id": "c", "text": "Use it to bargain for information." },
+        { "id": "d", "text": "Drop hints in public just to watch the chaos." }
+      ]
+    },
+    {
+      "id": "q10", "dimension": "mischief",
+      "prompt": "A secret mission says to distract the room for two minutes. You…",
+      "options": [
+        { "id": "a", "text": "Would skip it." },
+        { "id": "b", "text": "Would do something low-key." },
+        { "id": "c", "text": "Would come up with a convincing diversion." },
+        { "id": "d", "text": "Would cause a scene they'll talk about for years." }
+      ]
+    },
+    {
+      "id": "q11", "dimension": "commitment",
+      "prompt": "Before the party, how much would you read or prepare?",
+      "options": [
+        { "id": "a", "text": "As close to nothing as possible." },
+        { "id": "b", "text": "A short summary on the day." },
+        { "id": "c", "text": "A proper read a few days before." },
+        { "id": "d", "text": "Everything, twice, with notes." }
+      ]
+    },
+    {
+      "id": "q12", "dimension": "commitment",
+      "prompt": "If your character had tasks that kept you busy all night, you'd feel…",
+      "options": [
+        { "id": "a", "text": "Overwhelmed; I'd prefer a light role." },
+        { "id": "b", "text": "Fine with a couple of tasks." },
+        { "id": "c", "text": "Glad to have plenty to do." },
+        { "id": "d", "text": "Disappointed if there were any quiet moments." }
+      ]
+    }
+  ],
+  "preference_fields": {
+    "preparation_minutes": { "min": 0, "max": 240, "default": 30 },
+    "assistance": ["none", "some", "full"],
+    "stretch_preference": ["none", "modest", "high"]
+  }
+}

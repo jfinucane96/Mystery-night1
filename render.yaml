@@ -1,0 +1,17 @@
+# Render Blueprint: Dashboard → New → Blueprint → pick this GitHub repo.
+services:
+  - type: web
+    name: mystery-night
+    runtime: python
+    region: oregon        # same region as the Supabase database (aws us-west-2): keeps queries fast
+    plan: free            # free sleeps after ~15 min idle; "starter" (~$7/mo) stays awake
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m server.app
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.5
+      - key: MM_SECURE_COOKIES
+        value: "1"
+      - key: DATABASE_URL
+        sync: false       # Render asks you to paste it in its dashboard; it never lives in the repo

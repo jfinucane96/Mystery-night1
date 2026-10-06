@@ -1,0 +1,8 @@
+{
+  "canonical_facts": [
+    { "id": "f_shed_key", "statement": "Ollie Finch took the gardener's spare shed key at 09:20 to retrieve the sleeping tonic stored there.", "event_time": "09:20", "source_event_ids": [], "criticality": "critical" },
+    { "id": "f_envelope", "statement": "Dot Marsh handed Basil Thorne an envelope of photographs at 10:40 as part of her blackmail.", "event_time": "10:40", "source_event_ids": [], "criticality": "red_herring" },
+    { "id": "f_blue_plate", "statement": "Ollie Finch plated the judge's tasting slice separately on a blue plate at 11:45 and dosed it.", "event_time": "11:45", "source_event_ids": ["f_shed_key"], "criticality": "critical" },
+    { "id": "f_collapse", "statement": "Basil Thorne collapsed at 12:05 after tasting the lemon tart.", "event_time": "12:05", "source_event_ids": ["f_blue_plate"], "criticality": "critical" }
+  ]
+}

@@ -1,0 +1,3 @@
+# Keep LF everywhere. Story packages are fingerprinted byte-for-byte (spec §12),
+# so line-ending conversion would make an unchanged package look edited.
+* text=auto eol=lf

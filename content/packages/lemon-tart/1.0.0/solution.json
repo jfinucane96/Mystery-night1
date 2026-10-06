@@ -1,0 +1,8 @@
+{
+  "killer_role_id": "r_baker",
+  "accomplice_role_ids": [],
+  "motive": "Revenge for public humiliation that ruined Ollie's bakery.",
+  "method": "Sleeping tonic from the gardener's shed, added to the judge's separately plated slice of lemon tart.",
+  "key_evidence": ["f_shed_key", "f_blue_plate"],
+  "summary": "Ollie Finch borrowed the shed key, took the tonic, dosed the judge's blue-plated slice and let the blackmailing reporter look guilty."
+}

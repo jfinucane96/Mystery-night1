@@ -1,0 +1,101 @@
+{
+  "victim": {
+    "name": "Chef Basil Thorne",
+    "public_summary": "Celebrity pastry chef and head judge of the Little Marlow Bake-Off, found slumped over the judging table after tasting the final entry."
+  },
+  "content_tags": [
+    { "id": "plays_killer", "label": "Playing the murderer", "description": "Your character may secretly be the culprit and must keep it hidden all night.", "sensitive": true },
+    { "id": "romance_storyline", "label": "Romance storyline", "description": "Your character has a (fictional, non-physical) romantic history with another character.", "sensitive": true },
+    { "id": "public_deception", "label": "Lying in public", "description": "Your character must tell at least one scripted lie when questioned in front of the group.", "sensitive": false },
+    { "id": "performance_moment", "label": "Solo performance moment", "description": "Your character has a short scripted moment in front of everyone (e.g. a speech).", "sensitive": false }
+  ],
+  "roles": [
+    {
+      "id": "r_baker",
+      "name": "Ollie Finch",
+      "required": true,
+      "importance": "critical",
+      "public_bio": "Two-time runner-up and the village's most determined amateur baker. Entered a lemon tart this year.",
+      "content_tags": ["plays_killer", "public_deception"],
+      "dimension_targets": { "spotlight": 50, "performance": 50, "deception": 85, "investigation": 40, "mischief": 60, "commitment": 75 },
+      "load_budget": { "preparation_minutes": 40, "secrets": 2, "memories": 3, "missions": 2, "mandatory_performance_moments": 1 },
+      "relationships": ["rel_baker_judge", "rel_baker_reporter"],
+      "permitted_memory_ids": ["k_baker_1", "k_baker_2"],
+      "disclosure_rule_ids": ["dr_onboard_baker"],
+      "private": {
+        "backstory": "Basil Thorne humiliated you on live radio two years ago, calling your tart 'a lemon-scented apology'. Your shop has struggled ever since.",
+        "secrets": [
+          "You added a large dose of your grandmother's sleeping tonic to the judge's tasting slice of your tart.",
+          "You borrowed the gardener's shed key on the morning of the bake-off and never returned it."
+        ],
+        "goal": "Win the bake-off and make sure nobody learns what was in that tart."
+      }
+    },
+    {
+      "id": "r_reporter",
+      "name": "Dot Marsh",
+      "required": false,
+      "importance": "major",
+      "public_bio": "Editor, reporter and photographer of the Little Marlow Gazette. Never without a notebook.",
+      "content_tags": [],
+      "dimension_targets": { "spotlight": 30, "performance": 30, "deception": 20, "investigation": 90, "mischief": 40, "commitment": 50 },
+      "load_budget": { "preparation_minutes": 20, "secrets": 1, "memories": 3, "missions": 1, "mandatory_performance_moments": 0 },
+      "relationships": ["rel_reporter_judge"],
+      "permitted_memory_ids": ["k_reporter_1", "k_reporter_2"],
+      "disclosure_rule_ids": ["dr_onboard_reporter"],
+      "private": {
+        "backstory": "The Gazette is close to folding. A scandal at the bake-off would be the story that saves it.",
+        "secrets": [
+          "You have been quietly blackmailing the judge over a plagiarised cookbook and he paid you twice."
+        ],
+        "goal": "Get the scoop first, and keep the blackmail out of print."
+      }
+    },
+    {
+      "id": "r_gardener",
+      "name": "Hal Briggs",
+      "required": false,
+      "importance": "minor",
+      "public_bio": "Keeps the village green immaculate. Grumbles about marquee pegs in his lawn.",
+      "content_tags": [],
+      "dimension_targets": { "spotlight": 15, "performance": 25, "deception": 30, "investigation": 50, "mischief": 30, "commitment": 25 },
+      "load_budget": { "preparation_minutes": 10, "secrets": 1, "memories": 2, "missions": 0, "mandatory_performance_moments": 0 },
+      "relationships": [],
+      "permitted_memory_ids": ["k_gardener_1"],
+      "disclosure_rule_ids": ["dr_onboard_gardener"],
+      "private": {
+        "backstory": "You have tended the green for thirty years and know every path behind the marquee.",
+        "secrets": [
+          "Basil Thorne was your half-brother; nobody in the village knows you are related."
+        ],
+        "goal": "Find out who did this, without revealing your family connection."
+      }
+    },
+    {
+      "id": "r_organiser",
+      "name": "Prudence Vale",
+      "required": false,
+      "importance": "major",
+      "public_bio": "Chair of the bake-off committee. Gives the welcome speech every year, whether asked or not.",
+      "content_tags": ["romance_storyline", "performance_moment"],
+      "dimension_targets": { "spotlight": 90, "performance": 80, "deception": 50, "investigation": 40, "mischief": 50, "commitment": 60 },
+      "load_budget": { "preparation_minutes": 30, "secrets": 1, "memories": 2, "missions": 1, "mandatory_performance_moments": 2 },
+      "relationships": ["rel_organiser_judge"],
+      "permitted_memory_ids": ["k_organiser_1"],
+      "disclosure_rule_ids": ["dr_onboard_organiser"],
+      "private": {
+        "backstory": "You booked Basil Thorne as judge for the publicity, and because you were once engaged to him.",
+        "secrets": [
+          "You and Basil were secretly engaged twenty years ago; he broke it off the night before the wedding."
+        ],
+        "goal": "Keep the bake-off's reputation intact, and your old engagement out of the gossip."
+      }
+    }
+  ],
+  "relationships": [
+    { "id": "rel_baker_judge", "from": "r_baker", "to": null, "about": "Basil Thorne (victim)", "description": "He mocked your baking on the radio. You have never forgiven him." },
+    { "id": "rel_baker_reporter", "from": "r_baker", "to": "r_reporter", "about": null, "description": "Dot wrote a kind article about your shop last spring. You like her, but she asks too many questions." },
+    { "id": "rel_reporter_judge", "from": "r_reporter", "to": null, "about": "Basil Thorne (victim)", "description": "Your secret source of income, and your best story." },
+    { "id": "rel_organiser_judge", "from": "r_organiser", "to": null, "about": "Basil Thorne (victim)", "description": "Your former fiancé. You told the committee you'd never met before." }
+  ]
+}

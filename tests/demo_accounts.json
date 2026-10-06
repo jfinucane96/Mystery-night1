@@ -1,0 +1,8 @@
+{
+  "_note": "Throwaway local test accounts used for the manual browser walkthrough. Each runs on its own hostname so cookies don't collide.",
+  "host":  { "url": "http://localhost:8000",       "email": "host@demo.test",  "password": "demo-password-1", "display_name": "Hannah (Host)" },
+  "alice": { "url": "http://alice.localhost:8000", "email": "alice@demo.test", "password": "demo-password-1", "display_name": "Alice" },
+  "bob":   { "url": "http://bob.localhost:8000",   "email": "bob@demo.test",   "password": "demo-password-1", "display_name": "Bob" },
+  "carol": { "url": "http://carol.localhost:8000", "email": "carol@demo.test", "password": "demo-password-1", "display_name": "Carol" },
+  "dev":   { "url": "http://dev.localhost:8000",   "email": "dev@demo.test",   "password": "demo-password-1", "display_name": "Dev" }
+}
