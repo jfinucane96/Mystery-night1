@@ -43,6 +43,27 @@ MIGRATIONS = [
         "ALTER TABLE guests ADD COLUMN assessment_done INTEGER NOT NULL DEFAULT 0",
         "ALTER TABLE game ADD COLUMN released_at TEXT",
     ],
+    # 3. Texting and AI casting suggestions
+    [
+        "ALTER TABLE guests ADD COLUMN phone TEXT NOT NULL DEFAULT ''",
+        "ALTER TABLE guests ADD COLUMN sms_consent INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE guests ADD COLUMN is_host INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE game ADD COLUMN release_round INTEGER NOT NULL DEFAULT 0",
+        """CREATE TABLE IF NOT EXISTS texts (
+            id TEXT PRIMARY KEY,
+            guest_id TEXT NOT NULL,
+            kind TEXT NOT NULL,
+            round INTEGER NOT NULL DEFAULT 0,
+            status TEXT NOT NULL,
+            detail TEXT NOT NULL DEFAULT '',
+            created_at TEXT NOT NULL
+        )""",
+        """CREATE TABLE IF NOT EXISTS ai_suggestions (
+            id INTEGER PRIMARY KEY,
+            data TEXT NOT NULL,
+            created_at TEXT NOT NULL
+        )""",
+    ],
 ]
 
 

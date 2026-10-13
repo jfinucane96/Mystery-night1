@@ -223,18 +223,42 @@ let hostState = null;
 let hostMsg = null;
 const openDetails = new Set();   // which guests' answer panels are expanded
 
-async function hostAction(method, path, body) {
+let hostNotice = null;
+let busy = null;   // what the host is waiting on, e.g. "suggest" or "text-g1234abcd"
+
+async function hostAction(method, path, body, busyKey) {
+  if (busyKey) { busy = busyKey; renderHost(); }
   try {
     hostState = await api(method, path, body);
-    hostMsg = null;
+    hostMsg = hostState.error_detail || null;
+    hostNotice = hostState.notice || null;
   } catch (e) {
+    busy = null;
     if (e.status === 403) return showHostDenied();
     if (e.code === "needs_confirm" && window.confirm(e.message)) {
-      return hostAction(method, path, { ...body, confirm: true });
+      return hostAction(method, path, { ...body, confirm: true }, busyKey);
     }
     hostMsg = e.code === "needs_confirm" ? null : e.message;
+    hostNotice = null;
   }
+  busy = null;
   renderHost();
+}
+
+// A link that opens the host's own Messages app with the text pre-written.
+function smsLink(phone, text, label) {
+  return el("a", { class: "button", href: `sms:${phone}?&body=${encodeURIComponent(text)}` }, label);
+}
+
+function when(iso) {
+  return new Date(iso).toLocaleString([], { weekday: "short", hour: "numeric", minute: "2-digit" });
+}
+
+function textStatus(t, what) {
+  if (!t) return null;
+  if (t.status === "sent") return el("p", { class: "small ok-text" }, `${what} texted ${when(t.at)}`);
+  if (t.status === "sending") return el("p", { class: "small muted" }, `Sending ${what.toLowerCase()}…`);
+  return el("p", { class: "small bad" }, `${what} text failed: ${t.detail}`);
 }
 
 function showHostDenied() {
@@ -296,6 +320,100 @@ function answersPanel(g, s) {
   return details;
 }
 
+function charName(s, id) {
+  const c = s.characters.find((x) => x.id === id);
+  return c ? c.name : "No role";
+}
+
+// The AI's two best roles for this guest (from the last suggestion)
+function aiPicks(g, s) {
+  const picks = s.suggestion && s.suggestion.top_picks[g.id];
+  if (!picks || !picks.length) return null;
+  return el("div", { class: "ai-picks small" },
+    el("span", { class: "muted" }, "AI top picks: "),
+    picks.map((p, i) => [i ? " · " : "", el("strong", {}, charName(s, p.role_id)), ` (${p.reason})`]));
+}
+
+const openContact = new Set();
+
+function contactPanel(g, s) {
+  const phone = el("input", { type: "tel", placeholder: "Mobile number", "aria-label": `${g.name}'s mobile number`, value: g.phone });
+  const consent = el("input", { type: "checkbox", checked: g.sms_consent });
+  const isHost = el("input", { type: "checkbox", checked: g.is_host });
+  const details = el("details", { class: "contact", open: openContact.has(g.id) },
+    el("summary", {}, g.phone ? `Phone: ${g.phone}${g.sms_consent ? "" : " (no consent yet)"}` : "Add phone number"),
+    phone,
+    el("label", { class: "check" }, consent, " They agreed to get texts about this party"),
+    el("label", { class: "check" }, isHost, " This is me (the host)"),
+    el("button", {
+      class: "small",
+      onclick: () => hostAction("POST", `/api/host/guests/${g.id}/contact`,
+        { phone: phone.value, consent: consent.checked, is_host: isHost.checked }),
+    }, "Save"));
+  details.addEventListener("toggle", () => {
+    if (details.open) openContact.add(g.id); else openContact.delete(g.id);
+  });
+  return [details, textStatus(g.texts.invite, "Invite"), textStatus(g.texts.release, "Release")];
+}
+
+function inviteButton(g, s) {
+  if (!g.phone) return null;
+  if (!s.texting_automatic || (g.texts.invite && g.texts.invite.status === "failed")) {
+    return smsLink(g.phone, g.messages.invite, "Text from my phone");
+  }
+  const sending = busy === `text-${g.id}`;
+  return el("button", {
+    disabled: sending || !g.sms_consent,
+    title: g.sms_consent ? "" : "Tick that they agreed to texts first",
+    onclick: () => {
+      const again = g.texts.invite ? " again" : "";
+      if (confirm(`Text ${g.name} their invite link${again}?`)) {
+        hostAction("POST", `/api/host/guests/${g.id}/text-invite`, {}, `text-${g.id}`);
+      }
+    },
+  }, sending ? "Sending…" : g.texts.invite ? "Text again" : "Text invite");
+}
+
+function suggestionPanel(s) {
+  const sug = s.suggestion;
+  const thinking = busy === "suggest";
+  const ask = el("button", {
+    class: sug ? "quiet" : "",
+    disabled: thinking || !s.ai_configured || !s.guests.length,
+    onclick: () => hostAction("POST", "/api/host/suggest", {}, "suggest"),
+  }, thinking ? "Thinking… (up to a minute)" : sug ? "Suggest again" : "Suggest a cast");
+  const byId = Object.fromEntries(s.guests.map((g) => [g.id, g]));
+  return el("section", { class: "card" },
+    el("h2", {}, "Casting help (AI)"),
+    !s.ai_configured && el("p", { class: "note" }, "Not set up yet: needs an Anthropic API key."),
+    s.ai_configured && !sug && el("p", { class: "note" },
+      "The AI reads everyone's answers and limits and suggests who should play whom. You still decide."),
+    sug && [
+      el("p", {}, sug.summary),
+      el("p", { class: "small muted" }, `Suggested ${when(sug.created_at)}. If answers changed since, suggest again.`),
+      el("ul", { class: "plain plan" }, sug.cast.filter((r) => byId[r.guest_id]).map((r) => {
+        const g = byId[r.guest_id];
+        const already = g.character_id === r.role_id || (!g.character_id && r.role_id === "none");
+        return el("li", {},
+          el("div", { class: "row" },
+            el("span", { class: "grow" }, el("strong", {}, g.name), " → ", charName(s, r.role_id)),
+            r.role_id !== "none" && (already
+              ? el("span", { class: "pill ok" }, "Assigned")
+              : el("button", {
+                class: "small quiet",
+                onclick: () => hostAction("POST", `/api/host/guests/${g.id}/assign`, { character_id: r.role_id }),
+              }, "Use this"))),
+          el("p", { class: "small muted" }, r.reason));
+      })),
+      el("button", {
+        class: "wide",
+        onclick: () => confirm("Assign every role as suggested? This replaces current assignments for these guests.")
+          && hostAction("POST", "/api/host/suggest/apply", {}),
+      }, "Use the whole plan"),
+    ],
+    ask);
+}
+
 function guestCard(s, g) {
   const taken = new Map(s.guests.filter((o) => o.character_id && o.id !== g.id)
     .map((o) => [o.character_id, o.name]));
@@ -328,13 +446,16 @@ function guestCard(s, g) {
   const copyBtn = el("button", { onclick: (e) => copyLink(g, e.target) }, "Copy link");
   return el("li", { class: "card guest" },
     el("div", { class: "row" },
-      el("strong", {}, g.name),
+      el("strong", {}, g.name, g.is_host && el("span", { class: "muted small" }, " (you)")),
       progressPill(g, s)),
     answersPanel(g, s),
+    aiPicks(g, s),
     select,
     g.character_name && el("p", { class: "small" }, `Role: ${g.character_name}`),
     issues && issues.length > 0 && el("ul", { class: "issues" }, issues),
+    contactPanel(g, s),
     el("div", { class: "row buttons" },
+      inviteButton(g, s),
       copyBtn,
       el("a", { class: "button", href: guestLink(g), target: "_blank", rel: "noopener" }, "Open"),
       el("button", {
@@ -351,8 +472,14 @@ function guestCard(s, g) {
 
 function releasePanel(s) {
   if (s.released) {
+    // Guests to text from the host's own phone: everyone (manual mode) or failed automatic texts
+    const manual = s.guests.filter((g) => g.character_id && g.phone &&
+      (!s.texting_automatic || (g.texts.release && g.texts.release.status === "failed")));
     return el("section", { class: "card released" },
       el("p", {}, el("strong", {}, "Characters are released."), " Guests can see their roles."),
+      manual.length > 0 && el("div", {},
+        el("p", { class: "small" }, "Let these guests know from your phone:"),
+        el("div", { class: "row buttons" }, manual.map((g) => smsLink(g.phone, g.messages.release, `Text ${g.name}`)))),
       el("button", {
         class: "quiet small",
         onclick: () => confirm("Hide characters from guests again? (Useful for testing.)")
@@ -361,9 +488,11 @@ function releasePanel(s) {
   }
   const unassigned = s.guests.filter((g) => !g.character_id).map((g) => g.name);
   const unfinished = s.guests.filter((g) => !g.assessment_done).map((g) => g.name);
+  const texted = s.guests.filter((g) => g.character_id && g.phone && g.sms_consent).length;
   return el("section", { class: "card" },
     el("h2", {}, "Release characters"),
     el("p", { class: "note" }, "Guests only see their character after you release. Everyone gets theirs at the same moment."),
+    s.texting_automatic && el("p", { class: "small" }, `${texted} guest${texted === 1 ? "" : "s"} will get a text when you release.`),
     unfinished.length > 0 && el("p", { class: "small warn" }, `Still answering: ${unfinished.join(", ")}`),
     unassigned.length > 0 && el("p", { class: "small warn" }, `No character yet: ${unassigned.join(", ")}`),
     el("button", {
@@ -371,9 +500,9 @@ function releasePanel(s) {
       disabled: s.guests.length === 0,
       onclick: () => {
         const warn = unassigned.length ? `\n\n${unassigned.join(", ")} won't have a character yet.` : "";
-        if (confirm(`Show every guest their character now?${warn}`)) hostAction("POST", "/api/host/release", {});
+        if (confirm(`Show every guest their character now?${warn}`)) hostAction("POST", "/api/host/release", {}, "release");
       },
-    }, "Release characters to everyone"));
+    }, busy === "release" ? "Releasing…" : "Release characters to everyone"));
 }
 
 function renderHost() {
@@ -394,8 +523,13 @@ function renderHost() {
     el("header", {},
       el("p", { class: "eyebrow" }, "Host controls"),
       el("h1", {}, s.title),
-      s.placeholder && el("p", { class: "note" }, "Placeholder story for testing.")),
+      s.placeholder && el("p", { class: "note" }, "Placeholder story for testing."),
+      el("p", { class: "small muted" }, s.texting_automatic
+        ? "Texting: automatic (Twilio)"
+        : "Texting: from your phone (automatic texting not set up yet)")),
     hostMsg && el("p", { class: "error", role: "alert" }, hostMsg),
+    hostNotice && el("p", { class: "notice", role: "status" }, hostNotice),
+    suggestionPanel(s),
     el("section", {},
       el("div", { class: "row" },
         el("h2", { class: "grow" }, `Guests (${s.guests.length})`),

@@ -93,6 +93,8 @@ def fit(assessment, guest, character):
     answers, limits = answers_of(guest), limits_of(guest)
     labels = {l["id"]: l["prompt"].lower() for l in assessment["limits"]}
     blocked, check, warnings = [], [], []
+    if guest.get("is_host") and "killer" in character["casting"].get("content", []):
+        blocked.append("You're the host and know the solution, so you can't be the killer")
     for item in character["casting"].get("content", []):
         choice = limits.get(item)
         if choice == "no":

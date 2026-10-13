@@ -16,6 +16,8 @@ blocks roles a guest said no to), then the host releases all characters at once.
 | `server/app.py` | The web server: pages and the API the phones talk to |
 | `server/game.py` | Game rules: guests, links, answers, assigning and releasing characters |
 | `server/casting.py` | The assessment, and the rules comparing guests' answers with each role |
+| `server/ai_casting.py` | AI casting suggestions (Claude); suggestions only, limits still enforced |
+| `server/texting.py` | Texting guests through Twilio, or pre-written texts for the host's phone |
 | `server/story.py` | Loads the story, and decides what each person is allowed to see |
 | `server/db.py` | Saving data: a local file for testing, Supabase when online |
 | `server/manage.py` | Command to replace a lost or leaked host link |
@@ -61,6 +63,18 @@ First-time setup is described step by step in the chat. In short:
 
 Every time new code is pushed to GitHub's `main` branch, Render redeploys automatically.
 Saved games are not affected.
+
+## Optional services
+
+Both are optional: the app works without them.
+
+| Feature | Setting (Render: Environment; your computer: `.env`) | Cost |
+| --- | --- | --- |
+| AI casting suggestions | `ANTHROPIC_API_KEY` | Pay as you go; a few cents per suggestion |
+| Automatic texts | `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER` (e.g. `+15551234567`) | ~$1.15/mo number, ~$2/mo + ~$20 one-time US registration, ~1¢/text |
+
+Without Twilio, the "Text from my phone" buttons open your phone's Messages app with the text written for you.
+US texting needs Twilio's "A2P 10DLC Sole Proprietor" registration (about a week) before texts reach real phones.
 
 ## If a link leaks
 

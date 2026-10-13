@@ -1,2 +1,4 @@
-# Only needed for the online (Postgres/Supabase) database. Testing locally needs nothing.
+# Postgres driver: only needed for the online (Supabase) database.
 psycopg[binary]>=3.2,<4
+# Anthropic's official library: only needed for AI casting suggestions.
+anthropic>=1.13,<2

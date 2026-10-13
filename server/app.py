@@ -10,10 +10,11 @@ import json
 import os
 import re
 import sys
+import threading
 import traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from . import casting, db as dbmod, game, story as storymod
+from . import ai_casting, casting, db as dbmod, game, story as storymod, texting
 from .game import GameError
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -37,10 +38,13 @@ SECURITY_HEADERS = {
 ROUTES = []
 
 
-def route(method, pattern, who):
-    """Register an API handler. `who` is 'guest' or 'host': checked before the handler runs."""
+def route(method, pattern, who, own_tx=False):
+    """Register an API handler. `who` is 'guest' or 'host': checked before the handler runs.
+    Normally the handler runs inside one database transaction. `own_tx` handlers instead
+    open their own short transactions, so slow outside calls (AI, texting) never hold
+    up other phones while they wait."""
     def deco(fn):
-        ROUTES.append((method, re.compile("^" + pattern + "$"), who, fn))
+        ROUTES.append((method, re.compile("^" + pattern + "$"), who, own_tx, fn))
         return fn
     return deco
 
@@ -80,11 +84,18 @@ def guest_save_assessment(ctx, t, body, guest):
 
 # ----------------------------------------------------------------- host API
 
+def guest_link(ctx, g):
+    return f"{ctx.base_url}/play/{g['token']}"
+
+
 def host_state(ctx, t):
     names = ctx.story["by_id"]
     a = ctx.assessment
+    title = ctx.story["title"]
+    texts = game.latest_texts(t)
 
     def guest_row(g):
+        link = guest_link(ctx, g)
         return {
             "id": g["id"],
             "name": g["name"],
@@ -95,14 +106,24 @@ def host_state(ctx, t):
             "answers": casting.answers_of(g),
             "limits": casting.limits_of(g),
             "note": g["limits_note"],
+            "phone": g["phone"],
+            "sms_consent": bool(g["sms_consent"]),
+            "is_host": bool(g["is_host"]),
+            "texts": texts.get(g["id"], {}),
+            # pre-written texts, for sending from the host's own phone
+            "messages": {"invite": texting.invite_text(title, g["name"], link),
+                         "release": texting.release_text(title, g["name"], link)},
             # how every character fits this guest: drives the dropdown and warnings
             "fit": {c["id"]: casting.fit(a, g, c) for c in ctx.story["characters"]},
         }
 
     return {
-        "title": ctx.story["title"],
+        "title": title,
         "placeholder": ctx.story.get("placeholder", False),
         "released": game.is_released(t),
+        "texting_automatic": texting.is_automatic(),
+        "ai_configured": ai_casting.is_configured(),
+        "suggestion": game.get_suggestion(t),
         "questions": [{"id": q["id"], "label": q["label"], "options": q["options"]} for q in a["questions"]],
         "limit_labels": {l["id"]: l["prompt"] for l in a["limits"]},
         "characters": storymod.character_list(ctx.story),
@@ -129,9 +150,105 @@ def host_assign(ctx, t, body, _, gid):
     return host_state(ctx, t)
 
 
-@route("POST", r"/api/host/release", "host")
-def host_release(ctx, t, body, _):
-    game.release(t, ctx.story, ctx.assessment)
+def fresh_host_state(ctx, extra=None):
+    with ctx.db.tx() as t:
+        state = host_state(ctx, t)
+    state.update(extra or {})
+    return state
+
+
+@route("POST", r"/api/host/guests/(?P<gid>g[0-9a-f]{8})/contact", "host")
+def host_contact(ctx, t, body, _, gid):
+    game.update_contact(t, gid, body.get("phone"), bool(body.get("consent")), bool(body.get("is_host")))
+    return host_state(ctx, t)
+
+
+def send_texts(ctx, jobs):
+    """jobs: [(text_id, phone, body)]. Sends outside any transaction, then records results."""
+    results = []
+    for text_id, phone, body in jobs:
+        try:
+            ctx.send_text(phone, body)
+            results.append((text_id, True, ""))
+        except texting.TextError as e:
+            results.append((text_id, False, str(e)))
+    with ctx.db.tx() as t:
+        for text_id, ok, detail in results:
+            game.finish_text(t, text_id, ok, detail)
+    return sum(1 for r in results if r[1]), [r[2] for r in results if not r[1]]
+
+
+@route("POST", r"/api/host/guests/(?P<gid>g[0-9a-f]{8})/text-invite", "host", own_tx=True)
+def host_text_invite(ctx, _t, body, _, gid):
+    if not texting.is_automatic():
+        raise GameError(409, "Automatic texting isn't set up yet. Use 'Text from my phone' instead.")
+    with ctx.db.tx() as t:
+        g = game.guest_for_id(t, gid)
+        if not game.textable(g):
+            raise GameError(400, f"Add {g['name']}'s phone number and tick that they agreed to texts first.")
+        text_id = game.start_text(t, gid, "invite")
+        if not text_id:
+            raise GameError(409, "That invite is already being sent.")
+        job = (text_id, g["phone"], texting.invite_text(ctx.story["title"], g["name"], guest_link(ctx, g)))
+    sent, errors = send_texts(ctx, [job])
+    return fresh_host_state(ctx, {"notice": f"Invite texted to {g['name']}." if sent else None,
+                                  "error_detail": errors[0] if errors else None})
+
+
+@route("POST", r"/api/host/release", "host", own_tx=True)
+def host_release(ctx, _t, body, _):
+    """Release characters, then text everyone who has a character (once per release)."""
+    with ctx.db.tx() as t:
+        game.release(t, ctx.story, ctx.assessment)
+        round_ = game.release_round(t)
+        jobs = []
+        if texting.is_automatic():
+            for g in game.list_guests(t):
+                if g["character_id"] and game.textable(g):
+                    text_id = game.start_text(t, g["id"], "release", round_,
+                                              text_id=f"release-{g['id']}-{round_}")
+                    if text_id:
+                        jobs.append((text_id, g["phone"],
+                                     texting.release_text(ctx.story["title"], g["name"], guest_link(ctx, g))))
+    sent, errors = send_texts(ctx, jobs) if jobs else (0, [])
+    notice = "Characters released."
+    if jobs:
+        notice += f" Texted {sent} guest{'' if sent == 1 else 's'}."
+    return fresh_host_state(ctx, {
+        "notice": notice,
+        "error_detail": f"{len(errors)} text(s) failed. {errors[0]}" if errors else None,
+        "just_released": True,
+    })
+
+
+_ai_busy = threading.Lock()
+
+
+@route("POST", r"/api/host/suggest", "host", own_tx=True)
+def host_suggest(ctx, _t, body, _):
+    if not (ai_casting.is_configured() or ctx.ai_ask):
+        raise GameError(409, "AI suggestions need an Anthropic API key (ANTHROPIC_API_KEY). See README.")
+    if not _ai_busy.acquire(blocking=False):
+        raise GameError(409, "Already working on a suggestion. Give it a moment.")
+    try:
+        with ctx.db.tx() as t:
+            guests = game.list_guests(t)
+        if not guests:
+            raise GameError(400, "Add some guests first.")
+        try:
+            plan = ai_casting.suggest(ctx.story, ctx.assessment, guests, ask=ctx.ai_ask)
+        except ai_casting.AIError as e:
+            raise GameError(502, str(e))
+        with ctx.db.tx() as t:
+            game.save_suggestion(t, plan)
+    finally:
+        _ai_busy.release()
+    return fresh_host_state(ctx)
+
+
+@route("POST", r"/api/host/suggest/apply", "host")
+def host_apply_suggestion(ctx, t, body, _):
+    game.apply_suggestion(t, ctx.story, ctx.assessment, confirm=bool(body.get("confirm")))
     return host_state(ctx, t)
 
 
@@ -156,10 +273,13 @@ def host_remove(ctx, t, body, _, gid):
 # ------------------------------------------------------------- HTTP plumbing
 
 class Context:
-    def __init__(self, database, story, assessment):
+    def __init__(self, database, story, assessment, ai_ask=None, send_text=None):
         self.db = database
         self.story = story
         self.assessment = assessment
+        self.base_url = None                         # start of guest links; set in make_server
+        self.ai_ask = ai_ask                         # tests swap in a fake AI here
+        self.send_text = send_text or texting.send   # ...and a fake texting service here
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -216,7 +336,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def _api(self, method, path):
         try:
-            for m, pattern, who, fn in ROUTES:
+            for m, pattern, who, own_tx, fn in ROUTES:
                 match = pattern.match(path)
                 if m == method and match:
                     break
@@ -233,7 +353,10 @@ class Handler(BaseHTTPRequestHandler):
                     actor = game.guest_for_token(t, key)
                     if not actor:
                         return self._json(404, {"error": "invalid_link"})
-                result = fn(self.ctx, t, body, actor, **match.groupdict())
+                if not own_tx:
+                    result = fn(self.ctx, t, body, actor, **match.groupdict())
+            if own_tx:
+                result = fn(self.ctx, None, body, actor, **match.groupdict())
             self._json(200, result)
         except GameError as e:
             self._json(e.status, {"error": e.message, "code": e.code})
@@ -267,19 +390,37 @@ def load_content():
     return story, assessment
 
 
-def make_server(database, story, assessment, host, port):
+def make_server(database, story, assessment, host, port, ai_ask=None, send_text=None):
     database.init_schema()
     with database.tx() as t:
         host_key = game.ensure_game(t)
-    handler = type("BoundHandler", (Handler,), {"ctx": Context(database, story, assessment)})
-    return ThreadingHTTPServer((host, port), handler), host_key
+    ctx = Context(database, story, assessment, ai_ask, send_text)
+    server = ThreadingHTTPServer((host, port), type("BoundHandler", (Handler,), {"ctx": ctx}))
+    ctx.base_url = public_base_url(server.server_address[1])
+    return server, host_key
 
 
 def public_base_url(port):
     return (os.environ.get("RENDER_EXTERNAL_URL") or f"http://localhost:{port}").rstrip("/")
 
 
+def load_local_keys():
+    """On your own computer, read API keys from .env. DATABASE_URL is deliberately
+    skipped so local testing never touches the online game."""
+    path = os.path.join(ROOT, ".env")
+    if os.environ.get("RENDER") or not os.path.exists(path):
+        return
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                key, value = (x.strip() for x in line.split("=", 1))
+                if key != "DATABASE_URL":
+                    os.environ.setdefault(key, value)
+
+
 def main():
+    load_local_keys()
     on_host_service = "PORT" in os.environ          # Render and similar set PORT
     port = int(os.environ.get("PORT") or os.environ.get("MM_PORT") or 8000)
     bind = "0.0.0.0" if on_host_service else os.environ.get("MM_HOST", "127.0.0.1")
@@ -291,6 +432,9 @@ def main():
     server, host_key = make_server(database, story, assessment, bind, port)
     print(f"Mystery Night: '{story['title']}'", flush=True)
     print(f"Database: {database.describe()}", flush=True)
+    print("Texting: " + ("automatic (Twilio)" if texting.is_automatic()
+                         else "from the host's phone (Twilio not set up)"), flush=True)
+    print("AI casting: " + ("on" if ai_casting.is_configured() else "off (no ANTHROPIC_API_KEY)"), flush=True)
     print(f"HOST LINK (keep private): {public_base_url(port)}/host/{host_key}", flush=True)
     print(f"Listening on {bind}:{port}. Press Ctrl+C to stop.", flush=True)
     try:

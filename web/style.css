@@ -133,3 +133,14 @@ button.small { min-height: 36px; padding: 4px 10px; font-size: .85rem; }
 .answers dt { margin-top: 6px; }
 .issues { font-size: .9rem; margin: 4px 0 8px; }
 .card.released { border-color: #2f5d3a; }
+
+/* ---- Texting and AI casting ---- */
+.notice { background: #1f3a26; border: 1px solid #2f5d3a; border-radius: 8px; padding: 10px 12px; }
+.ok-text { color: #8fd19e; }
+.ai-picks { margin: 6px 0; }
+.plan li { border-top: 1px solid var(--line); padding-top: 8px; margin-top: 8px; }
+.contact { margin: 8px 0; font-size: .9rem; }
+.contact summary { color: var(--muted); }
+.contact input[type=tel] { margin: 8px 0; }
+.check { display: flex; gap: 8px; align-items: center; margin: 6px 0; }
+.check input { width: 20px; min-height: 20px; }

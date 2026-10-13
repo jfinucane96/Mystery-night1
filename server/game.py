@@ -5,7 +5,7 @@ import json
 import secrets
 from datetime import datetime, timezone
 
-from . import casting
+from . import casting, texting
 
 MAX_NAME = 40
 
@@ -60,6 +60,10 @@ def guest_for_token(t, token):
 
 def list_guests(t):
     return t.all("SELECT * FROM guests ORDER BY created_at, name")
+
+
+def guest_for_id(t, guest_id):
+    return _get_guest(t, guest_id)
 
 
 def _get_guest(t, guest_id):
@@ -136,7 +140,7 @@ def release(t, story, assessment):
         if c and casting.fit(assessment, g, c)["blocked"]:
             raise GameError(409, f"{g['name']} has a role they said no to ({c['name']}). Change it before releasing.")
     if not is_released(t):
-        t.run("UPDATE game SET released_at = ? WHERE id = 1", (_now(),))
+        t.run("UPDATE game SET released_at = ?, release_round = release_round + 1 WHERE id = 1", (_now(),))
 
 
 def unrelease(t):
@@ -151,4 +155,97 @@ def new_guest_link(t, guest_id):
 
 def remove_guest(t, guest_id):
     _get_guest(t, guest_id)
+    t.run("DELETE FROM texts WHERE guest_id = ?", (guest_id,))
     t.run("DELETE FROM guests WHERE id = ?", (guest_id,))
+
+
+# ------------------------------------------------------------ contact details
+
+def update_contact(t, guest_id, phone, consent, is_host):
+    _get_guest(t, guest_id)
+    number = texting.normalize_phone(phone)
+    if number is None:
+        raise GameError(400, "That phone number doesn't look right. Use 10 digits, e.g. 555 123 4567.")
+    if is_host:
+        t.run("UPDATE guests SET is_host = 0 WHERE id <> ?", (guest_id,))
+    t.run("UPDATE guests SET phone = ?, sms_consent = ?, is_host = ? WHERE id = ?",
+          (number, 1 if consent and number else 0, 1 if is_host else 0, guest_id))
+
+
+def textable(guest):
+    return bool(guest["phone"] and guest["sms_consent"])
+
+
+# ---------------------------------------------------------------- text history
+
+def start_text(t, guest_id, kind, round_=0, text_id=None):
+    """Record a text about to be sent. Returns its id, or None if it's a duplicate."""
+    text_id = text_id or f"{kind}-{guest_id}-{secrets.token_hex(4)}"
+    if t.one("SELECT id FROM texts WHERE id = ?", (text_id,)):
+        return None
+    if kind == "invite" and t.one("SELECT id FROM texts WHERE guest_id = ? AND kind = 'invite' AND status = 'sending'",
+                                  (guest_id,)):
+        return None
+    t.run("INSERT INTO texts (id, guest_id, kind, round, status, detail, created_at) VALUES (?, ?, ?, ?, 'sending', '', ?)",
+          (text_id, guest_id, kind, round_, _now()))
+    return text_id
+
+
+def finish_text(t, text_id, ok, detail=""):
+    t.run("UPDATE texts SET status = ?, detail = ? WHERE id = ?", ("sent" if ok else "failed", detail[:300], text_id))
+
+
+def latest_texts(t):
+    """{guest_id: {kind: {status, detail, at}}} using each guest's newest text of each kind."""
+    out = {}
+    for row in t.all("SELECT * FROM texts ORDER BY created_at"):
+        out.setdefault(row["guest_id"], {})[row["kind"]] = {
+            "status": row["status"], "detail": row["detail"], "at": row["created_at"]}
+    return out
+
+
+def release_round(t):
+    row = t.one("SELECT release_round FROM game WHERE id = 1")
+    return row["release_round"] if row else 0
+
+
+# -------------------------------------------------------------- AI suggestions
+
+def save_suggestion(t, data):
+    t.run("DELETE FROM ai_suggestions")
+    t.run("INSERT INTO ai_suggestions (id, data, created_at) VALUES (1, ?, ?)", (json.dumps(data), _now()))
+
+
+def get_suggestion(t):
+    row = t.one("SELECT * FROM ai_suggestions WHERE id = 1")
+    if not row:
+        return None
+    data = json.loads(row["data"])
+    data["created_at"] = row["created_at"]
+    return data
+
+
+def apply_suggestion(t, story, assessment, confirm=False):
+    """Assign every role from the saved whole-cast plan in one go."""
+    plan = get_suggestion(t)
+    if not plan:
+        raise GameError(404, "There's no suggestion to apply. Press 'Suggest a cast' first.")
+    guests = {g["id"]: g for g in list_guests(t)}
+    rows = [r for r in plan["cast"] if r["guest_id"] in guests]
+    needs_check = []
+    for r in rows:
+        if r["role_id"] in story["by_id"]:
+            f = casting.fit(assessment, guests[r["guest_id"]], story["by_id"][r["role_id"]])
+            if f["blocked"]:
+                raise GameError(409, f"The suggestion for {guests[r['guest_id']]['name']} no longer fits their limits. "
+                                     "Ask for a new suggestion.")
+            if f["check"]:
+                needs_check.append(guests[r["guest_id"]]["name"])
+    if needs_check and not confirm:
+        raise GameError(409, "Some suggested roles touch things these guests haven't said yes to: "
+                        + ", ".join(needs_check) + ". Have you checked with them?", code="needs_confirm")
+    for r in rows:                                   # clear first so roles can swap between guests
+        t.run("UPDATE guests SET character_id = NULL WHERE id = ?", (r["guest_id"],))
+    for r in rows:
+        if r["role_id"] in story["by_id"]:
+            assign_character(t, story, assessment, r["guest_id"], r["role_id"], confirm=True)
