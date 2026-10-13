@@ -116,5 +116,11 @@ class _Tx:
 
 
 def from_env():
-    return Database(url=os.environ.get("DATABASE_URL") or None,
+    url = (os.environ.get("DATABASE_URL") or "").strip() or None
+    if url and not url.startswith(("postgresql://", "postgres://")):
+        # Never print the value itself: it contains the database password.
+        raise SystemExit("DATABASE_URL is set but doesn't start with 'postgresql://'. "
+                         "Paste only the part after 'DATABASE_URL=' from your .env file "
+                         "(no '#' comment lines, quotes or spaces).")
+    return Database(url=url,
                     sqlite_path=os.environ.get("MM_DB") or None)
