@@ -519,6 +519,17 @@ function guestCard(s, g) {
       }, "Remove")));
 }
 
+// "Make short versions" for low-prep guests who have a role but no short version yet
+function makeBriefsButton(s) {
+  const noBrief = s.guests.filter((g) => g.character_id && g.prep_level === "short" && !g.brief);
+  if (!noBrief.length) return null;
+  return el("button", {
+    class: "wide quiet", disabled: busy === "briefs" || !s.ai_configured,
+    onclick: () => hostAction("POST", "/api/host/briefs/make", {}, "briefs"),
+  }, busy === "briefs" ? "Writing short versions… (about 30 seconds)"
+    : `Make short versions for low-prep guests (${noBrief.length})`);
+}
+
 function releasePanel(s) {
   if (s.released) {
     // Guests to text from the host's own phone: everyone (manual mode) or failed automatic texts
@@ -526,6 +537,7 @@ function releasePanel(s) {
       (!s.texting_automatic || (g.texts.release && g.texts.release.status === "failed")));
     return el("section", { class: "card released" },
       el("p", {}, el("strong", {}, "Characters are released."), " Guests can see their roles."),
+      makeBriefsButton(s),
       manual.length > 0 && el("div", {},
         el("p", { class: "small" }, "Let these guests know from your phone:"),
         el("div", { class: "row buttons" }, manual.map((g) => smsLink(g.phone, g.messages.release, `Text ${g.name}`)))),
@@ -539,16 +551,11 @@ function releasePanel(s) {
   const unfinished = s.guests.filter((g) => !g.assessment_done).map((g) => g.name);
   const texted = s.guests.filter((g) => g.character_id && g.phone && g.sms_consent).length;
   const lowPrep = s.guests.filter((g) => g.character_id && g.prep_level === "short");
-  const noBrief = lowPrep.filter((g) => !g.brief);
   const unapproved = lowPrep.filter((g) => !g.brief || g.brief.status === "draft").map((g) => g.name);
   return el("section", { class: "card" },
     el("h2", {}, "Release characters"),
     el("p", { class: "note" }, "Guests only see their character after you release. Everyone gets theirs at the same moment."),
-    noBrief.length > 0 && el("button", {
-      class: "wide quiet", disabled: busy === "briefs" || !s.ai_configured,
-      onclick: () => hostAction("POST", "/api/host/briefs/make", {}, "briefs"),
-    }, busy === "briefs" ? "Writing short versions… (about 30 seconds)"
-      : `Make short versions for low-prep guests (${noBrief.length})`),
+    makeBriefsButton(s),
     unapproved.length > 0 && el("p", { class: "small warn" },
       `Short version not approved: ${unapproved.join(", ")} (they'll see the full version)`),
     s.texting_automatic && el("p", { class: "small" }, `${texted} guest${texted === 1 ? "" : "s"} will get a text when you release.`),
