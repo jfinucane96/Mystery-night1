@@ -1,140 +1,74 @@
-# Mystery Night: casting vertical slice (M02–M04)
+# Mystery Night
 
-First working flow from *Game Design Specification v0.1* §13:
-**host creates a game → guests join by invitation → casting questionnaire and
-boundaries → host reviews and approves assignments → each guest sees their
-private character dashboard.**
+A small web app for running one murder-mystery party. Each guest gets a private
+link that shows only their own character. The host gets a separate link to run the game.
 
-Not included yet (deliberately): AI dialogue, question tokens, evidence/QR,
-live events, lighting/audio, accusations/scoring, and the production mystery.
-The bundled package *The Lemon Tart Affair* is a tiny fictional test package.
+**Current milestone: P01. Private links and mobile screens**, using a placeholder story.
 
-See [DECISIONS.md](DECISIONS.md) for the open decisions, the defaults chosen
-and the project structure.
+## What's in this folder
 
-## Requirements
+| Path | What it is |
+| --- | --- |
+| `server/app.py` | The web server: pages and the API the phones talk to |
+| `server/game.py` | Game rules: guests, links, assigning characters |
+| `server/story.py` | Loads the story, and decides what each person is allowed to see |
+| `server/db.py` | Saving data: a local file for testing, Supabase when online |
+| `server/manage.py` | Command to replace a lost or leaked host link |
+| `content/story.json` | The mystery itself (placeholder until P07) |
+| `web/` | The phone screens (HTML, CSS, JavaScript) |
+| `tests/` | Automatic checks for each milestone |
 
-- Python 3.11+ (developed on 3.13). Windows: use `py`; macOS/Linux: use `python3` below.
-- For Postgres/Supabase only: `py -m pip install -r requirements.txt` (installs psycopg).
-  Local SQLite mode needs no packages.
+## Run it on your computer
 
-## Run it
+You need Python 3.11 or newer (this PC has 3.13). Nothing else to install.
 
-From this folder:
+1. Open a terminal in this folder.
+2. Run:
+   ```
+   py -m server.app
+   ```
+3. The terminal prints a line starting `HOST LINK (keep private):`. Ctrl+click it to open the host screen.
+4. Press **Ctrl+C** in the terminal to stop the server.
 
-```bash
-py -m server.app
+Testing on your computer saves everything to `data/party.db`. To start over with an
+empty game, stop the server, delete the `data` folder and start it again (you'll get a new host link).
+
+## Run the automatic checks
+
+```
+py -m unittest -v
 ```
 
-Then open <http://localhost:8000>. The startup log says which database is in use:
+All tests should say `ok`.
 
-- **No `.env` file**: SQLite at `data/mystery.db` (local testing).
-- **`.env` with `DATABASE_URL`**: Postgres (Supabase). Tables are created automatically in
-  the `mystery` schema on first start.
+## Put it online (Render + Supabase)
 
-Settings (environment variables, or lines in `.env`): `DATABASE_URL`, `MM_PORT` (default 8000),
-`MM_HOST` (default 127.0.0.1), `MM_DB` (SQLite path), `MM_PG_SCHEMA` (default `mystery`),
-`MM_SECURE_COOKIES=1` (set when served over HTTPS). Hosts that set `PORT` are detected
-automatically.
+The online app runs on **Render** (hosting, about $7 USD/month on the Starter plan) and stores
+its data in your **Supabase** database (free tier), in a section called `party`.
 
-## Supabase
+First-time setup is described step by step in the chat. In short:
 
-1. In Supabase, open your project → **Connect** (top bar) → **Session pooler** → copy the URI.
-2. Copy `.env.example` to `.env` and paste the URI as `DATABASE_URL`, replacing
-   `[YOUR-PASSWORD]` with your database password. `.env` is git-ignored; never share or commit it.
-3. Start the server. It creates the tables in a dedicated `mystery` schema, **not** `public`.
-   Supabase publishes the `public` schema through its browser API, so story secrets must not
-   live there. Row-level security is also enabled on every table with no policies, and the
-   browser API roles are denied, so even if the schema were exposed it would return nothing.
-   The game server is the only thing that reads the data.
+1. The code is on GitHub (`jfinucane96/Mystery-night1`).
+2. In Render: **New → Blueprint**, pick the repo. Render reads `render.yaml`.
+3. Paste your Supabase `DATABASE_URL` when Render asks (same value as in your `.env` file).
+4. After it deploys, open the service's **Logs** and find the line `HOST LINK (keep private): ...`.
 
-Check it against Supabase with the same end-to-end test (uses a throwaway `mystery_test` schema):
+Every time new code is pushed to GitHub's `main` branch, Render redeploys automatically.
+Saved games are not affected.
 
-```bash
-$env:E2E_BACKEND="postgres"; py -m unittest tests.test_e2e -v; Remove-Item Env:E2E_BACKEND
-```
+## If a link leaks
 
-## Deploy (GitHub → Render → Supabase)
+- **A guest link:** on the host screen, press **New link** for that guest and send them the new one.
+- **The host link:** run one of these, then use the new link it prints:
+  ```
+  py -m server.manage new-host-link            (the test game on your computer)
+  py -m server.manage new-host-link --online   (the online game)
+  ```
 
-GitHub stores the code, Render runs it, and Supabase stores the data.
+## Privacy rules (how it works)
 
-1. Push this folder to a **private** GitHub repository. `.env` and `data/` are ignored automatically.
-2. In Render: **New → Blueprint** → connect the repo. It reads `render.yaml`.
-3. When asked for `DATABASE_URL`, paste the same Supabase session-pooler URI.
-4. Render gives you an address like `https://mystery-night.onrender.com`. Invitation links
-   use whatever address the host is on, so create games from that address.
-
-The free plan sleeps after about 15 minutes idle (the first visit then takes about 30 seconds).
-Use the Starter plan on party night.
-
-## Try the flow on one computer
-
-Login cookies are per hostname, so use a different hostname for each person:
-
-| Person | Open |
-|--------|------|
-| Host   | `http://localhost:8000` |
-| Guest 1 | `http://alice.localhost:8000` |
-| Guest 2 | `http://bob.localhost:8000` |
-
-(`*.localhost` resolves to your own machine in Chrome and Edge. Or use a private window per guest.)
-
-1. **Host**: create an account, then create a game with *The Lemon Tart Affair*.
-2. **Host**: create one invitation link per guest and copy it. Each link is shown once.
-3. **Each guest**: open their link on their own hostname (swap `localhost` for
-   `alice.localhost` in the link), create an account and accept.
-4. **Each guest**: answer the 12 questions (each answer saves immediately, so refreshing is safe), set
-   boundaries, prep time and preferences, then submit. To see casting reject a role, have one guest
-   choose **"No thanks"** for *Playing the murderer*.
-5. **Host**: *Recommend cast*. Review the explanations, optionally change a guest's character
-   (incompatible roles can't be selected, and the server revalidates every change), then *Approve*
-   (click twice to confirm).
-6. **Each guest**: their page switches to their private character dashboard.
-
-## Validate content
-
-```bash
-py -m server.validate_content
-```
-
-Checks for duplicate or missing IDs, unknown tags, roles, claims and facts, invalid phase gates,
-wrong-owner memories, and a killer role that isn't required, among other things. The server
-also refuses to start if content is invalid. If a game's package files change after the game
-was created, that game refuses to load them; publish edits as a new `content_version`.
-
-## Tests
-
-```bash
-py -m unittest discover -s tests -v
-```
-
-- `tests/test_casting.py`: scoring, hard-boundary rules, and the assignment solver
-  (checked against brute force on 200 random cases).
-- `tests/test_e2e.py`: starts a real server on a temporary database and runs the full
-  flow with a host and **two separately authenticated guests**. It covers resuming after
-  refresh, rejecting incompatible roles, nothing visible before approval, each guest seeing
-  only their own character, direct requests for another character or the solution being
-  denied, raw content files being unreachable, and assignments persisting across a
-  **server restart**.
-
-## Where privacy is enforced
-
-- `server/store.py` decides who the caller is relative to the game (host, accepted guest,
-  or nobody) on every request.
-- `server/content.py` holds the only functions that turn package content into response
-  data (`public_role`, `private_role_for_player`, `host_solution`, …). Guests never receive
-  scores, scoring maps, other characters' private fields or solution data.
-- Only `web/index.html`, `web/app.js` and `web/styles.css` are served as files. `content/`
-  is never reachable over HTTP.
-- Session cookies are HttpOnly and SameSite=Lax. State-changing requests must carry an
-  `X-Requested-With` header and a JSON body (CSRF protection). Invitation tokens are stored
-  only as hashes. Refused requests are written to `audit_log`.
-
-## Known gaps before real use
-
-No password reset, no login rate limiting, and no email delivery of invitations (the host
-copies links). Writes are serialised (one at a time), which is plenty for a party but not
-for many simultaneous games. The casting weights
-are a first guess: in the manual test, a guest who scored 100 on investigation was
-recommended the gardener just ahead of the reporter, and the host corrected it with an
-override. Tune the weights with real questionnaire data.
+- Links are long random codes (43 characters), so nobody can guess one.
+- The server checks every request: guest links can only fetch their own character,
+  and only the host link can see the solution or change anything.
+- Story secrets never go to a phone unless that phone's character owns them.
+- `.env` holds your database password. It's listed in `.gitignore`, so it never goes to GitHub.

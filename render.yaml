@@ -1,17 +1,15 @@
-# Render Blueprint: Dashboard → New → Blueprint → pick this GitHub repo.
+# Render Blueprint: tells Render how to run this app. See README.md "Put it online".
 services:
   - type: web
     name: mystery-night
     runtime: python
-    region: oregon        # same region as the Supabase database (aws us-west-2): keeps queries fast
-    plan: free            # free sleeps after ~15 min idle; "starter" (~$7/mo) stays awake
+    region: oregon        # same region as the Supabase database (us-west-2), so it stays fast
+    plan: starter         # ~$7 USD/month, always awake. Change to "free" to save money (sleeps when idle).
     buildCommand: pip install -r requirements.txt
     startCommand: python -m server.app
-    healthCheckPath: /
+    healthCheckPath: /healthz
     envVars:
       - key: PYTHON_VERSION
         value: 3.13.5
-      - key: MM_SECURE_COOKIES
-        value: "1"
       - key: DATABASE_URL
-        sync: false       # Render asks you to paste it in its dashboard; it never lives in the repo
+        sync: false       # Render asks you to paste this in its dashboard; it never goes in GitHub

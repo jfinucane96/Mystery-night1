@@ -1,0 +1,83 @@
+{
+  "title": "The Last Toast at Ravenscroft Manor",
+  "placeholder": true,
+  "note": "PLACEHOLDER story for testing the app. The real mystery replaces this in P07.",
+  "setting": "A stormy evening at Ravenscroft Manor. Lady Ravenscroft has invited old friends to celebrate her 60th birthday. Halfway through her toast, she collapses.",
+  "victim": "Lady Cordelia Ravenscroft",
+  "characters": [
+    {
+      "id": "butler",
+      "name": "Mr. Edmund Pike",
+      "tagline": "The loyal butler",
+      "biography": "You have served the Ravenscroft family for thirty years. You know every corridor of the manor, and every secret whispered in it.",
+      "relationships": [
+        { "with": "niece", "text": "You watched her grow up. Lately she has been asking odd questions about the wine cellar." },
+        { "with": "doctor", "text": "He visits Lady Ravenscroft weekly. You don't trust his smile." }
+      ],
+      "secrets": [
+        "TEST SECRET for PIKE: You have been quietly selling old bottles from the wine cellar for years."
+      ],
+      "objectives": [
+        "Keep anyone from looking closely at the wine cellar records.",
+        "Find out who moved the birthday champagne."
+      ]
+    },
+    {
+      "id": "niece",
+      "name": "Rosalind Ravenscroft",
+      "tagline": "The ambitious niece",
+      "biography": "You are Lady Ravenscroft's only niece and, you have always assumed, her heir. You run a struggling art gallery in the city.",
+      "relationships": [
+        { "with": "butler", "text": "Pike has known you since childhood. He is kind, but he notices everything." },
+        { "with": "painter", "text": "A painter your aunt has taken a sudden liking to. You find this suspicious." }
+      ],
+      "secrets": [
+        "TEST SECRET for ROSALIND: Your gallery is bankrupt and you owe money to dangerous people."
+      ],
+      "objectives": [
+        "Find out whether your aunt changed her will.",
+        "Hide your money troubles from everyone."
+      ]
+    },
+    {
+      "id": "doctor",
+      "name": "Dr. Silas Thorne",
+      "tagline": "The family doctor",
+      "biography": "You have been Lady Ravenscroft's doctor for a decade. You are charming, careful, and always carry your medical bag.",
+      "relationships": [
+        { "with": "butler", "text": "The butler watches you too closely. You suspect he dislikes you." },
+        { "with": "niece", "text": "Rosalind once asked you, oddly, how long her aunt might live." }
+      ],
+      "secrets": [
+        "TEST SECRET for THORNE: You lost your medical licence in another country under a different name."
+      ],
+      "objectives": [
+        "Keep your past hidden.",
+        "Find out who opened your medical bag during dinner."
+      ]
+    },
+    {
+      "id": "painter",
+      "name": "Juniper Vale",
+      "tagline": "The rising painter",
+      "biography": "You are a young painter whom Lady Ravenscroft recently 'discovered'. She commissioned her birthday portrait from you.",
+      "relationships": [
+        { "with": "niece", "text": "Rosalind runs a gallery and has been cold to you all evening." },
+        { "with": "doctor", "text": "The doctor looked startled when he first saw you, as if he recognised you." }
+      ],
+      "secrets": [
+        "TEST SECRET for JUNIPER: You are Lady Ravenscroft's secret granddaughter, and she told you so last week."
+      ],
+      "objectives": [
+        "Decide whether to reveal who you really are.",
+        "Learn why the doctor seemed to recognise you."
+      ]
+    }
+  ],
+  "solution": {
+    "killer": "doctor",
+    "motive": "Lady Ravenscroft discovered Dr. Thorne's false identity and planned to expose him after the party.",
+    "method": "He added poison from his medical bag to her champagne glass while everyone gathered for the toast.",
+    "summary": "PLACEHOLDER solution for testing only."
+  }
+}

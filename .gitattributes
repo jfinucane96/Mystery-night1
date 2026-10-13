@@ -1,3 +1,2 @@
-# Keep LF everywhere. Story packages are fingerprinted byte-for-byte (spec §12),
-# so line-ending conversion would make an unchanged package look edited.
+# Keep Unix line endings in the repo so files look identical on Windows and on the server.
 * text=auto eol=lf

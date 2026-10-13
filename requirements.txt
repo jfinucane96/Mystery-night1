@@ -1,1 +1,2 @@
+# Only needed for the online (Postgres/Supabase) database. Testing locally needs nothing.
 psycopg[binary]>=3.2,<4
