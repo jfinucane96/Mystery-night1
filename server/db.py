@@ -64,6 +64,16 @@ MIGRATIONS = [
             created_at TEXT NOT NULL
         )""",
     ],
+    # 4. Short character versions for low-prep guests (status: draft / approved / full)
+    [
+        """CREATE TABLE IF NOT EXISTS briefs (
+            guest_id TEXT PRIMARY KEY,
+            character_id TEXT NOT NULL,
+            data TEXT NOT NULL,
+            status TEXT NOT NULL,
+            created_at TEXT NOT NULL
+        )""",
+    ],
 ]
 
 

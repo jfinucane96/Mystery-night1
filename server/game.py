@@ -156,6 +156,7 @@ def new_guest_link(t, guest_id):
 def remove_guest(t, guest_id):
     _get_guest(t, guest_id)
     t.run("DELETE FROM texts WHERE guest_id = ?", (guest_id,))
+    t.run("DELETE FROM briefs WHERE guest_id = ?", (guest_id,))
     t.run("DELETE FROM guests WHERE id = ?", (guest_id,))
 
 
@@ -249,3 +250,42 @@ def apply_suggestion(t, story, assessment, confirm=False):
     for r in rows:
         if r["role_id"] in story["by_id"]:
             assign_character(t, story, assessment, r["guest_id"], r["role_id"], confirm=True)
+
+
+# ------------------------------------------------- short versions (low-prep guests)
+
+def current_brief(t, guest):
+    """The guest's short version, if it was made for the character they have now."""
+    row = t.one("SELECT * FROM briefs WHERE guest_id = ?", (guest["id"],))
+    if not row or row["character_id"] != guest["character_id"]:
+        return None
+    return {"status": row["status"], "data": json.loads(row["data"]), "created_at": row["created_at"]}
+
+
+def save_brief(t, guest_id, character_id, data):
+    """Store a fresh draft, unless the guest's role changed while the AI was writing."""
+    g = _get_guest(t, guest_id)
+    if g["character_id"] != character_id:
+        return False
+    t.run("DELETE FROM briefs WHERE guest_id = ?", (guest_id,))
+    t.run("INSERT INTO briefs (guest_id, character_id, data, status, created_at) VALUES (?, ?, ?, 'draft', ?)",
+          (guest_id, character_id, json.dumps(data), _now()))
+    return True
+
+
+def set_brief_status(t, guest_id, status):
+    g = _get_guest(t, guest_id)
+    if status == "full":
+        # "Use full version instead": remember the choice even if no draft exists yet
+        if not current_brief(t, g):
+            t.run("DELETE FROM briefs WHERE guest_id = ?", (guest_id,))
+            t.run("INSERT INTO briefs (guest_id, character_id, data, status, created_at) VALUES (?, ?, '{}', 'full', ?)",
+                  (guest_id, g["character_id"] or "", _now()))
+            return
+    elif status == "approved":
+        b = current_brief(t, g)
+        if not b or not b["data"]:
+            raise GameError(409, f"There's no short version for {g['name']} to approve yet.")
+    else:
+        raise GameError(400, "Unknown choice.")
+    t.run("UPDATE briefs SET status = ? WHERE guest_id = ?", (status, guest_id))

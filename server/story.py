@@ -52,9 +52,10 @@ def character_list(story):
             for c in story["characters"]]
 
 
-def guest_view(story, guest, released):
+def guest_view(story, guest, released, short=None):
     """Everything one guest may see. Contains ONLY their own character, and only
-    once the host has released characters."""
+    once the host has released characters. `short` is an approved short version
+    for low-prep guests; their full character is still included behind a button."""
     view = {
         "title": story["title"],
         "setting": story["setting"],
@@ -72,6 +73,7 @@ def guest_view(story, guest, released):
                               for r in c["relationships"]],
             "secrets": list(c["secrets"]),
             "objectives": list(c["objectives"]),
+            "short": short,
         }
     return view
 

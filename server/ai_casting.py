@@ -7,12 +7,9 @@ Needs ANTHROPIC_API_KEY in the environment.
 """
 
 import json
-import os
 
-from . import casting
+from . import ai, casting
 from .texting import first_name
-
-MODEL = "claude-opus-5-5"
 
 SYSTEM = """You help a host cast a murder-mystery party. Guests answered six questions (1 = shy, 4 = all-in) and set hard limits. Suggest roles that each guest will enjoy.
 
@@ -26,12 +23,8 @@ Rules, in order of importance:
 Reasons must be one friendly sentence (under 25 words) that refers to the guest's answers. Write them for the host."""
 
 
-class AIError(Exception):
-    pass
-
-
-def is_configured():
-    return bool(os.environ.get("ANTHROPIC_API_KEY"))
+AIError = ai.AIError
+is_configured = ai.is_configured
 
 
 def build_request(story, assessment, guests):
@@ -84,43 +77,7 @@ def build_request(story, assessment, guests):
 
 
 def ask_claude(prompt, schema):
-    """One request to Claude. Returns the parsed JSON answer."""
-    import anthropic
-    client = anthropic.Anthropic(timeout=120.0, max_retries=2)
-    try:
-        response = client.beta.messages.create(
-            model=MODEL,
-            max_tokens=16000,
-            betas=["server-side-fallback-2026-07-01"],
-            fallbacks="default",
-            system=SYSTEM,
-            output_config={"effort": "medium", "format": {"type": "json_schema", "schema": schema}},
-            messages=[{"role": "user", "content": prompt}],
-        )
-    except anthropic.AuthenticationError:
-        raise AIError("The Anthropic API key was rejected. Check ANTHROPIC_API_KEY.")
-    except anthropic.PermissionDeniedError:
-        raise AIError("The Anthropic API key isn't allowed to do this. Check your account and credit.")
-    except anthropic.RateLimitError:
-        raise AIError("The AI is busy right now. Try again in a minute.")
-    except anthropic.BadRequestError as e:
-        msg = str(getattr(e, "message", e))
-        if "credit" in msg.lower():
-            raise AIError("Your Anthropic account is out of credit. Add some at console.anthropic.com.")
-        raise AIError(f"The AI request was rejected: {msg}")
-    except anthropic.APIStatusError as e:
-        raise AIError(f"The AI service had a problem ({e.status_code}). Try again shortly.")
-    except anthropic.APIConnectionError:
-        raise AIError("Couldn't reach the AI service. Try again shortly.")
-    if response.stop_reason == "refusal":
-        raise AIError("The AI declined to make a suggestion. Try again, or cast manually.")
-    if response.stop_reason == "max_tokens":
-        raise AIError("The AI's answer was cut off. Try again.")
-    text = next((b.text for b in response.content if b.type == "text"), "")
-    try:
-        return json.loads(text)
-    except ValueError:
-        raise AIError("The AI's answer couldn't be read. Try again.")
+    return ai.ask_json(SYSTEM, prompt, schema, effort="medium")
 
 
 def clean(story, assessment, guests, raw):
