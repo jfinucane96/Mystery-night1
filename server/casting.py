@@ -77,6 +77,14 @@ def clean_limits(assessment, limits):
             if k in assessment["limit_ids"] and v in LIMIT_CHOICES}
 
 
+DEEP_PREP = (3, 4)   # preparation answers that get their character's chapter up front
+
+
+def prep_level(guest):
+    """'deep' (chapter + sheet) or 'light' (sheet; chapter behind a button)."""
+    return "deep" if answers_of(guest).get("preparation") in DEEP_PREP else "light"
+
+
 def is_complete(assessment, answers, limits):
     return (all(q in answers for q in assessment["question_ids"])
             and all(l in limits for l in assessment["limit_ids"]))

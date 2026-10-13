@@ -38,6 +38,8 @@ def check(story):
         for field in ("id", "name", "tagline", "biography", "relationships", "secrets", "objectives"):
             if field not in c:
                 problems.append(f"character '{c.get('id', '?')}' is missing '{field}'")
+        if "chapter" in c and not isinstance(c["chapter"], str):
+            problems.append(f"character '{c.get('id')}': chapter must be text")
         for r in c.get("relationships", []):
             if r.get("with") not in ids:
                 problems.append(f"character '{c.get('id')}' has a relationship with unknown id '{r.get('with')}'")
@@ -52,10 +54,10 @@ def character_list(story):
             for c in story["characters"]]
 
 
-def guest_view(story, guest, released, short=None):
+def guest_view(story, guest, released, prep="light"):
     """Everything one guest may see. Contains ONLY their own character, and only
-    once the host has released characters. `short` is an approved short version
-    for low-prep guests; their full character is still included behind a button."""
+    once the host has released characters. `prep` decides whether their chapter
+    opens first ('deep') or sits behind a button ('light')."""
     view = {
         "title": story["title"],
         "setting": story["setting"],
@@ -73,7 +75,8 @@ def guest_view(story, guest, released, short=None):
                               for r in c["relationships"]],
             "secrets": list(c["secrets"]),
             "objectives": list(c["objectives"]),
-            "short": short,
+            "chapter": c.get("chapter") or None,
+            "prep": prep,
         }
     return view
 

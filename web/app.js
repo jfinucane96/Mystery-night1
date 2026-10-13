@@ -60,7 +60,7 @@ function list(items) {
 let me = null;        // latest guest state from the server
 let step = null;      // which assessment screen is showing (null = choose automatically)
 let guestMsg = null;
-let showFull = false;  // low-prep guests: showing the full character instead of the quick version
+let chapterOpen = null;  // light-prep guests: has the guest opened their chapter?
 
 async function loadGuest() {
   try {
@@ -203,29 +203,29 @@ function renderCharacter() {
         el("p", {}, "The host hasn't given you a character yet. Check back soon."),
         el("button", { class: "wide", onclick: loadGuest }, "Check again")));
   }
-  // Low-prep guests see their approved short version first, with the full one a tap away
-  const quick = c.short && !showFull;
-  const who = quick ? c.short.who_you_are : c.biography;
-  const evening = quick ? c.short.the_evening : me.setting;
-  const rels = quick ? c.short.relationships : c.relationships;
-  const toggle = c.short && el("button", {
-    class: "wide quiet",
-    onclick: () => { showFull = !showFull; renderCharacter(); },
-  }, showFull ? "Show the quick version" : "Show full details");
+  // Deep-prep guests read their chapter first; light-prep guests can open it if they like
+  if (chapterOpen === null) chapterOpen = c.prep === "deep";
+  const chapter = c.chapter && (chapterOpen
+    ? el("section", { class: "card chapter" },
+      el("h2", {}, "Your story"),
+      c.chapter.split(/\n\s*\n/).map((para) => el("p", {}, para.trim())),
+      el("button", { class: "wide quiet", onclick: () => { chapterOpen = false; renderCharacter(); } }, "Hide the story"))
+    : el("button", { class: "wide quiet", onclick: () => { chapterOpen = true; renderCharacter(); } },
+      "Read your character's story (about 10 minutes)"));
   show(guestHeader(),
     el("div", { class: "card hero" },
-      el("p", { class: "eyebrow" }, quick ? "You are playing (quick version)" : "You are playing"),
+      el("p", { class: "eyebrow" }, "You are playing"),
       el("h1", {}, c.name),
       el("p", { class: "tagline" }, c.tagline)),
-    el("section", { class: "card" }, el("h2", {}, "The evening"), el("p", {}, evening)),
-    el("section", { class: "card" }, el("h2", {}, "Who you are"), el("p", {}, who)),
+    chapter,
+    el("section", { class: "card" }, el("h2", {}, "The evening"), el("p", {}, me.setting)),
+    el("section", { class: "card" }, el("h2", {}, "Who you are"), el("p", {}, c.biography)),
     el("section", { class: "card" }, el("h2", {}, "People you know"),
-      el("dl", {}, rels.map((r) => [el("dt", {}, r.name), el("dd", {}, r.text)]))),
+      el("dl", {}, c.relationships.map((r) => [el("dt", {}, r.name), el("dd", {}, r.text)]))),
     el("section", { class: "card secret" }, el("h2", {}, "Your secrets"),
       el("p", { class: "note" }, "Only you can see this. Don't show your screen to anyone."),
       list(c.secrets)),
-    el("section", { class: "card" }, el("h2", {}, "Your objectives"), list(c.objectives)),
-    toggle);
+    el("section", { class: "card" }, el("h2", {}, "Your objectives"), list(c.objectives)));
 }
 
 // --------------------------------------------------------------- host page
@@ -425,43 +425,6 @@ function suggestionPanel(s) {
     ask);
 }
 
-// Short-version review for low-prep guests (or anyone the host made one for)
-function briefPanel(g, s) {
-  if (!g.character_id || (g.prep_level !== "short" && !g.brief)) return null;
-  const b = g.brief;
-  const making = busy === `brief-${g.id}` || busy === "briefs";
-  const setStatus = (status) => hostAction("POST", `/api/host/guests/${g.id}/brief`, { status });
-  const remake = el("button", {
-    class: "small quiet", disabled: making || !s.ai_configured,
-    onclick: () => hostAction("POST", "/api/host/briefs/make", { guest_id: g.id }, `brief-${g.id}`),
-  }, making ? "Writing…" : b && b.data.who_you_are ? "Make again" : "Make short version");
-  const useFull = el("button", { class: "small quiet", onclick: () => setStatus("full") }, "Use full version instead");
-
-  let status, body = null, buttons;
-  if (!b) {
-    status = el("span", { class: "warn" }, "Short version not made yet");
-    buttons = [remake, useFull];
-  } else if (b.status === "full") {
-    status = el("span", {}, "Using the full version");
-    buttons = [remake];
-  } else {
-    status = b.status === "approved"
-      ? el("span", { class: "ok-text" }, "Short version approved")
-      : el("span", { class: "warn" }, "Short version ready to review");
-    body = el("div", { class: "brief" },
-      el("p", {}, el("strong", {}, "Who you are: "), b.data.who_you_are),
-      el("p", {}, el("strong", {}, "The evening: "), b.data.the_evening),
-      el("ul", {}, b.data.relationships.map((r) => el("li", {}, el("strong", {}, `${r.name}: `), r.text))),
-      el("p", { class: "note" }, "Secrets and objectives are always shown in full."));
-    buttons = [b.status !== "approved" && el("button", { class: "small", onclick: () => setStatus("approved") }, "Approve"),
-      remake, useFull];
-  }
-  return el("details", { class: "contact", open: b && b.status === "draft" },
-    el("summary", {}, "Prep: ", g.prep_level === "short" ? "low (short version) · " : "", status),
-    body,
-    el("div", { class: "row buttons" }, buttons));
-}
-
 function guestCard(s, g) {
   const taken = new Map(s.guests.filter((o) => o.character_id && o.id !== g.id)
     .map((o) => [o.character_id, o.name]));
@@ -501,7 +464,8 @@ function guestCard(s, g) {
     select,
     g.character_name && el("p", { class: "small" }, `Role: ${g.character_name}`),
     issues && issues.length > 0 && el("ul", { class: "issues" }, issues),
-    briefPanel(g, s),
+    g.assessment_done && el("p", { class: "small muted" }, g.prep_level === "deep"
+      ? "Prep: deep (story chapter + character sheet)" : "Prep: light (character sheet)"),
     contactPanel(g, s),
     el("div", { class: "row buttons" },
       inviteButton(g, s),
@@ -519,17 +483,6 @@ function guestCard(s, g) {
       }, "Remove")));
 }
 
-// "Make short versions" for low-prep guests who have a role but no short version yet
-function makeBriefsButton(s) {
-  const noBrief = s.guests.filter((g) => g.character_id && g.prep_level === "short" && !g.brief);
-  if (!noBrief.length) return null;
-  return el("button", {
-    class: "wide quiet", disabled: busy === "briefs" || !s.ai_configured,
-    onclick: () => hostAction("POST", "/api/host/briefs/make", {}, "briefs"),
-  }, busy === "briefs" ? "Writing short versions… (about 30 seconds)"
-    : `Make short versions for low-prep guests (${noBrief.length})`);
-}
-
 function releasePanel(s) {
   if (s.released) {
     // Guests to text from the host's own phone: everyone (manual mode) or failed automatic texts
@@ -537,7 +490,6 @@ function releasePanel(s) {
       (!s.texting_automatic || (g.texts.release && g.texts.release.status === "failed")));
     return el("section", { class: "card released" },
       el("p", {}, el("strong", {}, "Characters are released."), " Guests can see their roles."),
-      makeBriefsButton(s),
       manual.length > 0 && el("div", {},
         el("p", { class: "small" }, "Let these guests know from your phone:"),
         el("div", { class: "row buttons" }, manual.map((g) => smsLink(g.phone, g.messages.release, `Text ${g.name}`)))),
@@ -550,14 +502,9 @@ function releasePanel(s) {
   const unassigned = s.guests.filter((g) => !g.character_id).map((g) => g.name);
   const unfinished = s.guests.filter((g) => !g.assessment_done).map((g) => g.name);
   const texted = s.guests.filter((g) => g.character_id && g.phone && g.sms_consent).length;
-  const lowPrep = s.guests.filter((g) => g.character_id && g.prep_level === "short");
-  const unapproved = lowPrep.filter((g) => !g.brief || g.brief.status === "draft").map((g) => g.name);
   return el("section", { class: "card" },
     el("h2", {}, "Release characters"),
     el("p", { class: "note" }, "Guests only see their character after you release. Everyone gets theirs at the same moment."),
-    makeBriefsButton(s),
-    unapproved.length > 0 && el("p", { class: "small warn" },
-      `Short version not approved: ${unapproved.join(", ")} (they'll see the full version)`),
     s.texting_automatic && el("p", { class: "small" }, `${texted} guest${texted === 1 ? "" : "s"} will get a text when you release.`),
     unfinished.length > 0 && el("p", { class: "small warn" }, `Still answering: ${unfinished.join(", ")}`),
     unassigned.length > 0 && el("p", { class: "small warn" }, `No character yet: ${unassigned.join(", ")}`),

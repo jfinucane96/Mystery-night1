@@ -64,7 +64,7 @@ MIGRATIONS = [
             created_at TEXT NOT NULL
         )""",
     ],
-    # 4. Short character versions for low-prep guests (status: draft / approved / full)
+    # 4. AI short versions (feature removed; step 5 drops the table)
     [
         """CREATE TABLE IF NOT EXISTS briefs (
             guest_id TEXT PRIMARY KEY,
@@ -73,6 +73,10 @@ MIGRATIONS = [
             status TEXT NOT NULL,
             created_at TEXT NOT NULL
         )""",
+    ],
+    # 5. Remove the AI short-version table (replaced by authored chapters in the story)
+    [
+        "DROP TABLE IF EXISTS briefs",
     ],
 ]
 

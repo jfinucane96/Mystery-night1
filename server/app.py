@@ -12,10 +12,9 @@ import re
 import sys
 import threading
 import traceback
-from concurrent.futures import ThreadPoolExecutor
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from . import ai, ai_briefs, ai_casting, casting, db as dbmod, game, story as storymod, texting
+from . import ai_casting, casting, db as dbmod, game, story as storymod, texting
 from .game import GameError
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -54,9 +53,7 @@ def route(method, pattern, who, own_tx=False):
 
 def guest_state(ctx, t, guest):
     released = game.is_released(t)
-    brief = game.current_brief(t, guest) if released else None
-    short = brief["data"] if brief and brief["status"] == "approved" else None
-    view = storymod.guest_view(ctx.story, guest, released, short)
+    view = storymod.guest_view(ctx.story, guest, released, casting.prep_level(guest))
     if released:
         view["stage"] = "character"
         return view
@@ -113,8 +110,7 @@ def host_state(ctx, t):
             "sms_consent": bool(g["sms_consent"]),
             "is_host": bool(g["is_host"]),
             "texts": texts.get(g["id"], {}),
-            "prep_level": ai_briefs.prep_level(g),
-            "brief": game.current_brief(t, g),
+            "prep_level": casting.prep_level(g),
             # pre-written texts, for sending from the host's own phone
             "messages": {"invite": texting.invite_text(title, g["name"], link),
                          "release": texting.release_text(title, g["name"], link)},
@@ -251,59 +247,6 @@ def host_suggest(ctx, _t, body, _):
     return fresh_host_state(ctx)
 
 
-_briefs_busy = threading.Lock()
-
-
-@route("POST", r"/api/host/briefs/make", "host", own_tx=True)
-def host_make_briefs(ctx, _t, body, _):
-    """Draft short versions: for one guest ("Make again"), or every low-prep guest who needs one."""
-    if not (ai.is_configured() or ctx.ai_ask_brief):
-        raise GameError(409, "Short versions need an Anthropic API key (ANTHROPIC_API_KEY).")
-    if not _briefs_busy.acquire(blocking=False):
-        raise GameError(409, "Already writing short versions. Give it a moment.")
-    try:
-        only = body.get("guest_id")
-        with ctx.db.tx() as t:
-            jobs = []
-            for g in game.list_guests(t):
-                if not g["character_id"] or (only and g["id"] != only):
-                    continue
-                if not only and (ai_briefs.prep_level(g) != "short" or game.current_brief(t, g)):
-                    continue
-                jobs.append((g["id"], g["character_id"]))
-        if not jobs:
-            return fresh_host_state(ctx, {"notice": "Every low-prep guest with a role already has a short version."})
-        ask = ctx.ai_ask_brief or ai_briefs.ask_claude
-
-        def make(job):
-            try:
-                return job, ai_briefs.make_short(ctx.story, ctx.story["by_id"][job[1]], ask), None
-            except ai.AIError as e:
-                return job, None, str(e)
-
-        with ThreadPoolExecutor(max_workers=4) as pool:      # a few at once: ~20s total, not 20s each
-            results = list(pool.map(make, jobs))
-        made, errors = 0, []
-        with ctx.db.tx() as t:
-            for (gid, cid), data, err in results:
-                if data and game.save_brief(t, gid, cid, data):
-                    made += 1
-                elif err:
-                    errors.append(err)
-    finally:
-        _briefs_busy.release()
-    return fresh_host_state(ctx, {
-        "notice": f"Drafted {made} short version{'' if made == 1 else 's'}. Review and approve below." if made else None,
-        "error_detail": errors[0] if errors else None,
-    })
-
-
-@route("POST", r"/api/host/guests/(?P<gid>g[0-9a-f]{8})/brief", "host")
-def host_brief_status(ctx, t, body, _, gid):
-    game.set_brief_status(t, gid, body.get("status"))
-    return host_state(ctx, t)
-
-
 @route("POST", r"/api/host/suggest/apply", "host")
 def host_apply_suggestion(ctx, t, body, _):
     game.apply_suggestion(t, ctx.story, ctx.assessment, confirm=bool(body.get("confirm")))
@@ -331,13 +274,12 @@ def host_remove(ctx, t, body, _, gid):
 # ------------------------------------------------------------- HTTP plumbing
 
 class Context:
-    def __init__(self, database, story, assessment, ai_ask=None, send_text=None, ai_ask_brief=None):
+    def __init__(self, database, story, assessment, ai_ask=None, send_text=None):
         self.db = database
         self.story = story
         self.assessment = assessment
         self.base_url = None                         # start of guest links; set in make_server
         self.ai_ask = ai_ask                         # tests swap in a fake AI here
-        self.ai_ask_brief = ai_ask_brief
         self.send_text = send_text or texting.send   # ...and a fake texting service here
 
 
@@ -449,11 +391,11 @@ def load_content():
     return story, assessment
 
 
-def make_server(database, story, assessment, host, port, ai_ask=None, send_text=None, ai_ask_brief=None):
+def make_server(database, story, assessment, host, port, ai_ask=None, send_text=None):
     database.init_schema()
     with database.tx() as t:
         host_key = game.ensure_game(t)
-    ctx = Context(database, story, assessment, ai_ask, send_text, ai_ask_brief)
+    ctx = Context(database, story, assessment, ai_ask, send_text)
     server = ThreadingHTTPServer((host, port), type("BoundHandler", (Handler,), {"ctx": ctx}))
     ctx.base_url = public_base_url(server.server_address[1])
     return server, host_key

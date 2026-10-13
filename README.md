@@ -17,13 +17,12 @@ blocks roles a guest said no to), then the host releases all characters at once.
 | `server/game.py` | Game rules: guests, links, answers, assigning and releasing characters |
 | `server/casting.py` | The assessment, and the rules comparing guests' answers with each role |
 | `server/ai_casting.py` | AI casting suggestions (Claude); suggestions only, limits still enforced |
-| `server/ai_briefs.py` | AI short versions of a character for low-prep guests (host approves each) |
 | `server/ai.py` | The one place that talks to Claude |
 | `server/texting.py` | Texting guests through Twilio, or pre-written texts for the host's phone |
 | `server/story.py` | Loads the story, and decides what each person is allowed to see |
 | `server/db.py` | Saving data: a local file for testing, Supabase when online |
 | `server/manage.py` | Command to replace a lost or leaked host link |
-| `content/story.json` | The mystery itself (placeholder until P07), incl. each role's casting needs |
+| `content/story.json` | The mystery itself (placeholder until P07): each role's sheet, casting needs and story chapter |
 | `content/assessment.json` | The six questions and the hard limits (edit the wording here) |
 | `web/` | The phone screens (HTML, CSS, JavaScript) |
 | `tests/` | Automatic checks for each milestone |

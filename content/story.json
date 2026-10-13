@@ -31,7 +31,8 @@
       "objectives": [
         "Keep anyone from looking closely at the wine cellar records.",
         "Find out who moved the birthday champagne."
-      ]
+      ],
+      "chapter": "PLACEHOLDER CHAPTER. The real chapter (about 10 minutes of reading) is written with the story in P07.\n\nThe rain had not stopped since noon. You moved through the east corridor of Ravenscroft Manor the way you always did, silently, counting the portraits as you passed. Thirty years in this house had taught you which floorboards complained and which doors were best left closed.\n\nTonight the house was full again. Voices drifted up from the drawing room, and somewhere below, the wine cellar waited in the dark, keeping your secret as faithfully as you had kept everyone else's."
     },
     {
       "id": "niece",
@@ -64,7 +65,8 @@
       "objectives": [
         "Find out whether your aunt changed her will.",
         "Hide your money troubles from everyone."
-      ]
+      ],
+      "chapter": "PLACEHOLDER CHAPTER. The real chapter (about 10 minutes of reading) is written with the story in P07.\n\nYou arrived late on purpose. An entrance, after all, is half the battle. Your coat was soaked and your smile was perfect as you swept into the hall, already scanning the room for your aunt.\n\nSomewhere in this house was the answer to the only question that mattered: had she changed her will? You had come to find out, and you did not intend to leave without knowing."
     },
     {
       "id": "doctor",
@@ -97,7 +99,8 @@
       "objectives": [
         "Keep your past hidden.",
         "Find out who opened your medical bag during dinner."
-      ]
+      ],
+      "chapter": "PLACEHOLDER CHAPTER. The real chapter (about 10 minutes of reading) is written with the story in P07.\n\nYour medical bag sat by your feet at dinner, as it always did. The guests found it reassuring. A doctor at the table, just in case.\n\nYou smiled, passed the salt, and listened. A careful man listens more than he speaks, and you had been careful for a very long time."
     },
     {
       "id": "painter",
@@ -129,7 +132,8 @@
       "objectives": [
         "Decide whether to reveal who you really are.",
         "Learn why the doctor seemed to recognise you."
-      ]
+      ],
+      "chapter": "PLACEHOLDER CHAPTER. The real chapter (about 10 minutes of reading) is written with the story in P07.\n\nThe portrait was finished, wrapped in brown paper, leaning against the wall of the guest room you had been given. You had painted her eyes three times before they looked right.\n\nShe had told you a secret last week, one that changed everything you thought you knew about yourself. Tonight, among all these strangers who were not quite strangers, you would have to decide what to do with it."
     }
   ],
   "solution": {
