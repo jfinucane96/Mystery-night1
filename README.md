@@ -3,18 +3,24 @@
 A small web app for running one murder-mystery party. Each guest gets a private
 link that shows only their own character. The host gets a separate link to run the game.
 
-**Current milestone: P01. Private links and mobile screens**, using a placeholder story.
+**Current milestone: P02. Short assessment and manual casting**, using a placeholder story.
+
+How a game runs so far: the host adds guests and sends each their link, guests answer six quick
+questions and set their limits, the host assigns characters (the app warns about poor fits and
+blocks roles a guest said no to), then the host releases all characters at once.
 
 ## What's in this folder
 
 | Path | What it is |
 | --- | --- |
 | `server/app.py` | The web server: pages and the API the phones talk to |
-| `server/game.py` | Game rules: guests, links, assigning characters |
+| `server/game.py` | Game rules: guests, links, answers, assigning and releasing characters |
+| `server/casting.py` | The assessment, and the rules comparing guests' answers with each role |
 | `server/story.py` | Loads the story, and decides what each person is allowed to see |
 | `server/db.py` | Saving data: a local file for testing, Supabase when online |
 | `server/manage.py` | Command to replace a lost or leaked host link |
-| `content/story.json` | The mystery itself (placeholder until P07) |
+| `content/story.json` | The mystery itself (placeholder until P07), incl. each role's casting needs |
+| `content/assessment.json` | The six questions and the hard limits (edit the wording here) |
 | `web/` | The phone screens (HTML, CSS, JavaScript) |
 | `tests/` | Automatic checks for each milestone |
 

@@ -47,12 +47,14 @@ def check(story):
 
 
 def character_list(story):
-    """Names and taglines only: safe for the host's casting dropdown."""
-    return [{"id": c["id"], "name": c["name"], "tagline": c["tagline"]} for c in story["characters"]]
+    """For the host's casting screen: names, taglines and casting needs (no secrets)."""
+    return [{"id": c["id"], "name": c["name"], "tagline": c["tagline"], "casting": c["casting"]}
+            for c in story["characters"]]
 
 
-def guest_view(story, guest):
-    """Everything one guest may see. Contains ONLY their own character."""
+def guest_view(story, guest, released):
+    """Everything one guest may see. Contains ONLY their own character, and only
+    once the host has released characters."""
     view = {
         "title": story["title"],
         "setting": story["setting"],
@@ -60,7 +62,7 @@ def guest_view(story, guest):
         "character": None,
     }
     c = story["by_id"].get(guest.get("character_id") or "")
-    if c:
+    if c and released:
         names = story["by_id"]
         view["character"] = {
             "name": c["name"],

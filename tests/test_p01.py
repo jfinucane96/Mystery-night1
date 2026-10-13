@@ -17,15 +17,16 @@ class Server:
     """Runs the real app on a free port with a throwaway SQLite file."""
 
     def __init__(self, sqlite_path):
-        self.story = storymod.load()
-        self.httpd, self.host_key = app.make_server(
-            dbmod.Database(sqlite_path=sqlite_path), self.story, "127.0.0.1", 0)
+        self.story, self.assessment = app.load_content()
+        self.db = dbmod.Database(sqlite_path=sqlite_path)
+        self.httpd, self.host_key = app.make_server(self.db, self.story, self.assessment, "127.0.0.1", 0)
         self.base = f"http://127.0.0.1:{self.httpd.server_address[1]}"
         threading.Thread(target=self.httpd.serve_forever, daemon=True).start()
 
     def stop(self):
         self.httpd.shutdown()
         self.httpd.server_close()
+        self.db.close()
 
     def call(self, method, path, key=None, body=None):
         """Returns (status, raw response text)."""
@@ -56,7 +57,8 @@ class P01(unittest.TestCase):
         state = self.s.host("POST", "/api/host/guests", {"name": "Bob"})
         self.alice, self.bob = state["guests"]
         self.s.host("POST", f"/api/host/guests/{self.alice['id']}/assign", {"character_id": "butler"})
-        self.s.host("POST", f"/api/host/guests/{self.bob['id']}/assign", {"character_id": "niece"})
+        self.s.host("POST", f"/api/host/guests/{self.bob['id']}/assign", {"character_id": "niece", "confirm": True})
+        self.s.host("POST", "/api/host/release", {})
 
     def tearDown(self):
         self.s.stop()
@@ -151,7 +153,7 @@ class P01(unittest.TestCase):
 
 class StoryFile(unittest.TestCase):
     def test_story_has_no_problems(self):
-        storymod.load()
+        app.load_content()
 
 
 if __name__ == "__main__":

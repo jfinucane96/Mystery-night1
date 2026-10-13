@@ -13,7 +13,7 @@ import sys
 import traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from . import db as dbmod, game, story as storymod
+from . import casting, db as dbmod, game, story as storymod
 from .game import GameError
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -47,27 +47,67 @@ def route(method, pattern, who):
 
 # ---------------------------------------------------------------- guest API
 
+def guest_state(ctx, t, guest):
+    released = game.is_released(t)
+    view = storymod.guest_view(ctx.story, guest, released)
+    if released:
+        view["stage"] = "character"
+        return view
+    a = ctx.assessment
+    view["stage"] = "waiting" if guest["assessment_done"] else "assessment"
+    view["assessment"] = {
+        "intro": a["intro"],
+        "questions": [{"id": q["id"], "prompt": q["prompt"], "options": q["options"]} for q in a["questions"]],
+        "limits": a["limits"],
+        "answers": casting.answers_of(guest),
+        "chosen_limits": casting.limits_of(guest),
+        "note": guest["limits_note"],
+    }
+    return view
+
+
 @route("GET", r"/api/me", "guest")
 def guest_me(ctx, t, body, guest):
-    return storymod.guest_view(ctx.story, guest)
+    return guest_state(ctx, t, guest)
+
+
+@route("POST", r"/api/me/assessment", "guest")
+def guest_save_assessment(ctx, t, body, guest):
+    game.save_assessment(t, ctx.assessment, guest, body.get("answers"), body.get("limits"),
+                         body.get("note"), bool(body.get("submit")))
+    return guest_state(ctx, t, game.guest_for_token(t, guest["token"]))
 
 
 # ----------------------------------------------------------------- host API
 
 def host_state(ctx, t):
     names = ctx.story["by_id"]
-    return {
-        "title": ctx.story["title"],
-        "placeholder": ctx.story.get("placeholder", False),
-        "characters": storymod.character_list(ctx.story),
-        "solution": storymod.host_solution(ctx.story),
-        "guests": [{
+    a = ctx.assessment
+
+    def guest_row(g):
+        return {
             "id": g["id"],
             "name": g["name"],
             "token": g["token"],
             "character_id": g["character_id"],
             "character_name": names[g["character_id"]]["name"] if g["character_id"] in names else None,
-        } for g in game.list_guests(t)],
+            "assessment_done": bool(g["assessment_done"]),
+            "answers": casting.answers_of(g),
+            "limits": casting.limits_of(g),
+            "note": g["limits_note"],
+            # how every character fits this guest: drives the dropdown and warnings
+            "fit": {c["id"]: casting.fit(a, g, c) for c in ctx.story["characters"]},
+        }
+
+    return {
+        "title": ctx.story["title"],
+        "placeholder": ctx.story.get("placeholder", False),
+        "released": game.is_released(t),
+        "questions": [{"id": q["id"], "label": q["label"], "options": q["options"]} for q in a["questions"]],
+        "limit_labels": {l["id"]: l["prompt"] for l in a["limits"]},
+        "characters": storymod.character_list(ctx.story),
+        "solution": storymod.host_solution(ctx.story),
+        "guests": [guest_row(g) for g in game.list_guests(t)],
     }
 
 
@@ -84,7 +124,20 @@ def host_add_guest(ctx, t, body, _):
 
 @route("POST", r"/api/host/guests/(?P<gid>g[0-9a-f]{8})/assign", "host")
 def host_assign(ctx, t, body, _, gid):
-    game.assign_character(t, ctx.story, gid, body.get("character_id"))
+    game.assign_character(t, ctx.story, ctx.assessment, gid, body.get("character_id"),
+                          confirm=bool(body.get("confirm")))
+    return host_state(ctx, t)
+
+
+@route("POST", r"/api/host/release", "host")
+def host_release(ctx, t, body, _):
+    game.release(t, ctx.story, ctx.assessment)
+    return host_state(ctx, t)
+
+
+@route("POST", r"/api/host/unrelease", "host")
+def host_unrelease(ctx, t, body, _):
+    game.unrelease(t)
     return host_state(ctx, t)
 
 
@@ -103,9 +156,10 @@ def host_remove(ctx, t, body, _, gid):
 # ------------------------------------------------------------- HTTP plumbing
 
 class Context:
-    def __init__(self, database, story):
+    def __init__(self, database, story, assessment):
         self.db = database
         self.story = story
+        self.assessment = assessment
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -182,7 +236,7 @@ class Handler(BaseHTTPRequestHandler):
                 result = fn(self.ctx, t, body, actor, **match.groupdict())
             self._json(200, result)
         except GameError as e:
-            self._json(e.status, {"error": e.message})
+            self._json(e.status, {"error": e.message, "code": e.code})
         except Exception:
             traceback.print_exc()
             self._json(500, {"error": "Something went wrong on the server. Please try again."})
@@ -202,11 +256,22 @@ class Handler(BaseHTTPRequestHandler):
         return data
 
 
-def make_server(database, story, host, port):
+def load_content():
+    """Load the story and assessment, refusing to start if either has mistakes."""
+    story = storymod.load()
+    assessment = casting.load()
+    problems = casting.check_story(story, assessment)
+    if problems:
+        raise storymod.StoryError("Casting info in content/story.json has problems:\n  - "
+                                  + "\n  - ".join(problems))
+    return story, assessment
+
+
+def make_server(database, story, assessment, host, port):
     database.init_schema()
     with database.tx() as t:
         host_key = game.ensure_game(t)
-    handler = type("BoundHandler", (Handler,), {"ctx": Context(database, story)})
+    handler = type("BoundHandler", (Handler,), {"ctx": Context(database, story, assessment)})
     return ThreadingHTTPServer((host, port), handler), host_key
 
 
@@ -219,11 +284,11 @@ def main():
     port = int(os.environ.get("PORT") or os.environ.get("MM_PORT") or 8000)
     bind = "0.0.0.0" if on_host_service else os.environ.get("MM_HOST", "127.0.0.1")
     try:
-        story = storymod.load()
-    except storymod.StoryError as e:
+        story, assessment = load_content()
+    except (storymod.StoryError, casting.AssessmentError) as e:
         sys.exit(str(e))
     database = dbmod.from_env()
-    server, host_key = make_server(database, story, bind, port)
+    server, host_key = make_server(database, story, assessment, bind, port)
     print(f"Mystery Night: '{story['title']}'", flush=True)
     print(f"Database: {database.describe()}", flush=True)
     print(f"HOST LINK (keep private): {public_base_url(port)}/host/{host_key}", flush=True)

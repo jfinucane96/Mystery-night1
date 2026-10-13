@@ -1,0 +1,83 @@
+{
+  "intro": "Six quick questions so the host can give you a character you'll enjoy. There are no wrong answers, and nobody else sees them.",
+  "questions": [
+    {
+      "id": "spotlight",
+      "label": "Spotlight",
+      "prompt": "The host asks someone to read the opening announcement to the whole room. You…",
+      "options": [
+        "Quietly hope someone else volunteers.",
+        "Would do it if nobody else wants to.",
+        "Happily put your hand up.",
+        "Are already standing on a chair."
+      ]
+    },
+    {
+      "id": "acting",
+      "label": "Acting",
+      "prompt": "Your character card suggests an accent and a signature catchphrase. You…",
+      "options": [
+        "Would rather just be myself with a new name.",
+        "Might try the catchphrase once or twice.",
+        "Would commit to it for most of the night.",
+        "Would rehearse it in the car on the way over."
+      ]
+    },
+    {
+      "id": "investigation",
+      "label": "Investigating",
+      "prompt": "A torn letter is found under a cushion. You…",
+      "options": [
+        "Let someone else deal with it.",
+        "Have a look if it's passed to me.",
+        "Try to piece it together.",
+        "Photograph it, take notes and compare the handwriting."
+      ]
+    },
+    {
+      "id": "deception",
+      "label": "Bluffing",
+      "prompt": "Someone asks your character a question your character must not answer truthfully. You'd feel…",
+      "options": [
+        "Uncomfortable. I'd rather not have to lie.",
+        "Fine with a small fib if it's written for me.",
+        "Happy to bluff my way through.",
+        "Delighted. Keeping a straight face is my favourite part."
+      ]
+    },
+    {
+      "id": "missions",
+      "label": "Secret missions",
+      "prompt": "Your card gives you a secret mission: swap two objects without anyone noticing. You…",
+      "options": [
+        "Would rather skip it and just enjoy the evening.",
+        "Would give it a go if it's easy.",
+        "Would enjoy sneaking around a bit.",
+        "Want three missions and a decoy."
+      ]
+    },
+    {
+      "id": "preparation",
+      "label": "Preparation",
+      "prompt": "Before the party, how much reading and prep are you up for?",
+      "options": [
+        "None. Tell me what I need on the night.",
+        "A quick five-minute read.",
+        "A page or two, and maybe a costume.",
+        "Send me everything. I'll study it."
+      ]
+    }
+  ],
+  "limits": [
+    {
+      "id": "killer",
+      "prompt": "Being the murderer",
+      "help": "The killer has to keep a big secret and bluff all night."
+    },
+    {
+      "id": "romance",
+      "prompt": "A romance storyline",
+      "help": "For example a secret affair or a flirtation with another character."
+    }
+  ]
+}

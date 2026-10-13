@@ -17,19 +17,32 @@ from contextlib import contextmanager
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEFAULT_SQLITE = os.path.join(ROOT, "data", "party.db")
 
-SCHEMA = [
-    """CREATE TABLE IF NOT EXISTS game (
-        id INTEGER PRIMARY KEY,
-        host_key TEXT NOT NULL,
-        created_at TEXT NOT NULL
-    )""",
-    """CREATE TABLE IF NOT EXISTS guests (
-        id TEXT PRIMARY KEY,
-        name TEXT NOT NULL,
-        token TEXT NOT NULL UNIQUE,
-        character_id TEXT UNIQUE,
-        created_at TEXT NOT NULL
-    )""",
+# Each step runs once, in order, and the database remembers how far it got.
+# Never edit a step that has already run online: add a new one at the end.
+MIGRATIONS = [
+    # 1. P01: the game and its guests (IF NOT EXISTS: P01 databases already have these)
+    [
+        """CREATE TABLE IF NOT EXISTS game (
+            id INTEGER PRIMARY KEY,
+            host_key TEXT NOT NULL,
+            created_at TEXT NOT NULL
+        )""",
+        """CREATE TABLE IF NOT EXISTS guests (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            token TEXT NOT NULL UNIQUE,
+            character_id TEXT UNIQUE,
+            created_at TEXT NOT NULL
+        )""",
+    ],
+    # 2. P02: assessment answers, hard limits and character release
+    [
+        "ALTER TABLE guests ADD COLUMN answers TEXT NOT NULL DEFAULT '{}'",
+        "ALTER TABLE guests ADD COLUMN limits TEXT NOT NULL DEFAULT '{}'",
+        "ALTER TABLE guests ADD COLUMN limits_note TEXT NOT NULL DEFAULT ''",
+        "ALTER TABLE guests ADD COLUMN assessment_done INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE game ADD COLUMN released_at TEXT",
+    ],
 ]
 
 
@@ -70,6 +83,12 @@ class Database:
             self._conn = self._connect()
         return self._conn
 
+    def close(self):
+        with self._lock:
+            if self._conn is not None:
+                self._conn.close()
+                self._conn = None
+
     @contextmanager
     def tx(self):
         """Run a block of queries as one transaction: all saved, or none."""
@@ -86,9 +105,17 @@ class Database:
                 raise
 
     def init_schema(self):
+        """Bring the database up to date by running any migration steps it hasn't had yet."""
         with self.tx() as t:
-            for stmt in SCHEMA:
-                t.run(stmt)
+            t.run("CREATE TABLE IF NOT EXISTS schema_version (version INTEGER NOT NULL)")
+            row = t.one("SELECT version FROM schema_version")
+            if row is None:
+                t.run("INSERT INTO schema_version (version) VALUES (0)")
+            done = row["version"] if row else 0
+            for number, step in enumerate(MIGRATIONS[done:], start=done + 1):
+                for stmt in step:
+                    t.run(stmt)
+                t.run("UPDATE schema_version SET version = ?", (number,))
 
 
 class _Tx:

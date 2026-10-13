@@ -13,6 +13,7 @@ function el(tag, attrs, ...children) {
   for (const [k, v] of Object.entries(attrs || {})) {
     if (k === "class") node.className = v;
     else if (k.startsWith("on")) node.addEventListener(k.slice(2), v);
+    else if (k === "value") node.value = v;
     else if (v !== false && v != null) node.setAttribute(k, v === true ? "" : v);
   }
   for (const c of children.flat(Infinity)) {
@@ -35,12 +36,15 @@ async function api(method, path, body) {
     throw Object.assign(new Error("Can't reach the server. Check your connection and try again."), { status: 0 });
   }
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw Object.assign(new Error(data.error || "Something went wrong."), { status: res.status });
+  if (!res.ok) {
+    throw Object.assign(new Error(data.error || "Something went wrong."), { status: res.status, code: data.code });
+  }
   return data;
 }
 
 function show(...nodes) {
   app.replaceChildren(...nodes.filter(Boolean));
+  window.scrollTo(0, 0);
 }
 
 function errorCard(title, text) {
@@ -53,10 +57,13 @@ function list(items) {
 
 // -------------------------------------------------------------- guest page
 
+let me = null;        // latest guest state from the server
+let step = null;      // which assessment screen is showing (null = choose automatically)
+let guestMsg = null;
+
 async function loadGuest() {
-  let v;
   try {
-    v = await api("GET", "/api/me");
+    me = await api("GET", "/api/me");
   } catch (e) {
     if (e.status === 404) {
       return show(errorCard("Link not recognised",
@@ -65,26 +72,142 @@ async function loadGuest() {
     return show(errorCard("Couldn't load", e.message),
       el("button", { class: "wide", onclick: loadGuest }, "Try again"));
   }
-  document.title = v.title;
-  const header = el("header", {},
-    el("p", { class: "eyebrow" }, v.title),
-    el("p", { class: "muted" }, `Hello, ${v.guest_name}`));
+  renderGuest();
+}
 
-  if (!v.character) {
-    return show(header,
+async function saveAssessment(body) {
+  try {
+    me = await api("POST", "/api/me/assessment", body);
+    guestMsg = null;
+    return true;
+  } catch (e) {
+    if (e.status === 404) return loadGuest();
+    guestMsg = e.message;
+    if (e.status === 409) step = null;   // characters were released meanwhile
+    renderGuest();
+    return false;
+  }
+}
+
+function guestHeader() {
+  return el("header", {},
+    el("p", { class: "eyebrow" }, me.title),
+    el("p", { class: "muted" }, `Hello, ${me.guest_name}`));
+}
+
+function renderGuest() {
+  document.title = me.title;
+  if (me.stage === "character") return renderCharacter();
+  if (me.stage === "waiting" && step === null) return renderWaiting();
+  renderAssessment();
+}
+
+function renderWaiting() {
+  show(guestHeader(),
+    guestMsg && el("p", { class: "error", role: "alert" }, guestMsg),
+    el("div", { class: "card center" },
+      el("h1", {}, "Thanks, you're all set"),
+      el("p", {}, "The host is choosing characters. You'll see yours here once they release them."),
+      el("button", { class: "wide", onclick: loadGuest }, "Check again"),
+      el("button", { class: "wide quiet", onclick: () => { step = 0; renderGuest(); } }, "Change my answers")));
+}
+
+// The assessment is a series of screens: 0..5 = questions, 6 = limits.
+function renderAssessment() {
+  const a = me.assessment;
+  const qs = a.questions;
+  if (step === null) {
+    const firstUnanswered = qs.findIndex((q) => !(q.id in a.answers));
+    step = firstUnanswered === -1 ? qs.length : firstUnanswered;
+  }
+  const total = qs.length + 1;
+  const progress = el("p", { class: "eyebrow" }, `Step ${step + 1} of ${total}`);
+  const back = step > 0 && el("button", { class: "quiet", onclick: () => { step -= 1; renderGuest(); } }, "Back");
+
+  if (step < qs.length) {
+    const q = qs[step];
+    return show(guestHeader(),
+      step === 0 && el("p", { class: "card intro" }, a.intro),
+      guestMsg && el("p", { class: "error", role: "alert" }, guestMsg),
+      el("section", { class: "card" },
+        progress,
+        el("h2", { class: "question" }, q.prompt),
+        el("div", { class: "choices" }, q.options.map((text, i) => el("button", {
+          class: a.answers[q.id] === i + 1 ? "choice chosen" : "choice",
+          "aria-pressed": a.answers[q.id] === i + 1 ? "true" : "false",
+          onclick: async () => {
+            if (await saveAssessment({ answers: { [q.id]: i + 1 } })) { step += 1; renderGuest(); }
+          },
+        }, text)))),
+      back);
+  }
+
+  // Limits screen
+  const chosen = { ...a.chosen_limits };
+  const note = el("textarea", { rows: 3, maxlength: 500, placeholder: "Optional", "aria-label": "Anything else to avoid" });
+  note.value = a.note || "";
+  const labels = { ok: "OK", no: "Not OK", unsure: "No preference" };
+  const limitRows = a.limits.map((l) => {
+    const buttons = Object.entries(labels).map(([value, label]) => el("button", {
+      class: chosen[l.id] === value ? "choice small chosen" : "choice small",
+      "aria-pressed": chosen[l.id] === value ? "true" : "false",
+      onclick: (e) => {
+        chosen[l.id] = value;
+        for (const b of e.target.parentNode.children) {
+          const on = b === e.target;
+          b.classList.toggle("chosen", on);
+          b.setAttribute("aria-pressed", on ? "true" : "false");
+        }
+      },
+    }, label));
+    return el("div", { class: "limit" },
+      el("p", {}, el("strong", {}, l.prompt)),
+      el("p", { class: "note" }, l.help),
+      el("div", { class: "row segmented" }, buttons));
+  });
+
+  show(guestHeader(),
+    guestMsg && el("p", { class: "error", role: "alert" }, guestMsg),
+    el("section", { class: "card" },
+      progress,
+      el("h2", { class: "question" }, "Anything you'd rather not do?"),
+      el("p", { class: "note" }, "Only the host sees this. They won't give you a role you say no to."),
+      limitRows,
+      el("label", { class: "limit" }, el("strong", {}, "Anything else the host should avoid?"), note),
+      el("button", {
+        class: "wide",
+        onclick: async () => {
+          const missing = a.limits.filter((l) => !chosen[l.id]);
+          if (missing.length) {
+            guestMsg = `Please choose an option for: ${missing.map((l) => l.prompt).join(", ")}.`;
+            a.chosen_limits = chosen;
+            a.note = note.value;
+            return renderGuest();
+          }
+          if (await saveAssessment({ limits: chosen, note: note.value, submit: true })) {
+            step = null;
+            renderGuest();
+          }
+        },
+      }, "Finish")),
+    back);
+}
+
+function renderCharacter() {
+  const c = me.character;
+  if (!c) {
+    return show(guestHeader(),
       el("div", { class: "card center" },
         el("h1", {}, "Your character is coming"),
         el("p", {}, "The host hasn't given you a character yet. Check back soon."),
         el("button", { class: "wide", onclick: loadGuest }, "Check again")));
   }
-
-  const c = v.character;
-  show(header,
+  show(guestHeader(),
     el("div", { class: "card hero" },
       el("p", { class: "eyebrow" }, "You are playing"),
       el("h1", {}, c.name),
       el("p", { class: "tagline" }, c.tagline)),
-    el("section", { class: "card" }, el("h2", {}, "The evening"), el("p", {}, v.setting)),
+    el("section", { class: "card" }, el("h2", {}, "The evening"), el("p", {}, me.setting)),
     el("section", { class: "card" }, el("h2", {}, "Who you are"), el("p", {}, c.biography)),
     el("section", { class: "card" }, el("h2", {}, "People you know"),
       el("dl", {}, c.relationships.map((r) => [el("dt", {}, r.name), el("dd", {}, r.text)]))),
@@ -98,6 +221,7 @@ async function loadGuest() {
 
 let hostState = null;
 let hostMsg = null;
+const openDetails = new Set();   // which guests' answer panels are expanded
 
 async function hostAction(method, path, body) {
   try {
@@ -105,7 +229,10 @@ async function hostAction(method, path, body) {
     hostMsg = null;
   } catch (e) {
     if (e.status === 403) return showHostDenied();
-    hostMsg = e.message;
+    if (e.code === "needs_confirm" && window.confirm(e.message)) {
+      return hostAction(method, path, { ...body, confirm: true });
+    }
+    hostMsg = e.code === "needs_confirm" ? null : e.message;
   }
   renderHost();
 }
@@ -141,6 +268,34 @@ async function copyLink(g, button) {
   setTimeout(() => (button.textContent = "Copy link"), 1500);
 }
 
+function progressPill(g, s) {
+  if (g.assessment_done) return el("span", { class: "pill ok" }, "Questions done");
+  const n = Object.keys(g.answers).length;
+  return el("span", { class: "pill empty" }, n ? `Questions ${n}/${s.questions.length}` : "Not started");
+}
+
+function answersPanel(g, s) {
+  const limitWords = { ok: "OK", no: "Not OK", unsure: "No preference" };
+  const details = el("details", { class: "answers", open: openDetails.has(g.id) },
+    el("summary", {}, "Answers and limits"),
+    el("dl", {},
+      s.questions.map((q) => {
+        const v = g.answers[q.id];
+        return [el("dt", {}, `${q.label}: ${v ? `${v}/4` : "—"}`),
+          el("dd", { class: "muted" }, v ? q.options[v - 1] : "Not answered")];
+      }),
+      Object.entries(s.limit_labels).map(([id, label]) => {
+        const v = g.limits[id];
+        return [el("dt", {}, label),
+          el("dd", { class: v === "no" ? "bad" : v === "ok" ? "" : "warn" }, v ? limitWords[v] : "Not answered")];
+      }),
+      g.note && [el("dt", {}, "Also avoid"), el("dd", {}, g.note)]));
+  details.addEventListener("toggle", () => {
+    if (details.open) openDetails.add(g.id); else openDetails.delete(g.id);
+  });
+  return details;
+}
+
 function guestCard(s, g) {
   const taken = new Map(s.guests.filter((o) => o.character_id && o.id !== g.id)
     .map((o) => [o.character_id, o.name]));
@@ -149,16 +304,36 @@ function guestCard(s, g) {
     onchange: (e) => hostAction("POST", `/api/host/guests/${g.id}/assign`, { character_id: e.target.value }),
   },
     el("option", { value: "" }, "No character yet"),
-    s.characters.map((c) => el("option", {
-      value: c.id, selected: c.id === g.character_id, disabled: taken.has(c.id),
-    }, taken.has(c.id) ? `${c.name} (${taken.get(c.id)})` : `${c.name}: ${c.tagline}`)));
+    s.characters.map((c) => {
+      const f = g.fit[c.id];
+      let label = `${c.name} (${c.casting.load})`;
+      if (taken.has(c.id)) label += `: taken by ${taken.get(c.id)}`;
+      else if (f.blocked.length) label += ": said no";
+      else if (f.check.length) label += ": check first";
+      else if (f.warnings.length) label += " ⚠";
+      return el("option", {
+        value: c.id, selected: c.id === g.character_id,
+        disabled: c.id !== g.character_id && (taken.has(c.id) || f.blocked.length > 0),
+      }, label);
+    }));
+
+  // Issues with the current assignment
+  const f = g.character_id && g.fit[g.character_id];
+  const issues = f && [
+    f.blocked.map((t) => el("li", { class: "bad" }, t)),
+    f.check.map((t) => el("li", { class: "warn" }, `${t} (you confirmed you checked)`)),
+    f.warnings.map((t) => el("li", { class: "warn" }, t)),
+  ].flat();
 
   const copyBtn = el("button", { onclick: (e) => copyLink(g, e.target) }, "Copy link");
   return el("li", { class: "card guest" },
     el("div", { class: "row" },
       el("strong", {}, g.name),
-      el("span", { class: g.character_name ? "pill" : "pill empty" }, g.character_name || "unassigned")),
+      progressPill(g, s)),
+    answersPanel(g, s),
     select,
+    g.character_name && el("p", { class: "small" }, `Role: ${g.character_name}`),
+    issues && issues.length > 0 && el("ul", { class: "issues" }, issues),
     el("div", { class: "row buttons" },
       copyBtn,
       el("a", { class: "button", href: guestLink(g), target: "_blank", rel: "noopener" }, "Open"),
@@ -174,6 +349,33 @@ function guestCard(s, g) {
       }, "Remove")));
 }
 
+function releasePanel(s) {
+  if (s.released) {
+    return el("section", { class: "card released" },
+      el("p", {}, el("strong", {}, "Characters are released."), " Guests can see their roles."),
+      el("button", {
+        class: "quiet small",
+        onclick: () => confirm("Hide characters from guests again? (Useful for testing.)")
+          && hostAction("POST", "/api/host/unrelease", {}),
+      }, "Hide characters again"));
+  }
+  const unassigned = s.guests.filter((g) => !g.character_id).map((g) => g.name);
+  const unfinished = s.guests.filter((g) => !g.assessment_done).map((g) => g.name);
+  return el("section", { class: "card" },
+    el("h2", {}, "Release characters"),
+    el("p", { class: "note" }, "Guests only see their character after you release. Everyone gets theirs at the same moment."),
+    unfinished.length > 0 && el("p", { class: "small warn" }, `Still answering: ${unfinished.join(", ")}`),
+    unassigned.length > 0 && el("p", { class: "small warn" }, `No character yet: ${unassigned.join(", ")}`),
+    el("button", {
+      class: "wide",
+      disabled: s.guests.length === 0,
+      onclick: () => {
+        const warn = unassigned.length ? `\n\n${unassigned.join(", ")} won't have a character yet.` : "";
+        if (confirm(`Show every guest their character now?${warn}`)) hostAction("POST", "/api/host/release", {});
+      },
+    }, "Release characters to everyone"));
+}
+
 function renderHost() {
   const s = hostState;
   document.title = `Host · ${s.title}`;
@@ -187,6 +389,7 @@ function renderHost() {
   }, nameInput, el("button", { type: "submit" }, "Add guest"));
 
   const sol = s.solution;
+  const y = window.scrollY;
   show(
     el("header", {},
       el("p", { class: "eyebrow" }, "Host controls"),
@@ -194,11 +397,14 @@ function renderHost() {
       s.placeholder && el("p", { class: "note" }, "Placeholder story for testing.")),
     hostMsg && el("p", { class: "error", role: "alert" }, hostMsg),
     el("section", {},
-      el("h2", {}, `Guests (${s.guests.length})`),
+      el("div", { class: "row" },
+        el("h2", { class: "grow" }, `Guests (${s.guests.length})`),
+        el("button", { class: "quiet small", onclick: loadHost }, "Refresh")),
       s.guests.length
         ? el("ul", { class: "plain" }, s.guests.map((g) => guestCard(s, g)))
-        : el("p", { class: "muted" }, "No guests yet. Add one below."),
+        : el("p", { class: "muted" }, "No guests yet. Add one below. If you're playing too, add yourself."),
       addForm),
+    releasePanel(s),
     el("details", { class: "card secret" },
       el("summary", {}, "Solution (host only, tap to show)"),
       el("dl", {},
@@ -208,7 +414,7 @@ function renderHost() {
         el("dt", {}, "Method"), el("dd", {}, sol.method),
         sol.summary && [el("dt", {}, "Notes"), el("dd", {}, sol.summary)])),
     el("p", { class: "muted small" }, "Keep this page's link private: anyone with it can run the game."));
-  if (hostMsg) nameInput.focus();
+  window.scrollTo(0, hostMsg ? 0 : y);
 }
 
 // ------------------------------------------------------------------- start
