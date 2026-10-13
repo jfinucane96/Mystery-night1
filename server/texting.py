@@ -55,6 +55,12 @@ def release_text(title, guest_name, link):
             f"Find out who you are (keep it secret): {link}")
 
 
+def message_alert_text(title, guest_name, link):
+    # Deliberately says nothing about the message itself: lock screens are visible at parties.
+    return (f"{first_name(guest_name)}, you have a new private message in {title}. "
+            f"Open your link to read it (keep your screen to yourself): {link}")
+
+
 def send(to, body, timeout=15):
     """Send one text through Twilio. Returns Twilio's message id; raises TextError on failure."""
     sid = os.environ["TWILIO_ACCOUNT_SID"]

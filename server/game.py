@@ -156,6 +156,8 @@ def new_guest_link(t, guest_id):
 def remove_guest(t, guest_id):
     _get_guest(t, guest_id)
     t.run("DELETE FROM texts WHERE guest_id = ?", (guest_id,))
+    t.run("DELETE FROM balances WHERE guest_id = ?", (guest_id,))
+    t.run("DELETE FROM messages WHERE guest_id = ?", (guest_id,))
     t.run("DELETE FROM guests WHERE id = ?", (guest_id,))
 
 

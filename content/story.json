@@ -4,6 +4,10 @@
   "note": "PLACEHOLDER story for testing the app. The real mystery replaces this in P07.",
   "setting": "A stormy evening at Ravenscroft Manor. Lady Ravenscroft has invited old friends to celebrate her 60th birthday. Halfway through her toast, she collapses.",
   "victim": "Lady Cordelia Ravenscroft",
+  "murder_announcement": {
+    "title": "There has been a murder!",
+    "text": "As Lady Ravenscroft raised her glass for the birthday toast, she faltered, gasped, and collapsed. Dr. Thorne rushed to her side, but it was too late. Lady Cordelia Ravenscroft is dead, and the doors of the manor are locked against the storm. Someone in this room is a murderer. (PLACEHOLDER announcement.)"
+  },
   "characters": [
     {
       "id": "butler",
@@ -142,5 +146,43 @@
     "method": "He added poison from his medical bag to her champagne glass while everyone gathered for the toast.",
     "summary": "PLACEHOLDER solution for testing only."
   },
-  "casting_note": "casting.load is 'major' or 'low-pressure'. casting.needs: the minimum answer (1-4) a guest should give on that question. casting.content: sensitive content ('killer', 'romance') that guests can refuse."
+  "casting_note": "casting.load is 'major' or 'low-pressure'. casting.needs: the minimum answer (1-4) a guest should give on that question. casting.content: sensitive content ('killer', 'romance') that guests can refuse.",
+  "game": {
+    "start_tokens": {
+      "public": 2,
+      "private": 1
+    },
+    "round_tokens": {
+      "public": 1,
+      "private": 0
+    },
+    "rounds": 3
+  },
+  "directions": [
+    {
+      "id": "pike-cellar",
+      "character": "butler",
+      "phase": "investigation",
+      "text": "PLACEHOLDER: Excuse yourself and 'check the wine cellar'. Come back looking flustered, but don't explain why."
+    },
+    {
+      "id": "rosalind-will",
+      "character": "niece",
+      "phase": "investigation",
+      "text": "PLACEHOLDER: Ask Pike, loudly enough to be overheard, whether your aunt's solicitor visited this week."
+    },
+    {
+      "id": "thorne-calm",
+      "character": "doctor",
+      "phase": "investigation",
+      "text": "PLACEHOLDER: Offer to 'examine' the champagne glass. Keep everyone else away from it."
+    },
+    {
+      "id": "juniper-portrait",
+      "character": "painter",
+      "phase": "arrival",
+      "text": "PLACEHOLDER: Unveil the birthday portrait to the room and say something kind about Lady Ravenscroft."
+    }
+  ],
+  "game_note": "game.start_tokens are given when the investigation starts; game.round_tokens when each later round starts. directions: pre-written private instructions the host can send with one tap."
 }

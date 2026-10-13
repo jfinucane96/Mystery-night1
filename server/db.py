@@ -78,6 +78,34 @@ MIGRATIONS = [
     [
         "DROP TABLE IF EXISTS briefs",
     ],
+    # 6. P03: phases, rounds, pause, question tokens and private messages
+    [
+        "ALTER TABLE game ADD COLUMN phase TEXT NOT NULL DEFAULT 'setup'",
+        "ALTER TABLE game ADD COLUMN round INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE game ADD COLUMN paused INTEGER NOT NULL DEFAULT 0",
+        """CREATE TABLE IF NOT EXISTS balances (
+            guest_id TEXT PRIMARY KEY,
+            public INTEGER NOT NULL DEFAULT 0,
+            private INTEGER NOT NULL DEFAULT 0
+        )""",
+        # Every grant has an id; a repeated id (double tap, retry) is ignored
+        """CREATE TABLE IF NOT EXISTS grants (
+            id TEXT PRIMARY KEY,
+            target TEXT NOT NULL,
+            public INTEGER NOT NULL,
+            private INTEGER NOT NULL,
+            reason TEXT NOT NULL DEFAULT '',
+            created_at TEXT NOT NULL
+        )""",
+        """CREATE TABLE IF NOT EXISTS messages (
+            id TEXT PRIMARY KEY,
+            guest_id TEXT NOT NULL,
+            body TEXT NOT NULL,
+            direction_id TEXT NOT NULL DEFAULT '',
+            created_at TEXT NOT NULL,
+            read_at TEXT
+        )""",
+    ],
 ]
 
 

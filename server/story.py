@@ -45,6 +45,18 @@ def check(story):
                 problems.append(f"character '{c.get('id')}' has a relationship with unknown id '{r.get('with')}'")
     if story["solution"].get("killer") not in ids:
         problems.append("solution.killer is not a character id")
+    m = story.get("murder_announcement", {})
+    if not (m.get("title") and m.get("text")):
+        problems.append("murder_announcement needs a title and text")
+    seen = set()
+    for d in story.get("directions", []):
+        if d.get("id") in seen or not d.get("id"):
+            problems.append(f"direction id '{d.get('id')}' is missing or used twice")
+        seen.add(d.get("id"))
+        if d.get("character") not in ids:
+            problems.append(f"direction '{d.get('id')}' is for unknown character '{d.get('character')}'")
+        if not d.get("text"):
+            problems.append(f"direction '{d.get('id')}' has no text")
     return problems
 
 

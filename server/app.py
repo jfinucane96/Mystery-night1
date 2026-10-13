@@ -14,7 +14,7 @@ import threading
 import traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from . import ai_casting, casting, db as dbmod, game, story as storymod, texting
+from . import ai_casting, casting, db as dbmod, game, play, story as storymod, texting
 from .game import GameError
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -54,8 +54,17 @@ def route(method, pattern, who, own_tx=False):
 def guest_state(ctx, t, guest):
     released = game.is_released(t)
     view = storymod.guest_view(ctx.story, guest, released, casting.prep_level(guest))
+    s = play.state(t)
+    view["game"] = {"phase": s["phase"], "phase_name": play.PHASE_NAMES[s["phase"]],
+                    "round": s["round"], "paused": s["paused"]}
     if released:
         view["stage"] = "character"
+        view["tokens"] = play.balance(t, guest["id"])
+        msgs = play.messages_for(t, guest["id"])
+        view["messages"] = [{"id": m["id"], "body": m["body"], "at": m["created_at"], "read": m["read_at"] is not None}
+                            for m in msgs]
+        if s["phase"] in ("investigation", "accusation", "reveal"):
+            view["murder"] = ctx.story["murder_announcement"]
         return view
     a = ctx.assessment
     view["stage"] = "waiting" if guest["assessment_done"] else "assessment"
@@ -72,6 +81,12 @@ def guest_state(ctx, t, guest):
 
 @route("GET", r"/api/me", "guest")
 def guest_me(ctx, t, body, guest):
+    return guest_state(ctx, t, guest)
+
+
+@route("POST", r"/api/me/messages/read", "guest")
+def guest_read_messages(ctx, t, body, guest):
+    play.mark_read(t, guest["id"])
     return guest_state(ctx, t, guest)
 
 
@@ -93,6 +108,8 @@ def host_state(ctx, t):
     a = ctx.assessment
     title = ctx.story["title"]
     texts = game.latest_texts(t)
+    balances = play.all_balances(t)
+    messages = play.all_messages(t)
 
     def guest_row(g):
         link = guest_link(ctx, g)
@@ -116,10 +133,17 @@ def host_state(ctx, t):
                          "release": texting.release_text(title, g["name"], link)},
             # how every character fits this guest: drives the dropdown and warnings
             "fit": {c["id"]: casting.fit(a, g, c) for c in ctx.story["characters"]},
+            "tokens": balances.get(g["id"], {"public": 0, "private": 0}),
+            "private_messages": messages.get(g["id"], []),
+            "directions": [{**d, "sent": any(m["direction_id"] == d["id"] for m in messages.get(g["id"], []))}
+                           for d in play.directions_for(ctx.story, g["character_id"])],
+            "message_alert": texting.message_alert_text(title, g["name"], link),
         }
 
     return {
         "title": title,
+        "game": {**play.state(t), "phases": [{"id": p, "name": play.PHASE_NAMES[p]} for p in play.PHASES],
+                 **play.config(ctx.story)},
         "placeholder": ctx.story.get("placeholder", False),
         "released": game.is_released(t),
         "texting_automatic": texting.is_automatic(),
@@ -245,6 +269,65 @@ def host_suggest(ctx, _t, body, _):
     finally:
         _ai_busy.release()
     return fresh_host_state(ctx)
+
+
+# ---------------------------------------------------- P03: running the party
+
+@route("POST", r"/api/host/phase", "host")
+def host_phase(ctx, t, body, _):
+    play.set_phase(t, ctx.story, body.get("phase"))
+    return host_state(ctx, t)
+
+
+@route("POST", r"/api/host/round", "host")
+def host_round(ctx, t, body, _):
+    number = body.get("number")
+    if not isinstance(number, int):
+        raise GameError(400, "Which round?")
+    play.start_round(t, ctx.story, number)
+    return host_state(ctx, t)
+
+
+@route("POST", r"/api/host/pause", "host")
+def host_pause(ctx, t, body, _):
+    play.set_paused(t, bool(body.get("paused")))
+    return host_state(ctx, t)
+
+
+@route("POST", r"/api/host/grant", "host")
+def host_grant(ctx, t, body, _):
+    target = body.get("target")
+    if target != "all" and not (isinstance(target, str) and re.match(r"^g[0-9a-f]{8}$", target)):
+        raise GameError(400, "Grant to whom?")
+    new = play.host_grant(t, body.get("request_id"), target, body.get("public", 0), body.get("private", 0))
+    state = host_state(ctx, t)
+    state["notice"] = "Tokens granted." if new else "Already granted (that tap was a repeat)."
+    return state
+
+
+@route("POST", r"/api/host/guests/(?P<gid>g[0-9a-f]{8})/message", "host", own_tx=True)
+def host_message(ctx, _t, body, _, gid):
+    """Send a private message; optionally text the guest a heads-up (never the message itself)."""
+    with ctx.db.tx() as t:
+        msg, new = play.send_message(t, ctx.story, body.get("request_id"), gid,
+                                     body.get("body"), body.get("direction_id"))
+        g = game.guest_for_id(t, gid)
+        job = None
+        if new and body.get("also_text") and texting.is_automatic() and game.textable(g):
+            text_id = game.start_text(t, gid, "message", text_id=f"message-{msg['id']}")
+            if text_id:
+                job = (text_id, g["phone"], texting.message_alert_text(ctx.story["title"], g["name"], guest_link(ctx, g)))
+    notice = f"Message sent to {g['name']}." if new else "Already sent (that tap was a repeat)."
+    extra = {"notice": notice}
+    if job:
+        sent, errors = send_texts(ctx, [job])
+        if sent:
+            extra["notice"] += " They've been texted a heads-up."
+        else:
+            extra["error_detail"] = errors[0]
+    elif new and body.get("also_text") and g["phone"]:
+        extra["text_prompt"] = {"guest_id": gid}    # host page offers "Text from my phone"
+    return fresh_host_state(ctx, extra)
 
 
 @route("POST", r"/api/host/suggest/apply", "host")

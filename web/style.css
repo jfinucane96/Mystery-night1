@@ -146,3 +146,24 @@ button.small { min-height: 36px; padding: 4px 10px; font-size: .85rem; }
 .check input { width: 20px; min-height: 20px; }
 .chapter p { margin-bottom: 14px; line-height: 1.65; }
 .chapter p:first-of-type::first-letter { font-size: 2.4em; float: left; line-height: .9; margin: 4px 6px 0 0; color: var(--accent); }
+
+/* ---- P03: running the party ---- */
+.status { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: .9rem;
+  background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; margin-bottom: 12px; }
+.tokens { color: var(--accent); }
+.paused { background: #3d3418; border: 1px solid #8a7330; border-radius: 8px; padding: 10px 12px; }
+.paused-card { border-color: #8a7330; }
+.new-message { margin: 0 0 12px; }
+.messages li { border-top: 1px solid var(--line); padding-top: 8px; }
+.messages li.unread { border-left: 3px solid var(--accent); padding-left: 10px; }
+.reconnecting { position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%); background: #4a1d24;
+  border: 1px solid var(--danger); border-radius: 99px; padding: 6px 14px; font-size: .85rem; z-index: 20; }
+.overlay { position: fixed; inset: 0; background: rgba(10, 6, 8, .94); z-index: 10; display: flex;
+  align-items: center; justify-content: center; padding: 24px 16px; }
+.overlay-inner { max-width: 520px; text-align: center; }
+.overlay-inner h1 { font-size: 2.1rem; color: var(--danger); margin: 12px 0; }
+.overlay-inner p { font-size: 1.1rem; }
+.game .wide { margin-top: 8px; }
+.game select { margin-top: 10px; }
+.token-line { margin: 6px 0; }
+.directions li, .history li { border-top: 1px solid var(--line); padding-top: 6px; margin-top: 6px; }

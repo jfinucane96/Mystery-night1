@@ -42,9 +42,43 @@ async function api(method, path, body) {
   return data;
 }
 
+let quietRedraw = false;   // true while redrawing for a live update: keep the scroll position
+
 function show(...nodes) {
-  app.replaceChildren(...nodes.filter(Boolean));
-  window.scrollTo(0, 0);
+  const y = window.scrollY;
+  app.replaceChildren(...nodes.flat(Infinity).filter(Boolean));
+  window.scrollTo(0, quietRedraw ? y : 0);
+}
+
+// Live updates: ask the server every few seconds and redraw only if something changed.
+// If the connection drops, show "Reconnecting…" and keep trying; it catches up on its own.
+function startPolling(fetchState, onChange, everyMs) {
+  const banner = el("div", { class: "reconnecting", role: "status" }, "Reconnecting…");
+  let last = null;
+  async function tick() {
+    try {
+      const fresh = await fetchState();
+      banner.remove();
+      const text = JSON.stringify(fresh);
+      // onChange returns false to postpone (e.g. the host is typing); we'll try again next tick
+      if (last === null || text === last || onChange(fresh) !== false) last = text;
+    } catch (e) {
+      if (e.status === 0) document.body.append(banner);
+    }
+    setTimeout(tick, everyMs);
+  }
+  setTimeout(tick, everyMs);
+  return { remember: (state) => { last = JSON.stringify(state); } };
+}
+
+function newRequestId() {
+  // A fresh id per tap, so the server can ignore accidental repeats of the same tap.
+  return (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now()).replace(/[^A-Za-z0-9-]/g, "");
+}
+
+function redrawQuietly(render) {
+  quietRedraw = true;
+  try { render(); } finally { quietRedraw = false; }
 }
 
 function errorCard(title, text) {
@@ -74,6 +108,99 @@ async function loadGuest() {
       el("button", { class: "wide", onclick: loadGuest }, "Try again"));
   }
   renderGuest();
+  if (!guestPoll) guestPoll = startPolling(() => api("GET", "/api/me"), onGuestUpdate, 4000);
+  guestPoll.remember(me);
+}
+
+let guestPoll = null;
+
+function onGuestUpdate(fresh) {
+  const stageChanged = fresh.stage !== me.stage;
+  // Don't redraw under someone who is halfway through the questions
+  if (!stageChanged && me.stage !== "character") return;
+  me = fresh;
+  if (stageChanged) {
+    step = null;
+    renderGuest();
+  } else {
+    redrawQuietly(renderGuest);
+  }
+}
+
+// ---- P03: status, messages, the murder announcement
+
+function murderSeenKey() {
+  return `murder-seen-${KEY.slice(0, 12)}`;
+}
+
+function murderSeen() {
+  try { return localStorage.getItem(murderSeenKey()) === "1"; } catch { return murderDismissed; }
+}
+
+let murderDismissed = false;   // fallback when the browser blocks storage
+
+function murderOverlay() {
+  if (!me.murder || murderSeen() || murderDismissed) return null;
+  const overlay = el("div", { class: "overlay", role: "dialog", "aria-modal": "true" },
+    el("div", { class: "overlay-inner" },
+      el("p", { class: "eyebrow" }, me.title),
+      el("h1", {}, me.murder.title),
+      el("p", {}, me.murder.text),
+      el("button", {
+        class: "wide",
+        onclick: () => {
+          murderDismissed = true;
+          try { localStorage.setItem(murderSeenKey(), "1"); } catch { /* storage blocked: fine */ }
+          overlay.remove();
+        },
+      }, "I'm ready to investigate")));
+  return overlay;
+}
+
+function statusBar() {
+  const g = me.game;
+  const t = me.tokens;
+  const showTokens = ["investigation", "accusation", "reveal"].includes(g.phase);
+  return [
+    el("div", { class: "status" },
+      el("span", {}, g.phase === "investigation" ? `${g.phase_name} · Round ${g.round}` : g.phase_name),
+      showTokens && el("span", { class: "tokens" },
+        el("span", { title: "Public questions" }, `${t.public} public`), " · ",
+        el("span", { title: "Private questions" }, `${t.private} private`))),
+    g.paused && el("p", { class: "paused", role: "status" }, "The game is paused. Hold on until the host resumes."),
+    g.phase === "accusation" && el("p", { class: "notice" }, "Accusations are open! The host will tell you how to submit your theory."),
+    g.phase === "reveal" && el("p", { class: "notice" }, "The reveal is happening. Listen to the host!"),
+  ];
+}
+
+let markingRead = false;
+
+function messagesSection() {
+  const msgs = me.messages || [];
+  if (!msgs.length) return null;
+  const unread = msgs.filter((m) => !m.read).length;
+  if (unread && !markingRead && document.visibilityState === "visible") {
+    markingRead = true;           // tell the host they've been seen, after a moment on screen
+    setTimeout(async () => {
+      try { me = await api("POST", "/api/me/messages/read", {}); } catch { /* try again next time */ }
+      markingRead = false;
+    }, 2500);
+  }
+  return el("section", { class: "card messages", id: "messages" },
+    el("h2", {}, "Private messages from the host"),
+    el("p", { class: "note" }, "Only you can see these."),
+    el("ul", { class: "plain" }, msgs.map((m) => el("li", { class: m.read ? "" : "unread" },
+      el("p", { class: "small muted" }, when(m.at), m.read ? "" : " · new"),
+      el("p", {}, m.body)))));
+}
+
+function newMessageBanner() {
+  const unread = (me.messages || []).filter((m) => !m.read).length;
+  if (!unread) return null;
+  return el("button", {
+    class: "wide new-message",
+    onclick: () => document.getElementById("messages").scrollIntoView({ behavior: "smooth" }),
+  }, unread === 1 ? "You have a new private message" : `You have ${unread} new private messages`);
 }
 
 async function saveAssessment(body) {
@@ -213,6 +340,10 @@ function renderCharacter() {
     : el("button", { class: "wide quiet", onclick: () => { chapterOpen = true; renderCharacter(); } },
       "Read your character's story (about 10 minutes)"));
   show(guestHeader(),
+    statusBar(),
+    newMessageBanner(),
+    murderOverlay(),
+    messagesSection(),
     el("div", { class: "card hero" },
       el("p", { class: "eyebrow" }, "You are playing"),
       el("h1", {}, c.name),
@@ -235,6 +366,7 @@ let hostMsg = null;
 const openDetails = new Set();   // which guests' answer panels are expanded
 
 let hostNotice = null;
+let textPrompt = null;   // after a message: offer to text a heads-up from the host's phone
 let busy = null;   // what the host is waiting on, e.g. "suggest" or "text-g1234abcd"
 
 async function hostAction(method, path, body, busyKey) {
@@ -243,6 +375,12 @@ async function hostAction(method, path, body, busyKey) {
     hostState = await api(method, path, body);
     hostMsg = hostState.error_detail || null;
     hostNotice = hostState.notice || null;
+    textPrompt = hostState.text_prompt || null;
+    if (hostPoll) {
+      // Tell the live updater what we now have (minus one-off notices), so it doesn't redraw again
+      const { notice, error_detail, text_prompt, just_released, ...plain } = hostState;
+      hostPoll.remember(plain);
+    }
   } catch (e) {
     busy = null;
     if (e.status === 403) return showHostDenied();
@@ -286,6 +424,140 @@ async function loadHost() {
       el("button", { class: "wide", onclick: loadHost }, "Try again"));
   }
   renderHost();
+  if (!hostPoll) hostPoll = startPolling(() => api("GET", "/api/host"), onHostUpdate, 5000);
+  hostPoll.remember(hostState);
+}
+
+let hostPoll = null;
+
+function onHostUpdate(fresh) {
+  const active = document.activeElement;
+  const typing = active && ["INPUT", "TEXTAREA", "SELECT"].includes(active.tagName);
+  if (busy || typing) return false;           // never redraw under the host's fingers
+  hostState = fresh;
+  redrawQuietly(renderHost);
+  return true;
+}
+
+// ---- P03: running the party
+
+const NEXT_STEP = {
+  setup: { phase: "arrival", label: "Start arrival" },
+  arrival: { phase: "investigation", label: "Start the investigation (the murder!)" },
+  accusation: { phase: "reveal", label: "Start the reveal" },
+};
+
+function setPhase(s, phase, label) {
+  const g = s.game;
+  let question = `${label}?`;
+  if (phase === "investigation" && g.round === 0) {
+    question = `Start the investigation? Everyone sees the murder announcement and gets ` +
+      `${g.start_tokens.public} public + ${g.start_tokens.private} private question tokens.`;
+  }
+  if (phase !== "setup" && !s.released) question += "\n\nNote: characters haven't been released yet.";
+  if (confirm(question)) hostAction("POST", "/api/host/phase", { phase }, "phase");
+}
+
+function gamePanel(s) {
+  const g = s.game;
+  const step = NEXT_STEP[g.phase];
+  const buttons = [];
+  if (step) buttons.push(el("button", { class: "wide", disabled: !!busy, onclick: () => setPhase(s, step.phase, step.label) }, step.label));
+  if (g.phase === "investigation") {
+    if (g.round < g.rounds) {
+      const rt = g.round_tokens;
+      buttons.push(el("button", {
+        class: "wide", disabled: !!busy,
+        onclick: () => confirm(`Start round ${g.round + 1}? Everyone gets +${rt.public} public, +${rt.private} private.`)
+          && hostAction("POST", "/api/host/round", { number: g.round + 1 }, "round"),
+      }, `Start round ${g.round + 1} of ${g.rounds}`));
+    }
+    buttons.push(el("button", {
+      class: g.round < g.rounds ? "wide quiet" : "wide", disabled: !!busy,
+      onclick: () => setPhase(s, "accusation", "Open accusations"),
+    }, "Open accusations"));
+  }
+  const grantAll = (kind) => {
+    if (confirm(`Give every guest +1 ${kind} question token?`)) {
+      hostAction("POST", "/api/host/grant",
+        { request_id: newRequestId(), target: "all", public: kind === "public" ? 1 : 0, private: kind === "private" ? 1 : 0 }, "grant");
+    }
+  };
+  const jump = el("select", {
+    "aria-label": "Jump to phase",
+    onchange: (e) => { if (e.target.value) setPhase(s, e.target.value, `Jump to ${e.target.selectedOptions[0].text}`); e.target.value = ""; },
+  }, el("option", { value: "" }, "Jump to phase…"), g.phases.filter((p) => p.id !== g.phase).map((p) => el("option", { value: p.id }, p.name)));
+
+  return el("section", { class: g.paused ? "card game paused-card" : "card game" },
+    el("div", { class: "row" },
+      el("h2", { class: "grow" }, g.phases.find((p) => p.id === g.phase).name,
+        g.phase === "investigation" ? ` · Round ${g.round} of ${g.rounds}` : ""),
+      el("button", {
+        class: g.paused ? "small" : "small quiet", disabled: !!busy,
+        onclick: () => hostAction("POST", "/api/host/pause", { paused: !g.paused }, "pause"),
+      }, g.paused ? "Resume" : "Pause")),
+    g.paused && el("p", { class: "paused" }, "Paused: guests can't ask questions or scan clues."),
+    buttons,
+    el("div", { class: "row buttons" },
+      el("button", { class: "small quiet", disabled: !!busy, onclick: () => grantAll("public") }, "+1 public to everyone"),
+      el("button", { class: "small quiet", disabled: !!busy, onclick: () => grantAll("private") }, "+1 private to everyone")),
+    jump);
+}
+
+const openMessages = new Set();
+const drafts = {};   // unsent message text per guest, kept across live redraws
+
+function messagesPanel(g, s) {
+  const sending = busy === `msg-${g.id}`;
+  const send = (payload) => hostAction("POST", `/api/host/guests/${g.id}/message`,
+    { request_id: newRequestId(), ...payload }, `msg-${g.id}`);
+  const box = el("textarea", { rows: 2, maxlength: 1000, placeholder: `Private message to ${g.name}`, "aria-label": `Message to ${g.name}` });
+  box.value = drafts[g.id] || "";
+  box.addEventListener("input", () => { drafts[g.id] = box.value; });
+  const alsoText = g.phone && el("input", { type: "checkbox", checked: g.sms_consent });
+  const unread = g.private_messages.filter((m) => !m.read).length;
+  const details = el("details", { class: "contact", open: openMessages.has(g.id) },
+    el("summary", {}, `Messages (${g.private_messages.length} sent${unread ? `, ${unread} unread` : ""})`),
+    g.directions.length > 0 && el("div", {},
+      el("p", { class: "small muted" }, "Prepared instructions for this role:"),
+      el("ul", { class: "plain directions" }, g.directions.map((d) => el("li", {},
+        el("p", { class: "small" }, d.phase ? `[${d.phase}] ` : "", d.text),
+        el("button", {
+          class: d.sent ? "small quiet" : "small", disabled: sending,
+          onclick: () => (!d.sent || confirm("You've already sent this one. Send it again?"))
+            && send({ direction_id: d.id, also_text: !!(alsoText && alsoText.checked) }),
+        }, d.sent ? "Sent ✓ (send again)" : "Send"))))),
+    box,
+    alsoText && el("label", { class: "check" }, alsoText, " Also text them a heads-up (it won't include the message)"),
+    el("button", {
+      class: "small", disabled: sending,
+      onclick: async () => {
+        await send({ body: box.value, also_text: !!(alsoText && alsoText.checked) });
+        if (!hostMsg) { drafts[g.id] = ""; redrawQuietly(renderHost); }
+      },
+    }, sending ? "Sending…" : "Send message"),
+    g.private_messages.length > 0 && el("ul", { class: "plain history" }, g.private_messages.map((m) => el("li", { class: "small" },
+      el("span", { class: "muted" }, `${when(m.created_at)} · ${m.read ? "read ✓" : "not read yet"}: `), m.body))));
+  details.addEventListener("toggle", () => {
+    if (details.open) openMessages.add(g.id); else openMessages.delete(g.id);
+  });
+  return details;
+}
+
+function textPromptLine(s) {
+  const g = textPrompt && s.guests.find((x) => x.id === textPrompt.guest_id);
+  if (!g) return null;
+  return el("p", { class: "notice" }, "Let them know: ",
+    smsLink(g.phone, g.message_alert, `Text ${g.name} a heads-up from my phone`));
+}
+
+function tokenLine(g, s) {
+  const give = (kind) => hostAction("POST", "/api/host/grant",
+    { request_id: newRequestId(), target: g.id, public: kind === "public" ? 1 : 0, private: kind === "private" ? 1 : 0 }, `grant-${g.id}`);
+  return el("div", { class: "row small token-line" },
+    el("span", { class: "grow" }, `Tokens: ${g.tokens.public} public · ${g.tokens.private} private`),
+    el("button", { class: "small quiet", disabled: !!busy, onclick: () => give("public") }, "+1 public"),
+    el("button", { class: "small quiet", disabled: !!busy, onclick: () => give("private") }, "+1 private"));
 }
 
 function guestLink(g) {
@@ -466,6 +738,8 @@ function guestCard(s, g) {
     issues && issues.length > 0 && el("ul", { class: "issues" }, issues),
     g.assessment_done && el("p", { class: "small muted" }, g.prep_level === "deep"
       ? "Prep: deep (story chapter + character sheet)" : "Prep: light (character sheet)"),
+    s.released && tokenLine(g, s),
+    s.released && messagesPanel(g, s),
     contactPanel(g, s),
     el("div", { class: "row buttons" },
       inviteButton(g, s),
@@ -542,6 +816,8 @@ function renderHost() {
         : "Texting: from your phone (automatic texting not set up yet)")),
     hostMsg && el("p", { class: "error", role: "alert" }, hostMsg),
     hostNotice && el("p", { class: "notice", role: "status" }, hostNotice),
+    textPromptLine(s),
+    gamePanel(s),
     suggestionPanel(s),
     el("section", {},
       el("div", { class: "row" },
