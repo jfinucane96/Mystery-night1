@@ -12,6 +12,8 @@ On the night the host moves the game through Arrival, Investigation (in rounds),
 the Reveal, can pause, grants question tokens, and sends private messages. Phones update by themselves.
 During the investigation guests spend tokens on private questions (their character's memory) and public
 questions (another guest answers out loud from a script). Confessions need the right evidence.
+A watch-only **room screen** (its own link, on the host page) runs on the computer connected to the
+speaker or TV: it plays sounds and announces the murder, rounds, who is being questioned and confessions.
 
 ## What's in this folder
 

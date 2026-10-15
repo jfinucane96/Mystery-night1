@@ -654,7 +654,31 @@ function gamePanel(s) {
     el("div", { class: "row buttons" },
       el("button", { class: "small quiet", disabled: !!busy, onclick: () => grantAll("public") }, "+1 public to everyone"),
       el("button", { class: "small quiet", disabled: !!busy, onclick: () => grantAll("private") }, "+1 private to everyone")),
-    jump);
+    jump,
+    roomLinkRow(s));
+}
+
+// The watch-only room screen for the computer on the speaker (safe to show guests)
+function roomLinkRow(s) {
+  const link = `${location.origin}/room/${s.room_key}`;
+  const copy = el("button", {
+    class: "small quiet",
+    onclick: async (e) => {
+      try { await navigator.clipboard.writeText(link); e.target.textContent = "Copied!"; }
+      catch { window.prompt("Copy this link:", link); }
+      setTimeout(() => (e.target.textContent = "Copy link"), 1500);
+    },
+  }, "Copy link");
+  return el("div", { class: "room-link" },
+    el("p", { class: "small" }, el("strong", {}, "Room screen"), " (for the computer on your speaker or TV; shows nothing secret):"),
+    el("div", { class: "row buttons" },
+      el("a", { class: "button small", href: link, target: "_blank", rel: "noopener" }, "Open"),
+      copy,
+      el("button", {
+        class: "small quiet",
+        onclick: () => confirm("Make a new room link? The old one stops working.")
+          && hostAction("POST", "/api/host/room/new-link", {}),
+      }, "New link")));
 }
 
 const openMessages = new Set();
@@ -1039,5 +1063,156 @@ function renderHost() {
 
 // ------------------------------------------------------------------- start
 
+// ------------------------------------------------- room screen (speaker / TV)
+// Watch-only. Announces public moments with a sound and the browser's built-in voice.
+
+let room = null;
+let roomSoundOn = false;
+let roomLast = null;               // the last announcement shown on screen
+const roomSeen = new Set();        // events already announced
+let audioCtx = null;
+const speakQueue = [];
+let speaking = false;
+
+function tone(freq, start, length, type = "sine", volume = 0.25) {
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  const t0 = audioCtx.currentTime + start;
+  gain.gain.setValueAtTime(0.0001, t0);
+  gain.gain.exponentialRampToValueAtTime(volume, t0 + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t0 + length);
+  osc.connect(gain).connect(audioCtx.destination);
+  osc.start(t0);
+  osc.stop(t0 + length + 0.05);
+}
+
+function thunder(start, length) {
+  // A burst of filtered noise that rumbles away
+  const samples = Math.floor(audioCtx.sampleRate * length);
+  const buffer = audioCtx.createBuffer(1, samples, audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < samples; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / samples, 2);
+  const src = audioCtx.createBufferSource();
+  src.buffer = buffer;
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = "lowpass";
+  filter.frequency.value = 400;
+  const gain = audioCtx.createGain();
+  gain.gain.value = 0.9;
+  src.connect(filter).connect(gain).connect(audioCtx.destination);
+  src.start(audioCtx.currentTime + start);
+}
+
+const SOUNDS = {
+  chime: () => { tone(880, 0, 0.5); tone(1320, 0.18, 0.7); },
+  phase: () => { tone(392, 0, 0.6, "triangle"); tone(523, 0.2, 0.6, "triangle"); tone(659, 0.4, 0.9, "triangle"); },
+  murder: () => { thunder(0, 3.5); tone(73, 0.2, 3.2, "sawtooth", 0.12); tone(77.8, 0.2, 3.2, "sawtooth", 0.12); },
+  confession: () => { [233, 277, 330, 466].forEach((f) => tone(f, 0, 2.2, "sawtooth", 0.08)); tone(116, 0, 2.5, "square", 0.1); },
+};
+const SOUND_LENGTH = { chime: 900, phase: 1400, murder: 3200, confession: 2000 };
+
+function pickVoice() {
+  const voices = speechSynthesis.getVoices().filter((v) => v.lang.startsWith("en"));
+  return voices.find((v) => /natural/i.test(v.name)) || voices.find((v) => /google uk english male/i.test(v.name))
+    || voices.find((v) => /en-GB/.test(v.lang)) || voices[0] || null;
+}
+
+function announce(sound, text, show = text) {
+  speakQueue.push({ sound, text, show });
+  if (!speaking) nextAnnouncement();
+}
+
+function nextAnnouncement() {
+  const item = speakQueue.shift();
+  if (!item) { speaking = false; return; }
+  speaking = true;
+  roomLast = item.show;
+  renderRoom();
+  if (!roomSoundOn) return setTimeout(nextAnnouncement, 4000);
+  if (audioCtx.state === "suspended") audioCtx.resume();
+  SOUNDS[item.sound]();
+  setTimeout(() => {
+    const u = new SpeechSynthesisUtterance(item.text);
+    const voice = pickVoice();
+    if (voice) u.voice = voice;
+    u.rate = 0.92;
+    u.pitch = 0.9;
+    u.onend = () => setTimeout(nextAnnouncement, 600);
+    u.onerror = () => setTimeout(nextAnnouncement, 600);
+    speechSynthesis.speak(u);
+  }, SOUND_LENGTH[item.sound]);
+}
+
+function roomChanges(before, now) {
+  // Compare two snapshots of the game and announce what changed
+  if (now.phase !== before.phase) {
+    if (now.phase === "investigation" && before.phase !== "accusation" && before.phase !== "reveal") {
+      announce("murder", `${now.murder.title} ${now.murder.text}`, now.murder.title);
+    } else {
+      const lines = { arrival: "Welcome! The guests are arriving.", investigation: "The investigation resumes.",
+        accusation: "Accusations are now open!", reveal: "The time has come for the truth. The reveal begins!",
+        setup: "The game has been reset." };
+      announce("phase", lines[now.phase] || `${now.phase_name} begins.`);
+    }
+  } else if (now.phase === "investigation" && now.round !== before.round) {
+    announce("phase", `Round ${now.round} begins!`);
+  }
+  if (now.paused !== before.paused) announce("phase", now.paused ? "The game is paused." : "The game resumes!");
+}
+
+async function loadRoom() {
+  try {
+    room = await api("GET", "/api/room");
+  } catch (e) {
+    if (e.status === 403) return show(errorCard("Room link not recognised", "Ask the host for the current room link."));
+    return show(errorCard("Couldn't load", e.message), el("button", { class: "wide", onclick: loadRoom }, "Try again"));
+  }
+  room.events.forEach((ev) => roomSeen.add(ev.id));      // don't replay what happened before this page opened
+  renderRoom();
+  startPolling(() => api("GET", "/api/room"), (fresh) => {
+    const before = room;
+    room = fresh;
+    roomChanges(before, fresh);
+    fresh.events.slice().reverse().forEach((ev) => {     // oldest first
+      if (roomSeen.has(ev.id)) return;
+      roomSeen.add(ev.id);
+      announce(ev.kind === "confession" ? "confession" : "chime", ev.text);
+    });
+    renderRoom();
+  }, 3000);
+}
+
+async function keepAwake() {
+  try { if (navigator.wakeLock) await navigator.wakeLock.request("screen"); } catch { /* not supported: fine */ }
+}
+
+function startRoomSound() {
+  audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+  audioCtx.resume();
+  roomSoundOn = true;
+  keepAwake();
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") keepAwake(); });
+  announce("chime", "Sound is on. Let the mystery begin.", "Sound is on");
+}
+
+function renderRoom() {
+  document.title = `Room · ${room.title}`;
+  document.body.classList.add("room-mode");
+  const phaseLine = room.phase === "investigation" ? `${room.phase_name} · Round ${room.round} of ${room.rounds}` : room.phase_name;
+  show(
+    el("div", { class: "room" },
+      el("p", { class: "eyebrow" }, room.title),
+      el("h1", { class: "room-phase" }, phaseLine),
+      room.paused && el("p", { class: "paused" }, "Paused"),
+      el("p", { class: "room-announcement" }, roomLast || "Waiting for something to happen…"),
+      roomSoundOn
+        ? el("p", { class: "small muted" }, "Sound on. Leave this page open. ",
+          el("button", { class: "small quiet", onclick: () => announce("chime", "Testing, testing.", "Test") }, "Test sound"))
+        : el("button", { class: "room-start", onclick: () => { startRoomSound(); renderRoom(); } }, "Start sound")));
+}
+
 if (mode === "play") loadGuest();
 else if (mode === "host") loadHost();
+else if (mode === "room") loadRoom();

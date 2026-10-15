@@ -130,6 +130,10 @@ MIGRATIONS = [
             PRIMARY KEY (guest_id, evidence_id)
         )""",
     ],
+    # 8. Room screen: a watch-only link for the computer on the speaker / TV
+    [
+        "ALTER TABLE game ADD COLUMN room_key TEXT NOT NULL DEFAULT ''",
+    ],
 ]
 
 

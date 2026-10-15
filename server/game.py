@@ -47,6 +47,27 @@ def reset_host_key(t):
     return key
 
 
+def room_key(t):
+    """The watch-only link for the room screen, created the first time it's needed."""
+    row = t.one("SELECT room_key FROM game WHERE id = 1")
+    if row["room_key"]:
+        return row["room_key"]
+    key = _new_secret()
+    t.run("UPDATE game SET room_key = ? WHERE id = 1", (key,))
+    return key
+
+
+def reset_room_key(t):
+    key = _new_secret()
+    t.run("UPDATE game SET room_key = ? WHERE id = 1", (key,))
+    return key
+
+
+def is_room(t, key):
+    row = t.one("SELECT room_key FROM game WHERE id = 1")
+    return bool(row and row["room_key"] and key and secrets.compare_digest(row["room_key"], key))
+
+
 def is_host(t, key):
     row = t.one("SELECT host_key FROM game WHERE id = 1")
     return bool(row and key and secrets.compare_digest(row["host_key"], key))

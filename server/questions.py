@@ -241,3 +241,23 @@ def host_log(t, story):
                     "answer": r.get("answer") or r.get("spoken") or r.get("reason", ""),
                     "delivery": r.get("delivery", ""), "via": r.get("via", "")})
     return out
+
+
+def room_events(t, story, limit=20):
+    """Public announcements for the room screen: who is being questioned, and
+    that someone confessed (without saying who). Never the question or answer."""
+    guests = {g["id"]: g for g in t.all("SELECT id, character_id FROM guests")}
+    out = []
+    for q in t.all("SELECT * FROM questions WHERE kind = 'interrogate' AND status = 'answered' "
+                   "ORDER BY answered_at DESC LIMIT ?", (limit,)):
+        target = guests.get(q["target_id"])
+        c = story["by_id"].get((target or {}).get("character_id") or "")
+        if not c:
+            continue
+        r = json.loads(q["result"] or "{}")
+        if r.get("delivery") == "confessing":
+            out.append({"id": q["id"] + "-confession", "kind": "confession", "at": q["answered_at"],
+                        "text": "Someone has confessed!"})
+        out.append({"id": q["id"], "kind": "questioned", "at": q["answered_at"],
+                    "text": f"{c['name']}, you are being questioned!"})
+    return out

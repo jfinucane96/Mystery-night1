@@ -23,7 +23,7 @@ STATIC = {
     "/static/app.js": ("app.js", "text/javascript; charset=utf-8"),
     "/static/style.css": ("style.css", "text/css; charset=utf-8"),
 }
-PAGE_PATTERN = re.compile(r"^/(play|host)/[A-Za-z0-9_-]{20,100}$")
+PAGE_PATTERN = re.compile(r"^/(play|host|room)/[A-Za-z0-9_-]{20,100}$")
 MAX_BODY = 16 * 1024
 
 SECURITY_HEADERS = {
@@ -210,6 +210,7 @@ def host_state(ctx, t):
         "limit_labels": {l["id"]: l["prompt"] for l in a["limits"]},
         "characters": storymod.character_list(ctx.story),
         "solution": storymod.host_solution(ctx.story),
+        "room_key": game.room_key(t),
         "evidence": [{"id": e["id"], "name": e["name"]} for e in ctx.story.get("evidence", [])],
         "questions": questions.host_log(t, ctx.story),
         "guests": [guest_row(g) for g in game.list_guests(t)],
@@ -398,6 +399,26 @@ def host_evidence(ctx, t, body, _, gid):
     return host_state(ctx, t)
 
 
+@route("POST", r"/api/host/room/new-link", "host")
+def host_new_room_link(ctx, t, body, _):
+    game.reset_room_key(t)
+    return host_state(ctx, t)
+
+
+# ------------------------------------------------- the room screen (watch only)
+
+@route("GET", r"/api/room", "room")
+def room_get(ctx, t, body, _):
+    s = play.state(t)
+    return {
+        "title": ctx.story["title"],
+        "phase": s["phase"], "phase_name": play.PHASE_NAMES[s["phase"]],
+        "round": s["round"], "rounds": play.config(ctx.story)["rounds"], "paused": s["paused"],
+        "murder": ctx.story["murder_announcement"],
+        "events": questions.room_events(t, ctx.story),
+    }
+
+
 @route("POST", r"/api/host/suggest/apply", "host")
 def host_apply_suggestion(ctx, t, body, _):
     game.apply_suggestion(t, ctx.story, ctx.assessment, confirm=bool(body.get("confirm")))
@@ -501,6 +522,10 @@ class Handler(BaseHTTPRequestHandler):
                 if who == "host":
                     if not game.is_host(t, key):
                         return self._json(403, {"error": "This action needs the host link."})
+                    actor = None
+                elif who == "room":
+                    if not game.is_room(t, key):
+                        return self._json(403, {"error": "This room link isn't valid."})
                     actor = None
                 else:
                     actor = game.guest_for_token(t, key)
