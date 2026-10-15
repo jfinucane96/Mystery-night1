@@ -57,6 +57,43 @@ def check(story):
             problems.append(f"direction '{d.get('id')}' is for unknown character '{d.get('character')}'")
         if not d.get("text"):
             problems.append(f"direction '{d.get('id')}' has no text")
+    problems += check_knowledge(story, ids)
+    return problems
+
+
+STANCES = ("truth", "evade", "lie")
+
+
+def check_knowledge(story, ids):
+    """Facts, lies and evidence used by AI questions (P04)."""
+    problems = []
+    evidence_ids = [e.get("id") for e in story.get("evidence", [])]
+    for e in story.get("evidence", []):
+        if not (e.get("id") and e.get("name")):
+            problems.append("every evidence item needs an id and a name")
+    if len(evidence_ids) != len(set(evidence_ids)):
+        problems.append("two evidence items share the same id")
+    fact_ids = set()
+    for c in story["characters"]:
+        for f in c.get("knowledge", []):
+            where = f"character '{c['id']}' fact '{f.get('id')}'"
+            if not f.get("id") or f["id"] in fact_ids:
+                problems.append(f"{where}: id is missing or used twice")
+            fact_ids.add(f.get("id"))
+            if not f.get("text") or not f.get("topics"):
+                problems.append(f"{where}: needs text and topics")
+            if f.get("source") not in ("firsthand", "heard"):
+                problems.append(f"{where}: source must be 'firsthand' or 'heard'")
+            if f.get("source") == "heard" and f.get("heard_from") not in ids:
+                problems.append(f"{where}: heard_from must be a character id")
+            w = f.get("when_asked", {})
+            if w.get("stance") not in STANCES or not w.get("says"):
+                problems.append(f"{where}: when_asked needs a stance ({'/'.join(STANCES)}) and 'says'")
+            for ev in w.get("confess_with", []):
+                if ev not in evidence_ids:
+                    problems.append(f"{where}: confess_with names unknown evidence '{ev}'")
+            if w.get("confess_with") and not w.get("confession"):
+                problems.append(f"{where}: has confess_with but no confession text")
     return problems
 
 

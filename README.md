@@ -3,13 +3,15 @@
 A small web app for running one murder-mystery party. Each guest gets a private
 link that shows only their own character. The host gets a separate link to run the game.
 
-**Current milestone: P03. Host-run game progression**, using a placeholder story.
+**Current milestone: P04. AI memory and interrogations**, using a placeholder story.
 
 How a game runs so far: the host adds guests and sends each their link, guests answer six quick
 questions and set their limits, the host assigns characters (the app warns about poor fits and
 blocks roles a guest said no to), then the host releases all characters at once.
 On the night the host moves the game through Arrival, Investigation (in rounds), Accusations and
 the Reveal, can pause, grants question tokens, and sends private messages. Phones update by themselves.
+During the investigation guests spend tokens on private questions (their character's memory) and public
+questions (another guest answers out loud from a script). Confessions need the right evidence.
 
 ## What's in this folder
 
@@ -18,6 +20,8 @@ the Reveal, can pause, grants question tokens, and sends private messages. Phone
 | `server/app.py` | The web server: pages and the API the phones talk to |
 | `server/game.py` | Game rules: guests, links, answers, assigning and releasing characters |
 | `server/play.py` | Running the party: phases, rounds, pause, question tokens, private messages |
+| `server/questions.py` | Private and public questions: what each character may remember or say, tokens, evidence |
+| `server/ai_questions.py` | Turning a question into an answer with the AI, checked against the story (with a no-AI backup) |
 | `server/casting.py` | The assessment, and the rules comparing guests' answers with each role |
 | `server/ai_casting.py` | AI casting suggestions (Claude); suggestions only, limits still enforced |
 | `server/ai.py` | The one place that talks to Claude |
@@ -25,7 +29,7 @@ the Reveal, can pause, grants question tokens, and sends private messages. Phone
 | `server/story.py` | Loads the story, and decides what each person is allowed to see |
 | `server/db.py` | Saving data: a local file for testing, Supabase when online |
 | `server/manage.py` | Command to replace a lost or leaked host link |
-| `content/story.json` | The mystery itself (placeholder until P07): each role's sheet, casting needs and story chapter |
+| `content/story.json` | The mystery itself (placeholder until P07): roles, chapters, knowledge, lies, evidence |
 | `content/assessment.json` | The six questions and the hard limits (edit the wording here) |
 | `web/` | The phone screens (HTML, CSS, JavaScript) |
 | `tests/` | Automatic checks for each milestone |

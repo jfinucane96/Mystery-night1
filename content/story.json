@@ -36,7 +36,65 @@
         "Keep anyone from looking closely at the wine cellar records.",
         "Find out who moved the birthday champagne."
       ],
-      "chapter": "PLACEHOLDER CHAPTER. The real chapter (about 10 minutes of reading) is written with the story in P07.\n\nThe rain had not stopped since noon. You moved through the east corridor of Ravenscroft Manor the way you always did, silently, counting the portraits as you passed. Thirty years in this house had taught you which floorboards complained and which doors were best left closed.\n\nTonight the house was full again. Voices drifted up from the drawing room, and somewhere below, the wine cellar waited in the dark, keeping your secret as faithfully as you had kept everyone else's."
+      "chapter": "PLACEHOLDER CHAPTER. The real chapter (about 10 minutes of reading) is written with the story in P07.\n\nThe rain had not stopped since noon. You moved through the east corridor of Ravenscroft Manor the way you always did, silently, counting the portraits as you passed. Thirty years in this house had taught you which floorboards complained and which doors were best left closed.\n\nTonight the house was full again. Voices drifted up from the drawing room, and somewhere below, the wine cellar waited in the dark, keeping your secret as faithfully as you had kept everyone else's.",
+      "knowledge": [
+        {
+          "id": "pike-saw-thorne",
+          "text": "Ten minutes before the toast, you saw Dr. Thorne alone by the champagne tray in the dining room, rummaging in his medical bag.",
+          "source": "firsthand",
+          "certainty": "certain",
+          "from_round": 1,
+          "topics": [
+            "champagne",
+            "doctor",
+            "thorne",
+            "tray",
+            "bag",
+            "toast",
+            "dining"
+          ],
+          "when_asked": {
+            "stance": "truth",
+            "says": "I'll tell you what I saw. Dr. Thorne, alone at the champagne tray, ten minutes before the toast, with his hand in that bag of his."
+          }
+        },
+        {
+          "id": "pike-cellar",
+          "text": "You have been quietly selling old bottles from the wine cellar for years.",
+          "source": "firsthand",
+          "certainty": "certain",
+          "from_round": 1,
+          "topics": [
+            "cellar",
+            "wine",
+            "bottles",
+            "money",
+            "selling"
+          ],
+          "when_asked": {
+            "stance": "lie",
+            "says": "The cellar? Everything is exactly as Her Ladyship left it. I keep meticulous records."
+          }
+        },
+        {
+          "id": "pike-solicitor",
+          "text": "Rosalind told you this afternoon that the family solicitor visited Lady Ravenscroft this week.",
+          "source": "heard",
+          "heard_from": "niece",
+          "certainty": "unsure",
+          "from_round": 1,
+          "topics": [
+            "will",
+            "solicitor",
+            "lawyer",
+            "inheritance"
+          ],
+          "when_asked": {
+            "stance": "evade",
+            "says": "Family business is not mine to discuss, I'm afraid."
+          }
+        }
+      ]
     },
     {
       "id": "niece",
@@ -70,7 +128,63 @@
         "Find out whether your aunt changed her will.",
         "Hide your money troubles from everyone."
       ],
-      "chapter": "PLACEHOLDER CHAPTER. The real chapter (about 10 minutes of reading) is written with the story in P07.\n\nYou arrived late on purpose. An entrance, after all, is half the battle. Your coat was soaked and your smile was perfect as you swept into the hall, already scanning the room for your aunt.\n\nSomewhere in this house was the answer to the only question that mattered: had she changed her will? You had come to find out, and you did not intend to leave without knowing."
+      "chapter": "PLACEHOLDER CHAPTER. The real chapter (about 10 minutes of reading) is written with the story in P07.\n\nYou arrived late on purpose. An entrance, after all, is half the battle. Your coat was soaked and your smile was perfect as you swept into the hall, already scanning the room for your aunt.\n\nSomewhere in this house was the answer to the only question that mattered: had she changed her will? You had come to find out, and you did not intend to leave without knowing.",
+      "knowledge": [
+        {
+          "id": "rosalind-will",
+          "text": "At lunch, your aunt told you she was 'making some changes' to her will.",
+          "source": "firsthand",
+          "certainty": "certain",
+          "from_round": 1,
+          "topics": [
+            "will",
+            "inheritance",
+            "changes",
+            "money",
+            "heir"
+          ],
+          "when_asked": {
+            "stance": "lie",
+            "says": "My aunt and I never discussed money. Never."
+          }
+        },
+        {
+          "id": "rosalind-letter",
+          "text": "Before dinner you saw Juniper slip a sealed letter into your aunt's handbag.",
+          "source": "firsthand",
+          "certainty": "certain",
+          "from_round": 1,
+          "topics": [
+            "letter",
+            "juniper",
+            "painter",
+            "handbag",
+            "envelope"
+          ],
+          "when_asked": {
+            "stance": "truth",
+            "says": "I saw that painter, Juniper, slip a sealed letter into my aunt's handbag before dinner. Ask her about that."
+          }
+        },
+        {
+          "id": "rosalind-gallery",
+          "text": "Your gallery is bankrupt and you owe money to dangerous people.",
+          "source": "firsthand",
+          "certainty": "certain",
+          "from_round": 1,
+          "topics": [
+            "gallery",
+            "debt",
+            "money",
+            "bankrupt",
+            "owe"
+          ],
+          "when_asked": {
+            "stance": "evade",
+            "says": "The art world has its ups and downs, darling. Next question."
+          }
+        }
+      ]
     },
     {
       "id": "doctor",
@@ -104,7 +218,68 @@
         "Keep your past hidden.",
         "Find out who opened your medical bag during dinner."
       ],
-      "chapter": "PLACEHOLDER CHAPTER. The real chapter (about 10 minutes of reading) is written with the story in P07.\n\nYour medical bag sat by your feet at dinner, as it always did. The guests found it reassuring. A doctor at the table, just in case.\n\nYou smiled, passed the salt, and listened. A careful man listens more than he speaks, and you had been careful for a very long time."
+      "chapter": "PLACEHOLDER CHAPTER. The real chapter (about 10 minutes of reading) is written with the story in P07.\n\nYour medical bag sat by your feet at dinner, as it always did. The guests found it reassuring. A doctor at the table, just in case.\n\nYou smiled, passed the salt, and listened. A careful man listens more than he speaks, and you had been careful for a very long time.",
+      "knowledge": [
+        {
+          "id": "thorne-poison",
+          "text": "You added powder from a glass vial in your medical bag to Lady Ravenscroft's champagne just before the toast.",
+          "source": "firsthand",
+          "certainty": "certain",
+          "from_round": 1,
+          "topics": [
+            "champagne",
+            "poison",
+            "vial",
+            "bag",
+            "toast",
+            "glass",
+            "powder"
+          ],
+          "when_asked": {
+            "stance": "lie",
+            "says": "I never went near the champagne. I was by the fireplace the whole time.",
+            "confess_with": [
+              "vial"
+            ],
+            "confession": "That vial... all right. Yes. I put it in her glass. She knew who I really was, and she was going to ruin me."
+          }
+        },
+        {
+          "id": "thorne-past",
+          "text": "Last week Lady Ravenscroft confronted you about the name you used to practise under abroad.",
+          "source": "firsthand",
+          "certainty": "certain",
+          "from_round": 1,
+          "topics": [
+            "past",
+            "name",
+            "identity",
+            "licence",
+            "argument",
+            "confronted"
+          ],
+          "when_asked": {
+            "stance": "lie",
+            "says": "We had a perfectly cordial relationship. She was my patient and my friend."
+          }
+        },
+        {
+          "id": "thorne-pike",
+          "text": "You noticed Pike watching you closely all evening.",
+          "source": "firsthand",
+          "certainty": "certain",
+          "from_round": 1,
+          "topics": [
+            "pike",
+            "butler",
+            "watching"
+          ],
+          "when_asked": {
+            "stance": "truth",
+            "says": "That butler hasn't taken his eyes off me all night. Ask him why."
+          }
+        }
+      ]
     },
     {
       "id": "painter",
@@ -137,7 +312,66 @@
         "Decide whether to reveal who you really are.",
         "Learn why the doctor seemed to recognise you."
       ],
-      "chapter": "PLACEHOLDER CHAPTER. The real chapter (about 10 minutes of reading) is written with the story in P07.\n\nThe portrait was finished, wrapped in brown paper, leaning against the wall of the guest room you had been given. You had painted her eyes three times before they looked right.\n\nShe had told you a secret last week, one that changed everything you thought you knew about yourself. Tonight, among all these strangers who were not quite strangers, you would have to decide what to do with it."
+      "chapter": "PLACEHOLDER CHAPTER. The real chapter (about 10 minutes of reading) is written with the story in P07.\n\nThe portrait was finished, wrapped in brown paper, leaning against the wall of the guest room you had been given. You had painted her eyes three times before they looked right.\n\nShe had told you a secret last week, one that changed everything you thought you knew about yourself. Tonight, among all these strangers who were not quite strangers, you would have to decide what to do with it.",
+      "knowledge": [
+        {
+          "id": "juniper-granddaughter",
+          "text": "Last week Lady Ravenscroft told you that you are her granddaughter.",
+          "source": "firsthand",
+          "certainty": "certain",
+          "from_round": 1,
+          "topics": [
+            "granddaughter",
+            "family",
+            "secret",
+            "letter",
+            "related"
+          ],
+          "when_asked": {
+            "stance": "evade",
+            "says": "She was very kind to me. That's all I'll say for now."
+          }
+        },
+        {
+          "id": "juniper-napkin",
+          "text": "Right after the toast you saw Dr. Thorne wipe his hands on a napkin, looking pale.",
+          "source": "firsthand",
+          "certainty": "certain",
+          "from_round": 1,
+          "topics": [
+            "doctor",
+            "thorne",
+            "napkin",
+            "after",
+            "pale",
+            "hands"
+          ],
+          "when_asked": {
+            "stance": "truth",
+            "says": "Right after the toast, the doctor was wiping his hands on a napkin. He looked white as a sheet."
+          }
+        },
+        {
+          "id": "juniper-bottles",
+          "text": "In the hallway you overheard Pike muttering about 'missing bottles'.",
+          "source": "heard",
+          "heard_from": "butler",
+          "certainty": "certain",
+          "from_round": 2,
+          "topics": [
+            "cellar",
+            "wine",
+            "bottles",
+            "pike",
+            "butler",
+            "missing"
+          ],
+          "when_asked": {
+            "stance": "truth",
+            "says": "I heard Pike in the hallway muttering about 'missing bottles'. I don't know what he meant."
+          }
+        }
+      ]
     }
   ],
   "solution": {
@@ -184,5 +418,30 @@
       "text": "PLACEHOLDER: Unveil the birthday portrait to the room and say something kind about Lady Ravenscroft."
     }
   ],
-  "game_note": "game.start_tokens are given when the investigation starts; game.round_tokens when each later round starts. directions: pre-written private instructions the host can send with one tap."
+  "game_note": "game.start_tokens are given when the investigation starts; game.round_tokens when each later round starts. directions: pre-written private instructions the host can send with one tap.",
+  "evidence": [
+    {
+      "id": "vial",
+      "name": "An empty glass vial",
+      "description": "Found under the dining table. It smells faintly bitter. (PLACEHOLDER)"
+    },
+    {
+      "id": "napkin",
+      "name": "A stained napkin",
+      "description": "Crumpled by the fireplace, with a white powdery smear. (PLACEHOLDER)"
+    }
+  ],
+  "suggested_questions": {
+    "remember": [
+      "What did I see near the champagne?",
+      "What do I know about the will?",
+      "Who was acting strangely tonight?"
+    ],
+    "interrogate": [
+      "Where were you during the toast?",
+      "What's your relationship with the victim?",
+      "Did you go near the champagne?"
+    ]
+  },
+  "knowledge_note": "knowledge: what each character knows. 'text' is the private truth (used for REMEMBER). when_asked.stance (truth/evade/lie) and when_asked.says decide what they say when INTERROGATED; the AI only ever sees 'says' for lies and evasions. confess_with lists evidence ids that unlock the confession."
 }

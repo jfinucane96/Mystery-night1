@@ -14,7 +14,7 @@ import threading
 import traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from . import ai_casting, casting, db as dbmod, game, play, story as storymod, texting
+from . import ai_casting, ai_questions, casting, db as dbmod, game, play, questions, story as storymod, texting
 from .game import GameError
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -65,6 +65,7 @@ def guest_state(ctx, t, guest):
                             for m in msgs]
         if s["phase"] in ("investigation", "accusation", "reveal"):
             view["murder"] = ctx.story["murder_announcement"]
+        view["investigation"] = investigation_view(ctx, t, guest, s)
         return view
     a = ctx.assessment
     view["stage"] = "waiting" if guest["assessment_done"] else "assessment"
@@ -79,8 +80,60 @@ def guest_state(ctx, t, guest):
     return view
 
 
+def investigation_view(ctx, t, guest, s):
+    """What a guest needs to ask questions: who they can question, their evidence,
+    their notebook, and any interrogation aimed at them."""
+    others = []
+    for g in game.list_guests(t):
+        c = ctx.story["by_id"].get(g["character_id"] or "")
+        if c and g["id"] != guest["id"]:
+            others.append({"guest_id": g["id"], "label": f"{c['name']} ({texting.first_name(g['name'])})"})
+    evidence = questions.evidence_list(ctx.story)
+    notebook, aimed = questions.guest_questions(t, ctx.story, guest)
+    return {
+        "open": s["phase"] == "investigation" and not s["paused"],
+        "suggestions": ctx.story.get("suggested_questions", {}),
+        "targets": others,
+        "evidence": [{"id": e, "name": evidence[e]["name"], "description": evidence[e].get("description", "")}
+                     for e in questions.evidence_of(t, guest["id"]) if e in evidence],
+        "notebook": notebook,
+        "questioned": aimed,
+    }
+
+
 @route("GET", r"/api/me", "guest")
 def guest_me(ctx, t, body, guest):
+    return guest_state(ctx, t, guest)
+
+
+@route("POST", r"/api/me/ask", "guest", own_tx=True)
+def guest_ask(ctx, _t, body, guest):
+    """Ask a question: take the token, get the answer outside the lock, then keep or refund it."""
+    with ctx.db.tx() as t:
+        questions.refund_stale(t)
+        q, new = questions.reserve(t, ctx.story, body.get("request_id"), guest, body.get("kind"),
+                                   body.get("question"), body.get("target_guest_id") or "", body.get("evidence_id") or "")
+        info = questions.context_for(t, ctx.story, q) if new else None
+    if new:
+        status, result = "failed", {"reason": "Something went wrong. Your token was returned."}
+        try:
+            if q["kind"] == "remember":
+                status, result = ai_questions.answer_remember(info["character"], q["question"], info["items"], ctx.ai_ask_q)
+            else:
+                status, result = ai_questions.answer_interrogate(info["character"], info["asker_character"],
+                                                                 q["question"], info["items"], ctx.ai_ask_q)
+        finally:
+            with ctx.db.tx() as t:
+                questions.settle(t, q["id"], status, result)
+    with ctx.db.tx() as t:
+        state = guest_state(ctx, t, game.guest_for_id(t, guest["id"]))
+    state["asked"] = q["id"]
+    return state
+
+
+@route("POST", r"/api/me/interrogations/(?P<qid>[A-Za-z0-9_-]{8,64})/done", "guest")
+def guest_interrogation_done(ctx, t, body, guest, qid):
+    questions.mark_target_done(t, guest["id"], qid)
     return guest_state(ctx, t, guest)
 
 
@@ -138,6 +191,7 @@ def host_state(ctx, t):
             "directions": [{**d, "sent": any(m["direction_id"] == d["id"] for m in messages.get(g["id"], []))}
                            for d in play.directions_for(ctx.story, g["character_id"])],
             "message_alert": texting.message_alert_text(title, g["name"], link),
+            "evidence": questions.evidence_of(t, g["id"]),
         }
 
     return {
@@ -153,6 +207,8 @@ def host_state(ctx, t):
         "limit_labels": {l["id"]: l["prompt"] for l in a["limits"]},
         "characters": storymod.character_list(ctx.story),
         "solution": storymod.host_solution(ctx.story),
+        "evidence": [{"id": e["id"], "name": e["name"]} for e in ctx.story.get("evidence", [])],
+        "questions": questions.host_log(t, ctx.story),
         "guests": [guest_row(g) for g in game.list_guests(t)],
     }
 
@@ -330,6 +386,15 @@ def host_message(ctx, _t, body, _, gid):
     return fresh_host_state(ctx, extra)
 
 
+@route("POST", r"/api/host/guests/(?P<gid>g[0-9a-f]{8})/evidence", "host")
+def host_evidence(ctx, t, body, _, gid):
+    if body.get("give", True):
+        questions.give_evidence(t, ctx.story, gid, body.get("evidence_id"))
+    else:
+        questions.take_evidence(t, gid, body.get("evidence_id"))
+    return host_state(ctx, t)
+
+
 @route("POST", r"/api/host/suggest/apply", "host")
 def host_apply_suggestion(ctx, t, body, _):
     game.apply_suggestion(t, ctx.story, ctx.assessment, confirm=bool(body.get("confirm")))
@@ -357,13 +422,14 @@ def host_remove(ctx, t, body, _, gid):
 # ------------------------------------------------------------- HTTP plumbing
 
 class Context:
-    def __init__(self, database, story, assessment, ai_ask=None, send_text=None):
+    def __init__(self, database, story, assessment, ai_ask=None, send_text=None, ai_ask_q=None):
         self.db = database
         self.story = story
         self.assessment = assessment
         self.base_url = None                         # start of guest links; set in make_server
         self.ai_ask = ai_ask                         # tests swap in a fake AI here
         self.send_text = send_text or texting.send   # ...and a fake texting service here
+        self.ai_ask_q = ai_ask_q                     # ...and a fake AI for questions
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -474,11 +540,11 @@ def load_content():
     return story, assessment
 
 
-def make_server(database, story, assessment, host, port, ai_ask=None, send_text=None):
+def make_server(database, story, assessment, host, port, ai_ask=None, send_text=None, ai_ask_q=None):
     database.init_schema()
     with database.tx() as t:
         host_key = game.ensure_game(t)
-    ctx = Context(database, story, assessment, ai_ask, send_text)
+    ctx = Context(database, story, assessment, ai_ask, send_text, ai_ask_q)
     server = ThreadingHTTPServer((host, port), type("BoundHandler", (Handler,), {"ctx": ctx}))
     ctx.base_url = public_base_url(server.server_address[1])
     return server, host_key

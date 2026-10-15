@@ -118,6 +118,9 @@ function onGuestUpdate(fresh) {
   const stageChanged = fresh.stage !== me.stage;
   // Don't redraw under someone who is halfway through the questions
   if (!stageChanged && me.stage !== "character") return;
+  // ...or under someone typing a question, or while their question is being answered
+  const active = document.activeElement;
+  if (!stageChanged && (asking || (active && ["INPUT", "TEXTAREA", "SELECT"].includes(active.tagName)))) return false;
   me = fresh;
   if (stageChanged) {
     step = null;
@@ -125,6 +128,154 @@ function onGuestUpdate(fresh) {
   } else {
     redrawQuietly(renderGuest);
   }
+}
+
+// ---- P04: asking questions
+
+let askMode = null;          // "remember" | "interrogate" | null (form closed)
+let askDraft = "";
+let askTarget = "";
+let askEvidence = "";
+let asking = false;          // a question is being answered right now
+let askRequestId = null;     // reused if the network drops mid-ask, so it's never charged twice
+let askError = null;
+let lastAsked = null;        // id of the question just answered, to highlight it
+
+const rerender = () => redrawQuietly(renderCharacter);   // redraw without jumping to the top
+
+const ASK = {
+  remember: { token: "private", title: "Private question", verb: "Search your memory",
+    blurb: "Ask what your character remembers. Only you see the answer.",
+    placeholder: "e.g. What did I see near the champagne?", waiting: "Searching your memory…" },
+  interrogate: { token: "public", title: "Public question", verb: "Question a suspect",
+    blurb: "Ask another guest out loud. Their phone tells them how to answer.",
+    placeholder: "e.g. Where were you during the toast?", waiting: "Sending your question…" },
+};
+
+async function submitQuestion() {
+  if (asking) return;
+  askError = null;
+  if (askMode === "interrogate" && !askTarget) { askError = "Choose who to question."; return rerender(); }
+  if (askDraft.trim().length < 3) { askError = "Type your question first."; return rerender(); }
+  asking = true;
+  askRequestId = askRequestId || newRequestId();
+  redrawQuietly(renderCharacter);
+  try {
+    me = await api("POST", "/api/me/ask", {
+      request_id: askRequestId, kind: askMode, question: askDraft,
+      target_guest_id: askMode === "interrogate" ? askTarget : "",
+      evidence_id: askMode === "interrogate" ? askEvidence : "",
+    });
+    lastAsked = me.asked;
+    askRequestId = null;
+    askDraft = ""; askEvidence = ""; askMode = null;
+  } catch (e) {
+    askError = e.message;
+    if (e.status !== 0) askRequestId = null;   // a real refusal: next try is a new question
+  }
+  asking = false;
+  rerender();
+  const result = document.getElementById("latest-question");
+  if (result) result.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+// "You're being questioned!" cards, shown at the top until answered
+function questionedCards() {
+  const inv = me.investigation;
+  if (!inv) return null;
+  return inv.questioned.filter((q) => !q.done).map((q) => el("section", { class: "card questioned", role: "alert" },
+    el("p", { class: "eyebrow" }, "You're being questioned!"),
+    el("p", {}, el("strong", {}, q.asker), " asks: ", el("em", {}, `"${q.question}"`)),
+    q.evidence && el("p", { class: "small warn" }, `They present evidence: ${q.evidence}`),
+    el("p", { class: "small muted" }, "Say this out loud (in your own words is fine; keep the facts):"),
+    el("p", { class: "spoken" }, q.spoken),
+    el("p", { class: "small" }, el("strong", {}, "Acting tip (only you see this): "), q.acting_tip),
+    el("button", {
+      class: "wide",
+      onclick: async () => {
+        try { me = await api("POST", `/api/me/interrogations/${q.id}/done`, {}); } catch { /* retry on next tap */ }
+        rerender();
+      },
+    }, "Done, I've answered")));
+}
+
+function askForm(inv) {
+  const info = ASK[askMode];
+  const left = me.tokens[info.token];
+  const box = el("textarea", { rows: 2, maxlength: 300, placeholder: info.placeholder, "aria-label": "Your question" });
+  box.value = askDraft;
+  box.addEventListener("input", () => { askDraft = box.value; });
+  const chips = (inv.suggestions[askMode] || []).map((sq) => el("button", {
+    class: "chip", type: "button", onclick: () => { askDraft = sq; rerender(); },
+  }, sq));
+  const who = askMode === "interrogate" && el("div", {},
+    el("p", { class: "small muted" }, "Who do you want to question?"),
+    el("div", { class: "targets" }, inv.targets.map((tg) => el("button", {
+      type: "button", class: askTarget === tg.guest_id ? "choice small chosen" : "choice small",
+      "aria-pressed": askTarget === tg.guest_id ? "true" : "false",
+      onclick: () => { askTarget = tg.guest_id; rerender(); },
+    }, tg.label))));
+  const evidence = askMode === "interrogate" && inv.evidence.length > 0 && el("label", { class: "limit" },
+    el("span", { class: "small muted" }, "Present evidence (optional)"),
+    el("select", { onchange: (e) => { askEvidence = e.target.value; } },
+      el("option", { value: "" }, "No evidence"),
+      inv.evidence.map((ev) => el("option", { value: ev.id, selected: askEvidence === ev.id }, ev.name))));
+  return el("div", { class: "ask-form" },
+    el("p", { class: "small" }, info.blurb),
+    who,
+    box,
+    chips.length > 0 && el("div", { class: "chips" }, chips),
+    evidence,
+    askError && el("p", { class: "error small", role: "alert" }, askError),
+    el("button", {
+      class: "wide", disabled: asking || left < 1, onclick: submitQuestion,
+    }, asking ? info.waiting : left < 1 ? `No ${info.token} questions left` : `Ask (uses 1 ${info.token} question)`),
+    el("button", { class: "wide quiet", disabled: asking, onclick: () => { askMode = null; askError = null; rerender(); } }, "Cancel"));
+}
+
+function notebookEntry(q) {
+  const latest = q.id === lastAsked;
+  let body;
+  if (q.status === "pending") body = el("p", { class: "muted" }, "Waiting for an answer…");
+  else if (q.status !== "answered") body = el("p", { class: "muted" }, q.note);
+  else if (q.kind === "remember") body = el("p", {}, q.answer);
+  else body = el("p", { class: q.answered_aloud ? "muted" : "warn" },
+    q.answered_aloud ? `${q.target} has answered.` : `Listen! ${q.target} is answering out loud.`);
+  return el("li", { class: latest ? "latest" : "", id: latest ? "latest-question" : null },
+    el("p", { class: "small muted" },
+      q.kind === "remember" ? "Private · you remembered" : `Public · you asked ${q.target}`,
+      q.evidence ? ` · showed ${q.evidence}` : "", ` · ${when(q.at)}`),
+    el("p", {}, el("strong", {}, `"${q.question}"`)),
+    body);
+}
+
+function investigationPanel() {
+  const inv = me.investigation;
+  if (!inv || !["investigation", "accusation", "reveal"].includes(me.game.phase)) return null;
+  const choice = (mode) => {
+    const info = ASK[mode];
+    const left = me.tokens[info.token];
+    return el("button", {
+      class: askMode === mode ? `ask-choice ${mode} chosen` : `ask-choice ${mode}`,
+      disabled: !inv.open || asking,
+      onclick: () => { askMode = askMode === mode ? null : mode; askError = null; rerender(); },
+    },
+      el("span", { class: "ask-title" }, info.title),
+      el("span", { class: "ask-verb" }, info.verb),
+      el("span", { class: left ? "ask-count" : "ask-count none" }, `${left} left`));
+  };
+  return el("section", { class: "card investigate" },
+    el("h2", {}, me.game.phase === "investigation" ? `Investigate · Round ${me.game.round}` : "Your investigation"),
+    !inv.open && me.game.phase === "investigation" && el("p", { class: "small warn" }, "Paused: questions are closed for now."),
+    me.game.phase !== "investigation" && el("p", { class: "small muted" }, "Questions are closed. Your notebook is below."),
+    el("div", { class: "ask-choices" }, choice("remember"), choice("interrogate")),
+    askMode && inv.open && askForm(inv),
+    inv.evidence.length > 0 && el("details", { class: "contact" },
+      el("summary", {}, `Your evidence (${inv.evidence.length})`),
+      el("ul", {}, inv.evidence.map((ev) => el("li", {}, el("strong", {}, ev.name), ev.description ? `: ${ev.description}` : "")))),
+    inv.notebook.length > 0 && el("div", {},
+      el("h3", {}, "Your notebook"),
+      el("ul", { class: "plain notebook" }, inv.notebook.map(notebookEntry))));
 }
 
 // ---- P03: status, messages, the murder announcement
@@ -336,11 +487,13 @@ function renderCharacter() {
     ? el("section", { class: "card chapter" },
       el("h2", {}, "Your story"),
       c.chapter.split(/\n\s*\n/).map((para) => el("p", {}, para.trim())),
-      el("button", { class: "wide quiet", onclick: () => { chapterOpen = false; renderCharacter(); } }, "Hide the story"))
-    : el("button", { class: "wide quiet", onclick: () => { chapterOpen = true; renderCharacter(); } },
+      el("button", { class: "wide quiet", onclick: () => { chapterOpen = false; redrawQuietly(renderCharacter); } }, "Hide the story"))
+    : el("button", { class: "wide quiet", onclick: () => { chapterOpen = true; redrawQuietly(renderCharacter); } },
       "Read your character's story (about 10 minutes)"));
   show(guestHeader(),
     statusBar(),
+    questionedCards(),
+    investigationPanel(),
     newMessageBanner(),
     murderOverlay(),
     messagesSection(),
@@ -551,6 +704,48 @@ function textPromptLine(s) {
     smsLink(g.phone, g.message_alert, `Text ${g.name} a heads-up from my phone`));
 }
 
+const DELIVERY = { truthful: "truth", evasive: "dodged", lying: "LIED", confessing: "CONFESSED" };
+
+// Every question asked, newest first, so the host can follow the game (and step in)
+function questionsFeed(s) {
+  if (!s.questions.length && s.game.phase !== "investigation") return null;
+  const details = el("details", { class: "card feed", open: openFeed },
+    el("summary", {}, `Questions asked (${s.questions.length})`),
+    !s.questions.length && el("p", { class: "small muted" }, "Nothing yet. Guests' questions appear here as they ask them."),
+    el("ul", { class: "plain" }, s.questions.map((q) => el("li", {},
+      el("p", { class: "small muted" },
+        q.kind === "remember" ? `${q.asker} · private memory` : `${q.asker} → ${q.target} · public`,
+        q.evidence ? ` · showed ${q.evidence}` : "", ` · ${when(q.at)}`,
+        q.via === "backup" ? " · backup answer (AI unavailable)" : ""),
+      el("p", {}, el("strong", {}, `"${q.question}"`)),
+      el("p", { class: q.status === "answered" ? "" : "muted" },
+        q.status === "answered"
+          ? [q.delivery && el("span", { class: `pill ${q.delivery}` }, DELIVERY[q.delivery]), " ", q.answer]
+          : q.status === "pending" ? "Answering…" : `Not answered (token refunded): ${q.answer}`)))));
+  details.addEventListener("toggle", () => { openFeed = details.open; });
+  return details;
+}
+
+let openFeed = true;
+const openEvidence = new Set();
+
+function evidencePanel(g, s) {
+  if (!s.evidence.length) return null;
+  const has = new Set(g.evidence);
+  const details = el("details", { class: "contact", open: openEvidence.has(g.id) },
+    el("summary", {}, `Evidence (${g.evidence.length})`),
+    el("ul", { class: "plain directions" }, s.evidence.map((ev) => el("li", { class: "row" },
+      el("span", { class: "grow small" }, ev.name),
+      el("button", {
+        class: has.has(ev.id) ? "small quiet" : "small", disabled: !!busy,
+        onclick: () => hostAction("POST", `/api/host/guests/${g.id}/evidence`, { evidence_id: ev.id, give: !has.has(ev.id) }, `ev-${g.id}`),
+      }, has.has(ev.id) ? "Take back" : "Give")))));
+  details.addEventListener("toggle", () => {
+    if (details.open) openEvidence.add(g.id); else openEvidence.delete(g.id);
+  });
+  return details;
+}
+
 function tokenLine(g, s) {
   const give = (kind) => hostAction("POST", "/api/host/grant",
     { request_id: newRequestId(), target: g.id, public: kind === "public" ? 1 : 0, private: kind === "private" ? 1 : 0 }, `grant-${g.id}`);
@@ -740,6 +935,7 @@ function guestCard(s, g) {
       ? "Prep: deep (story chapter + character sheet)" : "Prep: light (character sheet)"),
     s.released && tokenLine(g, s),
     s.released && messagesPanel(g, s),
+    s.released && evidencePanel(g, s),
     contactPanel(g, s),
     el("div", { class: "row buttons" },
       inviteButton(g, s),
@@ -818,6 +1014,7 @@ function renderHost() {
     hostNotice && el("p", { class: "notice", role: "status" }, hostNotice),
     textPromptLine(s),
     gamePanel(s),
+    questionsFeed(s),
     suggestionPanel(s),
     el("section", {},
       el("div", { class: "row" },

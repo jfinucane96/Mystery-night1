@@ -106,6 +106,30 @@ MIGRATIONS = [
             read_at TEXT
         )""",
     ],
+    # 7. P04: AI questions (token reserved when asked, refunded if unanswered) and evidence
+    [
+        """CREATE TABLE IF NOT EXISTS questions (
+            id TEXT PRIMARY KEY,
+            asker_id TEXT NOT NULL,
+            kind TEXT NOT NULL,
+            target_id TEXT NOT NULL DEFAULT '',
+            question TEXT NOT NULL,
+            evidence_id TEXT NOT NULL DEFAULT '',
+            status TEXT NOT NULL,
+            charged INTEGER NOT NULL DEFAULT 0,
+            result TEXT NOT NULL DEFAULT '{}',
+            created_at TEXT NOT NULL,
+            answered_at TEXT,
+            target_done_at TEXT
+        )""",
+        """CREATE TABLE IF NOT EXISTS guest_evidence (
+            guest_id TEXT NOT NULL,
+            evidence_id TEXT NOT NULL,
+            source TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            PRIMARY KEY (guest_id, evidence_id)
+        )""",
+    ],
 ]
 
 
