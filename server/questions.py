@@ -185,7 +185,9 @@ def context_for(t, story, q):
     if q["kind"] == "remember":
         return {"character": story["by_id"][asker["character_id"]], "items": memories(story, asker["character_id"], round_)}
     target = _get_guest(t, q["target_id"])
+    first = (target["name"].split() or [target["name"]])[0]
     return {"character": story["by_id"][target["character_id"]],
+            "target_label": f"{first} ({story['by_id'][target['character_id']]['name']})",
             "asker_character": story["by_id"][asker["character_id"]],
             "items": claims(story, target["character_id"], round_, q["evidence_id"])}
 

@@ -122,6 +122,9 @@ def guest_ask(ctx, _t, body, guest):
             else:
                 status, result = ai_questions.answer_interrogate(info["character"], info["asker_character"],
                                                                  q["question"], info["items"], ctx.ai_ask_q)
+                if status == "unknown":
+                    result = {"reason": f"{info['target_label']} has nothing to say about that. Nothing was sent "
+                                        "to them, and no token was used. Try another question."}
         finally:
             with ctx.db.tx() as t:
                 questions.settle(t, q["id"], status, result)

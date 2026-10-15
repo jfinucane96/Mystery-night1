@@ -73,7 +73,7 @@ class P04(unittest.TestCase):
         self.assertEqual(status, 200, view)
         q = self.latest(view)
         self.assertEqual(q["status"], "answered")
-        self.assertIn("pike-saw-thorne", q["answer"])
+        self.assertIn("'pike-", q["answer"], "answered from one of Pike's own memories")
         prompt = self.prompts[-1]
         self.assertIn("Dr. Thorne alone by the champagne tray", prompt)
         for other in ("niece", "doctor", "painter"):
@@ -136,6 +136,20 @@ class P04(unittest.TestCase):
         self.assertNotIn("AI LINE", self.s.call("GET", "/api/me", self.bob["token"])[1])
         self.s.call("POST", f"/api/me/interrogations/{mine['id']}/done", self.cara["token"], {})
         self.assertTrue(self.latest(self.me(self.alice))["answered_aloud"])
+
+    def test_unanswerable_interrogation_explains_and_sends_nothing(self):
+        self.mode = "nomatch"
+        status, view = self.ask(self.alice, "interrogate", "What's your favourite colour?", target=self.cara)
+        q = self.latest(view)
+        self.assertEqual(q["status"], "unknown")
+        self.assertIn("Cara (Juniper Vale) has nothing to say about that", q["note"])
+        self.assertEqual(view["tokens"]["public"], 2)
+        self.assertEqual(self.me(self.cara)["investigation"]["questioned"], [])
+
+    def test_every_role_can_answer_the_basics(self):
+        for c in self.s.story["characters"]:
+            topics = {tp for f in c["knowledge"] for tp in f["topics"]}
+            self.assertTrue({"alibi", "victim"} <= topics, c["id"])
 
     def test_cannot_interrogate_yourself_or_nobody(self):
         self.assertEqual(self.ask(self.alice, "interrogate", "Hello there?", target=self.alice)[0], 400)

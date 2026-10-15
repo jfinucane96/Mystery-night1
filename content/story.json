@@ -39,6 +39,45 @@
       "chapter": "PLACEHOLDER CHAPTER. The real chapter (about 10 minutes of reading) is written with the story in P07.\n\nThe rain had not stopped since noon. You moved through the east corridor of Ravenscroft Manor the way you always did, silently, counting the portraits as you passed. Thirty years in this house had taught you which floorboards complained and which doors were best left closed.\n\nTonight the house was full again. Voices drifted up from the drawing room, and somewhere below, the wine cellar waited in the dark, keeping your secret as faithfully as you had kept everyone else's.",
       "knowledge": [
         {
+          "id": "pike-alibi",
+          "text": "During the toast you stood by the dining-room door holding the tray of spare glasses, as you always do.",
+          "source": "firsthand",
+          "certainty": "certain",
+          "from_round": 1,
+          "topics": [
+            "alibi",
+            "toast",
+            "where",
+            "during",
+            "door",
+            "standing"
+          ],
+          "when_asked": {
+            "stance": "truth",
+            "says": "During the toast? By the dining-room door with the spare glasses, where I always stand. I saw the whole room."
+          }
+        },
+        {
+          "id": "pike-victim",
+          "text": "You served Lady Ravenscroft for thirty years. She was demanding but fair, and you were loyal to her.",
+          "source": "firsthand",
+          "certainty": "certain",
+          "from_round": 1,
+          "topics": [
+            "victim",
+            "relationship",
+            "lady",
+            "ravenscroft",
+            "cordelia",
+            "employer",
+            "know"
+          ],
+          "when_asked": {
+            "stance": "truth",
+            "says": "Thirty years I served Her Ladyship. Demanding, yes, but fair. I was loyal to the end."
+          }
+        },
+        {
           "id": "pike-saw-thorne",
           "text": "Ten minutes before the toast, you saw Dr. Thorne alone by the champagne tray in the dining room, rummaging in his medical bag.",
           "source": "firsthand",
@@ -131,6 +170,63 @@
       "chapter": "PLACEHOLDER CHAPTER. The real chapter (about 10 minutes of reading) is written with the story in P07.\n\nYou arrived late on purpose. An entrance, after all, is half the battle. Your coat was soaked and your smile was perfect as you swept into the hall, already scanning the room for your aunt.\n\nSomewhere in this house was the answer to the only question that mattered: had she changed her will? You had come to find out, and you did not intend to leave without knowing.",
       "knowledge": [
         {
+          "id": "rosalind-alibi",
+          "text": "During the toast you were standing beside your aunt, closest of anyone, smiling for the guests.",
+          "source": "firsthand",
+          "certainty": "certain",
+          "from_round": 1,
+          "topics": [
+            "alibi",
+            "toast",
+            "where",
+            "during",
+            "standing",
+            "beside"
+          ],
+          "when_asked": {
+            "stance": "truth",
+            "says": "I was right beside my aunt during the toast. Closer than anyone. I saw her fall."
+          }
+        },
+        {
+          "id": "rosalind-victim",
+          "text": "You resented your aunt's control over your life and money, but you also loved her.",
+          "source": "firsthand",
+          "certainty": "certain",
+          "from_round": 1,
+          "topics": [
+            "victim",
+            "relationship",
+            "aunt",
+            "lady",
+            "ravenscroft",
+            "cordelia",
+            "know"
+          ],
+          "when_asked": {
+            "stance": "evade",
+            "says": "She was my aunt. Family is... complicated. That's all."
+          }
+        },
+        {
+          "id": "rosalind-champagne",
+          "text": "You never touched the champagne tray; Pike served everyone's glass.",
+          "source": "firsthand",
+          "certainty": "certain",
+          "from_round": 1,
+          "topics": [
+            "champagne",
+            "glass",
+            "tray",
+            "drink",
+            "served"
+          ],
+          "when_asked": {
+            "stance": "truth",
+            "says": "I didn't touch the champagne. Pike served everyone. Ask him."
+          }
+        },
+        {
           "id": "rosalind-will",
           "text": "At lunch, your aunt told you she was 'making some changes' to her will.",
           "source": "firsthand",
@@ -220,6 +316,45 @@
       ],
       "chapter": "PLACEHOLDER CHAPTER. The real chapter (about 10 minutes of reading) is written with the story in P07.\n\nYour medical bag sat by your feet at dinner, as it always did. The guests found it reassuring. A doctor at the table, just in case.\n\nYou smiled, passed the salt, and listened. A careful man listens more than he speaks, and you had been careful for a very long time.",
       "knowledge": [
+        {
+          "id": "thorne-alibi",
+          "text": "During the toast you stood next to Lady Ravenscroft, close enough to swap her glass. You claim you were by the fireplace.",
+          "source": "firsthand",
+          "certainty": "certain",
+          "from_round": 1,
+          "topics": [
+            "alibi",
+            "toast",
+            "where",
+            "during",
+            "fireplace",
+            "standing"
+          ],
+          "when_asked": {
+            "stance": "lie",
+            "says": "Where was I? By the fireplace, warming my hands, nowhere near her."
+          }
+        },
+        {
+          "id": "thorne-victim",
+          "text": "Lady Ravenscroft was your patient for ten years and paid you generously.",
+          "source": "firsthand",
+          "certainty": "certain",
+          "from_round": 1,
+          "topics": [
+            "victim",
+            "relationship",
+            "patient",
+            "lady",
+            "ravenscroft",
+            "cordelia",
+            "know"
+          ],
+          "when_asked": {
+            "stance": "truth",
+            "says": "She was my patient for ten years. A generous woman. This is a great loss."
+          }
+        },
         {
           "id": "thorne-poison",
           "text": "You added powder from a glass vial in your medical bag to Lady Ravenscroft's champagne just before the toast.",
@@ -314,6 +449,63 @@
       ],
       "chapter": "PLACEHOLDER CHAPTER. The real chapter (about 10 minutes of reading) is written with the story in P07.\n\nThe portrait was finished, wrapped in brown paper, leaning against the wall of the guest room you had been given. You had painted her eyes three times before they looked right.\n\nShe had told you a secret last week, one that changed everything you thought you knew about yourself. Tonight, among all these strangers who were not quite strangers, you would have to decide what to do with it.",
       "knowledge": [
+        {
+          "id": "juniper-alibi",
+          "text": "During the toast you stood at the back of the room beside your covered portrait.",
+          "source": "firsthand",
+          "certainty": "certain",
+          "from_round": 1,
+          "topics": [
+            "alibi",
+            "toast",
+            "where",
+            "during",
+            "back",
+            "portrait",
+            "standing"
+          ],
+          "when_asked": {
+            "stance": "truth",
+            "says": "I was at the back, next to my portrait. I was waiting to unveil it after the toast."
+          }
+        },
+        {
+          "id": "juniper-victim",
+          "text": "Lady Ravenscroft commissioned your portrait and treated you with unusual warmth.",
+          "source": "firsthand",
+          "certainty": "certain",
+          "from_round": 1,
+          "topics": [
+            "victim",
+            "relationship",
+            "lady",
+            "ravenscroft",
+            "cordelia",
+            "know",
+            "commission"
+          ],
+          "when_asked": {
+            "stance": "truth",
+            "says": "She commissioned my portrait. She was... unusually kind to me."
+          }
+        },
+        {
+          "id": "juniper-champagne",
+          "text": "You were handed a glass by Pike but didn't drink; you were too nervous about the unveiling.",
+          "source": "firsthand",
+          "certainty": "certain",
+          "from_round": 1,
+          "topics": [
+            "champagne",
+            "glass",
+            "drink",
+            "served"
+          ],
+          "when_asked": {
+            "stance": "truth",
+            "says": "Pike handed me a glass, but I didn't drink it. I was too nervous about the unveiling."
+          }
+        },
         {
           "id": "juniper-granddaughter",
           "text": "Last week Lady Ravenscroft told you that you are her granddaughter.",
@@ -439,9 +631,13 @@
     ],
     "interrogate": [
       "Where were you during the toast?",
-      "What's your relationship with the victim?",
-      "Did you go near the champagne?"
+      "What was your relationship with the victim?",
+      "What did you see tonight?"
     ]
   },
-  "knowledge_note": "knowledge: what each character knows. 'text' is the private truth (used for REMEMBER). when_asked.stance (truth/evade/lie) and when_asked.says decide what they say when INTERROGATED; the AI only ever sees 'says' for lies and evasions. confess_with lists evidence ids that unlock the confession."
+  "knowledge_note": "knowledge: what each character knows. 'text' is the private truth (used for REMEMBER). when_asked.stance (truth/evade/lie) and when_asked.says decide what they say when INTERROGATED; the AI only ever sees 'says' for lies and evasions. confess_with lists evidence ids that unlock the confession.",
+  "core_topics": {
+    "alibi": "Where they were during the murder (true or a lie)",
+    "victim": "Their relationship with the victim"
+  }
 }

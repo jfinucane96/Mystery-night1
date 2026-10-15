@@ -94,6 +94,11 @@ def check_knowledge(story, ids):
                     problems.append(f"{where}: confess_with names unknown evidence '{ev}'")
             if w.get("confess_with") and not w.get("confession"):
                 problems.append(f"{where}: has confess_with but no confession text")
+        # Every role must be able to answer the basics everyone asks
+        topics = {tp for f in c.get("knowledge", []) for tp in f.get("topics", [])}
+        for core, meaning in story.get("core_topics", {}).items():
+            if core not in topics:
+                problems.append(f"character '{c['id']}' needs a fact with topic '{core}' ({meaning})")
     return problems
 
 
