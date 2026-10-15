@@ -196,10 +196,63 @@ h3 { font-weight: normal; font-size: 1.05rem; color: var(--accent); margin: 14px
 .pill.lying { background: #6b2a33; color: #fbe9ec; }
 .pill.confessing { background: var(--danger); color: #1b0c0f; font-weight: bold; }
 
-/* ---- Room screen (speaker / TV) ---- */
-body.room-mode main { max-width: 1100px; }
-.room { min-height: 85vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 18px; }
-.room-phase { font-size: clamp(2rem, 6vw, 4.5rem); color: var(--accent); }
-.room-announcement { font-size: clamp(1.6rem, 4.5vw, 3.4rem); line-height: 1.25; max-width: 22ch; }
-button.room-start { font-size: 1.6rem; padding: 18px 36px; }
+/* ---- Room screen (speaker / TV): haunted mansion + pop-up announcements ---- */
+body.room-mode { overflow: hidden; background: #06050f; }
+body.room-mode main { max-width: none; padding: 0; }
+.scene { position: fixed; inset: 0; }
+.scene svg { width: 100%; height: 100%; display: block; }
+.room-hud { position: fixed; left: 24px; bottom: 18px; z-index: 2; text-shadow: 0 2px 8px #000; }
+.room-hud p { margin: 0; }
+.room-title { font-size: clamp(.8rem, 1.4vw, 1.1rem); letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+.room-phase { font-size: clamp(1.1rem, 2.2vw, 1.8rem); color: #efe6d8; }
+.room-controls { position: fixed; right: 20px; bottom: 18px; z-index: 5; }
+button.room-start { font-size: clamp(1.1rem, 2vw, 1.6rem); padding: 16px 30px; box-shadow: 0 0 40px #d9a44188; }
+button.room-test { opacity: .35; }
+button.room-test:hover { opacity: 1; }
+.room-box { position: fixed; inset: 0; z-index: 4; display: flex; align-items: center; justify-content: center;
+  padding: 5vh 6vw; pointer-events: none; opacity: 0; transition: opacity .6s ease; }
+.room-box.show { opacity: 1; }
+.room-box-inner { max-width: 1100px; text-align: center; padding: clamp(24px, 4vw, 56px) clamp(28px, 5vw, 72px);
+  background: radial-gradient(ellipse at center, #241a2ef2 0%, #120c18f2 100%);
+  border: 3px solid var(--accent); border-radius: 18px;
+  box-shadow: 0 0 0 8px #120c18cc, 0 0 0 10px #d9a44155, 0 0 80px #000;
+  transform: scale(.85); transition: transform .6s cubic-bezier(.2, 1.4, .4, 1); }
+.room-box.show .room-box-inner { transform: scale(1); }
+.room-box-inner h1 { font-size: clamp(2.2rem, 6vw, 5rem); color: var(--danger); margin-bottom: 18px; }
+.room-box-inner p { font-size: clamp(1.6rem, 4vw, 3.4rem); line-height: 1.25; margin: 0; }
+.room-box-inner.murder p { font-size: clamp(1.1rem, 2.4vw, 2rem); }
+.room-box-inner.confession { border-color: var(--danger); }
+
+/* scene animation */
+.star { animation: twinkle 4s ease-in-out infinite; }
+.s2 { animation-delay: -1s; } .s3 { animation-delay: -2.2s; } .s4 { animation-delay: -3.1s; animation-duration: 6s; }
+@keyframes twinkle { 0%, 100% { opacity: .9; } 50% { opacity: .25; } }
+.clouds { animation: drift 90s linear infinite; }
+@keyframes drift { from { transform: translateX(-300px); } to { transform: translateX(400px); } }
+.win { fill: #f7c45c; }
+.win.dark { fill: #17111f; }
+.w1 { animation: flicker 3.1s infinite; }
+.w2 { animation: flicker 4.3s infinite; animation-delay: -1.2s; }
+.w3 { animation: flicker 2.6s infinite; animation-delay: -.7s; }
+@keyframes flicker { 0%, 100% { opacity: 1; } 41% { opacity: 1; } 42% { opacity: .55; } 44% { opacity: .95; } 70% { opacity: .8; } 72% { opacity: 1; } }
+.fog.f1 { animation: fog 60s linear infinite; }
+.fog.f2 { animation: fog 85s linear infinite reverse; }
+@keyframes fog { from { transform: translateX(0); } to { transform: translateX(-600px); } }
+.bat { opacity: 0; }
+.b1 { animation: bat1 23s linear infinite; }
+.b2 { animation: bat2 31s linear infinite; animation-delay: -9s; }
+.b3 { animation: bat1 37s linear infinite; animation-delay: -20s; }
+@keyframes bat1 { 0% { transform: translate(-60px, 300px) scale(1); opacity: 0; } 3% { opacity: 1; }
+  25% { transform: translate(400px, 180px) scale(1.1, .7); } 50% { transform: translate(800px, 260px) scale(1); }
+  75% { transform: translate(1200px, 150px) scale(1.1, .7); } 97% { opacity: 1; } 100% { transform: translate(1700px, 220px) scale(1); opacity: 0; } }
+@keyframes bat2 { 0% { transform: translate(1700px, 140px) scale(.8); opacity: 0; } 3% { opacity: 1; }
+  30% { transform: translate(1150px, 230px) scale(.9, .6); } 60% { transform: translate(650px, 120px) scale(.8); }
+  97% { opacity: 1; } 100% { transform: translate(-80px, 200px) scale(.8, .6); opacity: 0; } }
+.lightning { opacity: 0; animation: lightning 19s infinite; pointer-events: none; }
+.lightning.strike { animation: strike 1.6s; }
+@keyframes lightning { 0%, 92%, 100% { opacity: 0; } 93% { opacity: .55; } 94% { opacity: .05; } 95% { opacity: .35; } 96% { opacity: 0; } }
+@keyframes strike { 0% { opacity: 0; } 5% { opacity: .95; } 12% { opacity: .1; } 18% { opacity: .8; } 30% { opacity: 0; } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .star, .clouds, .w1, .w2, .w3, .fog, .bat, .lightning { animation: none; }
+}
 .room-link { border-top: 1px solid var(--line); margin-top: 12px; padding-top: 8px; }

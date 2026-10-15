@@ -1068,7 +1068,6 @@ function renderHost() {
 
 let room = null;
 let roomSoundOn = false;
-let roomLast = null;               // the last announcement shown on screen
 const roomSeen = new Set();        // events already announced
 let audioCtx = null;
 const speakQueue = [];
@@ -1119,18 +1118,25 @@ function pickVoice() {
     || voices.find((v) => /en-GB/.test(v.lang)) || voices[0] || null;
 }
 
-function announce(sound, text, show = text) {
-  speakQueue.push({ sound, text, show });
+function announce(sound, text, box = { text }) {
+  speakQueue.push({ sound, text, box });
   if (!speaking) nextAnnouncement();
 }
 
+let hideBoxTimer = null;
+
 function nextAnnouncement() {
   const item = speakQueue.shift();
-  if (!item) { speaking = false; return; }
+  if (!item) {
+    speaking = false;
+    hideBoxTimer = setTimeout(() => showBox(null), 5000);   // linger, then back to the mansion
+    return;
+  }
   speaking = true;
-  roomLast = item.show;
-  renderRoom();
-  if (!roomSoundOn) return setTimeout(nextAnnouncement, 4000);
+  clearTimeout(hideBoxTimer);
+  showBox(item.box, item.sound);
+  if (item.sound === "murder") strikeLightning();
+  if (!roomSoundOn) return setTimeout(nextAnnouncement, 7000);
   if (audioCtx.state === "suspended") audioCtx.resume();
   SOUNDS[item.sound]();
   setTimeout(() => {
@@ -1149,7 +1155,7 @@ function roomChanges(before, now) {
   // Compare two snapshots of the game and announce what changed
   if (now.phase !== before.phase) {
     if (now.phase === "investigation" && before.phase !== "accusation" && before.phase !== "reveal") {
-      announce("murder", `${now.murder.title} ${now.murder.text}`, now.murder.title);
+      announce("murder", `${now.murder.title} ${now.murder.text}`, { title: now.murder.title, text: now.murder.text });
     } else {
       const lines = { arrival: "Welcome! The guests are arriving.", investigation: "The investigation resumes.",
         accusation: "Accusations are now open!", reveal: "The time has come for the truth. The reveal begins!",
@@ -1170,6 +1176,7 @@ async function loadRoom() {
     return show(errorCard("Couldn't load", e.message), el("button", { class: "wide", onclick: loadRoom }, "Try again"));
   }
   room.events.forEach((ev) => roomSeen.add(ev.id));      // don't replay what happened before this page opened
+  await buildRoomShell();
   renderRoom();
   startPolling(() => api("GET", "/api/room"), (fresh) => {
     const before = room;
@@ -1194,23 +1201,57 @@ function startRoomSound() {
   roomSoundOn = true;
   keepAwake();
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") keepAwake(); });
-  announce("chime", "Sound is on. Let the mystery begin.", "Sound is on");
+  announce("chime", "Sound is on. Let the mystery begin.", { text: "Let the mystery begin…" });
+}
+
+// The room page is built once (so the scene's animations never restart),
+// then only the corner info, the controls and the announcement box change.
+let roomShell = null;
+
+async function buildRoomShell() {
+  document.body.classList.add("room-mode");
+  const scene = el("div", { class: "scene" });
+  try {
+    const res = await fetch("/static/mansion.svg");
+    scene.innerHTML = await res.text();      // our own static file, not user content
+  } catch { /* no scene: the dark background still works */ }
+  const box = el("div", { class: "room-box", role: "status", "aria-live": "assertive" });
+  const hud = el("div", { class: "room-hud" });
+  const controls = el("div", { class: "room-controls" });
+  roomShell = { scene, box, hud, controls };
+  app.replaceChildren(scene, hud, box, controls);
+}
+
+function showBox(content, sound) {
+  if (!roomShell) return;
+  const { box } = roomShell;
+  if (!content) { box.classList.remove("show"); return; }
+  box.replaceChildren(el("div", { class: `room-box-inner ${sound || ""}` },
+    content.title && el("h1", {}, content.title),
+    el("p", {}, content.text)));
+  box.classList.remove("show");
+  void box.offsetWidth;                        // restart the pop-in animation
+  box.classList.add("show");
+}
+
+function strikeLightning() {
+  const flash = roomShell && roomShell.scene.querySelector(".lightning");
+  if (!flash) return;
+  flash.classList.remove("strike");
+  void flash.getBoundingClientRect();
+  flash.classList.add("strike");
 }
 
 function renderRoom() {
+  if (!roomShell) return;
   document.title = `Room · ${room.title}`;
-  document.body.classList.add("room-mode");
   const phaseLine = room.phase === "investigation" ? `${room.phase_name} · Round ${room.round} of ${room.rounds}` : room.phase_name;
-  show(
-    el("div", { class: "room" },
-      el("p", { class: "eyebrow" }, room.title),
-      el("h1", { class: "room-phase" }, phaseLine),
-      room.paused && el("p", { class: "paused" }, "Paused"),
-      el("p", { class: "room-announcement" }, roomLast || "Waiting for something to happen…"),
-      roomSoundOn
-        ? el("p", { class: "small muted" }, "Sound on. Leave this page open. ",
-          el("button", { class: "small quiet", onclick: () => announce("chime", "Testing, testing.", "Test") }, "Test sound"))
-        : el("button", { class: "room-start", onclick: () => { startRoomSound(); renderRoom(); } }, "Start sound")));
+  roomShell.hud.replaceChildren(
+    el("p", { class: "room-title" }, room.title),
+    el("p", { class: "room-phase" }, phaseLine, room.paused ? " · Paused" : ""));
+  roomShell.controls.replaceChildren(roomSoundOn
+    ? el("button", { class: "small quiet room-test", onclick: () => announce("chime", "Testing, testing.", { text: "Testing…" }) }, "Test sound")
+    : el("button", { class: "room-start", onclick: () => { startRoomSound(); renderRoom(); } }, "Click to start sound"));
 }
 
 if (mode === "play") loadGuest();

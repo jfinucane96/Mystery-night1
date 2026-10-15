@@ -22,6 +22,7 @@ WEB = os.path.join(ROOT, "web")
 STATIC = {
     "/static/app.js": ("app.js", "text/javascript; charset=utf-8"),
     "/static/style.css": ("style.css", "text/css; charset=utf-8"),
+    "/static/mansion.svg": ("mansion.svg", "image/svg+xml"),
 }
 PAGE_PATTERN = re.compile(r"^/(play|host|room)/[A-Za-z0-9_-]{20,100}$")
 MAX_BODY = 16 * 1024
