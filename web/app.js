@@ -1263,7 +1263,7 @@ async function loadRoom() {
       roomSeen.add(ev.id);
       if (ev.kind === "confession") return announce("confession", ev.text);
       if (!ev.done) waitFor(ev);
-      announce("chime", ev.question ? [ev.text, `The question is: ${ev.question}`] : ev.text,
+      announce("chime", ev.question ? [ev.text, ev.question] : ev.text,
         { title: ev.text, text: ev.question ? `“${ev.question}”` : "" });
     });
     checkAnswered(fresh);
