@@ -207,8 +207,10 @@ body.room-mode main { max-width: none; padding: 0; }
 .room-phase { font-size: clamp(1.1rem, 2.2vw, 1.8rem); color: #efe6d8; }
 .room-controls { position: fixed; right: 20px; bottom: 18px; z-index: 5; }
 button.room-start { font-size: clamp(.95rem, 1.4vw, 1.25rem); padding: 10px 20px; box-shadow: 0 0 30px #d9a44188; }
-button.room-test { opacity: .35; }
-button.room-test:hover { opacity: 1; }
+.room-sound-controls { display: flex; gap: 8px; align-items: center; opacity: .3; transition: opacity .3s; }
+.room-sound-controls:hover, .room-sound-controls:focus-within { opacity: 1; }
+select.room-voice { width: auto; max-width: 280px; font-size: .8rem; min-height: 36px; }
+.room-note { background: #120c18dd; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; }
 .room-box { position: fixed; inset: 0; z-index: 4; display: flex; align-items: center; justify-content: center;
   padding: 5vh 6vw; pointer-events: none; opacity: 0; transition: opacity .6s ease; }
 .room-box.show { opacity: 1; }
@@ -221,6 +223,8 @@ button.room-test:hover { opacity: 1; }
 .room-box-inner h1 { font-size: clamp(2.2rem, 6vw, 5rem); color: var(--danger); margin-bottom: 18px; }
 .room-box-inner p { font-size: clamp(1.6rem, 4vw, 3.4rem); line-height: 1.25; margin: 0; }
 .room-box-inner.murder p { font-size: clamp(1.1rem, 2.4vw, 2rem); }
+.room-box-inner.chime h1 { color: var(--accent); font-size: clamp(1.8rem, 4.5vw, 3.8rem); }
+.room-box-inner.chime p { font-style: italic; }
 .room-box-inner.confession { border-color: var(--danger); }
 
 /* photo scene: the image keeps its 3:2 shape and covers the screen; effects sit on top in the same frame */

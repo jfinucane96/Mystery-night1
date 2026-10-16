@@ -1118,10 +1118,57 @@ const SOUNDS = {
 };
 const SOUND_LENGTH = { chime: 900, phase: 1400, murder: 3200, confession: 2000 };
 
-function pickVoice() {
-  const voices = speechSynthesis.getVoices().filter((v) => v.lang.startsWith("en"));
-  return voices.find((v) => /natural/i.test(v.name)) || voices.find((v) => /google uk english male/i.test(v.name))
-    || voices.find((v) => /en-GB/.test(v.lang)) || voices[0] || null;
+// ---- one voice, chosen once and reused for every announcement
+const VOICE_KEY = "room-voice";
+let roomVoice = null;
+
+function englishVoices() {
+  return speechSynthesis.getVoices().filter((v) => v.lang.startsWith("en"));
+}
+
+function bestVoice() {
+  const voices = englishVoices();
+  let saved = null;
+  try { saved = localStorage.getItem(VOICE_KEY); } catch { /* storage blocked */ }
+  return voices.find((v) => v.name === saved)
+    || voices.find((v) => /en-GB/.test(v.lang) && /natural/i.test(v.name) && /male|ryan|thomas|george/i.test(v.name))
+    || voices.find((v) => /en-GB/.test(v.lang) && /natural/i.test(v.name))
+    || voices.find((v) => /google uk english male/i.test(v.name))
+    || voices.find((v) => /en-GB/.test(v.lang))
+    || voices.find((v) => /natural/i.test(v.name))
+    || voices[0] || null;
+}
+
+function voicesReady() {
+  // The browser loads its voice list a moment after the page opens; wait for it (max 3s)
+  return new Promise((resolve) => {
+    if (speechSynthesis.getVoices().length) return resolve();
+    const done = () => resolve();
+    speechSynthesis.addEventListener("voiceschanged", done, { once: true });
+    setTimeout(done, 3000);
+  });
+}
+
+function setRoomVoice(name) {
+  roomVoice = englishVoices().find((v) => v.name === name) || roomVoice;
+  try { localStorage.setItem(VOICE_KEY, name); } catch { /* storage blocked: fine for this session */ }
+  announce("chime", "Good evening. I shall be your announcer tonight.", { text: "Testing the voice…" });
+}
+
+// ---- only one room screen per computer may speak (otherwise two tabs talk over each other)
+const SPEAKER_KEY = "room-speaker";
+const myTab = Math.random().toString(36).slice(2);
+let otherTabSpeaking = false;
+
+function claimSpeaker() {
+  try {
+    const now = Date.now();
+    const held = JSON.parse(localStorage.getItem(SPEAKER_KEY) || "null");
+    if (held && held.tab !== myTab && now - held.at < 8000) { otherTabSpeaking = true; return false; }
+    localStorage.setItem(SPEAKER_KEY, JSON.stringify({ tab: myTab, at: now }));
+    otherTabSpeaking = false;
+    return true;
+  } catch { return true; }   // storage blocked: can't coordinate, just speak
 }
 
 function announce(sound, text, box = { text }) {
@@ -1142,13 +1189,13 @@ function nextAnnouncement() {
   clearTimeout(hideBoxTimer);
   showBox(item.box, item.sound);
   if (item.sound === "murder") strikeLightning(true);
-  if (!roomSoundOn) return setTimeout(nextAnnouncement, 7000);
+  if (!roomSoundOn || !claimSpeaker()) return setTimeout(nextAnnouncement, 7000);
   if (audioCtx.state === "suspended") audioCtx.resume();
   SOUNDS[item.sound]();
   setTimeout(() => {
     const u = new SpeechSynthesisUtterance(item.text);
-    const voice = pickVoice();
-    if (voice) u.voice = voice;
+    roomVoice = roomVoice || bestVoice();
+    if (roomVoice) { u.voice = roomVoice; u.lang = roomVoice.lang; }
     u.rate = 0.92;
     u.pitch = 0.9;
     u.onend = () => setTimeout(nextAnnouncement, 600);
@@ -1191,7 +1238,9 @@ async function loadRoom() {
     fresh.events.slice().reverse().forEach((ev) => {     // oldest first
       if (roomSeen.has(ev.id)) return;
       roomSeen.add(ev.id);
-      announce(ev.kind === "confession" ? "confession" : "chime", ev.text);
+      if (ev.kind === "confession") announce("confession", ev.text);
+      else announce("chime", ev.question ? `${ev.text} ${ev.question}` : ev.text,
+        { title: ev.text, text: ev.question ? `“${ev.question}”` : "" });
     });
     renderRoom();
   }, 3000);
@@ -1201,12 +1250,17 @@ async function keepAwake() {
   try { if (navigator.wakeLock) await navigator.wakeLock.request("screen"); } catch { /* not supported: fine */ }
 }
 
-function startRoomSound() {
+async function startRoomSound() {
   audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
   audioCtx.resume();
   roomSoundOn = true;
   keepAwake();
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") keepAwake(); });
+  setInterval(() => { if (!otherTabSpeaking) claimSpeaker(); renderRoom(); }, 4000);   // keep this tab as the speaker
+  claimSpeaker();
+  await voicesReady();
+  roomVoice = bestVoice();
+  renderRoom();
   announce("chime", "Sound is on. Let the mystery begin.", { text: "Let the mystery begin…" });
 }
 
@@ -1361,9 +1415,21 @@ function renderRoom() {
   roomShell.hud.replaceChildren(
     el("p", { class: "room-title" }, room.title),
     el("p", { class: "room-phase" }, phaseLine, room.paused ? " · Paused" : ""));
-  roomShell.controls.replaceChildren(roomSoundOn
-    ? el("button", { class: "small quiet room-test", onclick: () => announce("chime", "Testing, testing.", { text: "Testing…" }) }, "Test sound")
-    : el("button", { class: "room-start", onclick: () => { startRoomSound(); renderRoom(); } }, "Click to start sound"));
+  if (!roomSoundOn) {
+    roomShell.controls.replaceChildren(
+      el("button", { class: "room-start", onclick: () => { startRoomSound(); renderRoom(); } }, "Click to start sound"));
+    return;
+  }
+  if (otherTabSpeaking) {
+    roomShell.controls.replaceChildren(el("p", { class: "small room-note" },
+      "Sound is playing in another tab of this room screen. Close one of them."));
+    return;
+  }
+  const picker = el("select", { class: "room-voice", "aria-label": "Announcer voice", onchange: (e) => setRoomVoice(e.target.value) },
+    englishVoices().map((v) => el("option", { value: v.name, selected: roomVoice && v.name === roomVoice.name }, `${v.name}`)));
+  roomShell.controls.replaceChildren(el("div", { class: "room-sound-controls" },
+    picker,
+    el("button", { class: "small quiet", onclick: () => announce("chime", "Testing, testing.", { text: "Testing…" }) }, "Test sound")));
 }
 
 if (mode === "play") loadGuest();

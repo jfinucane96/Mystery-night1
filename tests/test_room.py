@@ -26,12 +26,14 @@ class Room(test_p04.P04):
             self.assertEqual(self.s.call("GET", "/api/room", key)[0], 403)
         self.assertEqual(self.s.call("GET", f"/room/{self.s.host('GET', '/api/host')['room_key']}")[0], 200)
 
-    def test_announces_who_is_questioned_but_nothing_secret(self):
+    def test_announces_who_is_questioned_and_the_question_but_nothing_secret(self):
         self.ask(self.alice, "interrogate", "Where were you during the toast?", target=self.cara)
         status, room = self.room()
-        self.assertEqual([e["text"] for e in room["events"]], ["Juniper Vale, you are being questioned!"])
+        ev = room["events"][0]
+        self.assertEqual((ev["text"], ev["question"]),
+                         ("Juniper Vale, you are being questioned!", "Where were you during the toast?"))
         raw = json.dumps(room)
-        for secret in ("Where were you during the toast", "AI LINE", "Alice", "Cara",
+        for secret in ("AI LINE", "AI TIP", "Alice", "Cara", "Pike",
                        self.s.story["solution"]["motive"]):
             self.assertNotIn(secret, raw)
 

@@ -258,6 +258,7 @@ def room_events(t, story, limit=20):
         if r.get("delivery") == "confessing":
             out.append({"id": q["id"] + "-confession", "kind": "confession", "at": q["answered_at"],
                         "text": "Someone has confessed!"})
+        # The question is public (it's asked out loud anyway); who asked, and the answer, are not
         out.append({"id": q["id"], "kind": "questioned", "at": q["answered_at"],
-                    "text": f"{c['name']}, you are being questioned!"})
+                    "text": f"{c['name']}, you are being questioned!", "question": q["question"]})
     return out
