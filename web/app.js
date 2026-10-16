@@ -1087,19 +1087,25 @@ function tone(freq, start, length, type = "sine", volume = 0.25) {
   osc.stop(t0 + length + 0.05);
 }
 
-function thunder(start, length) {
+function thunder(start, length, volume = 0.9) {
   // A burst of filtered noise that rumbles away
   const samples = Math.floor(audioCtx.sampleRate * length);
   const buffer = audioCtx.createBuffer(1, samples, audioCtx.sampleRate);
   const data = buffer.getChannelData(0);
-  for (let i = 0; i < samples; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / samples, 2);
+  let rolling = 0;
+  for (let i = 0; i < samples; i++) {
+    // Brown-ish noise with a few bumps, fading out: a rolling rumble rather than a hiss
+    rolling = (rolling + (Math.random() * 2 - 1) * 0.12) * 0.985;
+    const bumps = 0.6 + 0.4 * Math.sin(i / audioCtx.sampleRate * 7) ** 2;
+    data[i] = rolling * 4 * bumps * Math.pow(1 - i / samples, 1.6);
+  }
   const src = audioCtx.createBufferSource();
   src.buffer = buffer;
   const filter = audioCtx.createBiquadFilter();
   filter.type = "lowpass";
-  filter.frequency.value = 400;
+  filter.frequency.value = 260;
   const gain = audioCtx.createGain();
-  gain.gain.value = 0.9;
+  gain.gain.value = volume;
   src.connect(filter).connect(gain).connect(audioCtx.destination);
   src.start(audioCtx.currentTime + start);
 }
@@ -1135,7 +1141,7 @@ function nextAnnouncement() {
   speaking = true;
   clearTimeout(hideBoxTimer);
   showBox(item.box, item.sound);
-  if (item.sound === "murder") strikeLightning();
+  if (item.sound === "murder") strikeLightning(true);
   if (!roomSoundOn) return setTimeout(nextAnnouncement, 7000);
   if (audioCtx.state === "suspended") audioCtx.resume();
   SOUNDS[item.sound]();
@@ -1208,18 +1214,132 @@ function startRoomSound() {
 // then only the corner info, the controls and the announcement box change.
 let roomShell = null;
 
+// Where the lights are in the photo (pixels in the 1536 x 1024 image): x, y, size, kind
+const MANSION = { w: 1536, h: 1024 };
+const GLOWS = [
+  [455, 318, 70, "window"], [690, 338, 80, "window"], [853, 378, 70, "window"], [958, 380, 50, "window"],
+  [445, 462, 110, "window"], [295, 520, 90, "window"], [690, 470, 100, "window"], [912, 505, 70, "window"],
+  [1015, 520, 80, "window"], [1140, 538, 90, "window"], [1245, 552, 70, "window"], [430, 655, 90, "window"],
+  [920, 665, 70, "window"], [1020, 665, 80, "window"], [1145, 665, 90, "window"],
+  [698, 628, 90, "lantern"], [563, 655, 60, "lantern"], [835, 655, 60, "lantern"],
+  [283, 655, 170, "lantern"], [1355, 655, 170, "lantern"],
+];
+
+function positioned(cls, x, y, size) {
+  // CSP-safe positioning (CSSOM, not style attributes), in % of the photo
+  const node = el("div", { class: cls });
+  node.style.left = `${(x / MANSION.w) * 100}%`;
+  node.style.top = `${(y / MANSION.h) * 100}%`;
+  node.style.width = node.style.height = `${(size / MANSION.w) * 100}%`;
+  return node;
+}
+
 async function buildRoomShell() {
   document.body.classList.add("room-mode");
-  const scene = el("div", { class: "scene" });
-  try {
-    const res = await fetch("/static/mansion.svg");
-    scene.innerHTML = await res.text();      // our own static file, not user content
-  } catch { /* no scene: the dark background still works */ }
+  const stage = el("div", { class: "stage" },
+    el("img", { class: "mansion-img", src: "/static/mansion.webp", alt: "" }),
+    el("div", { class: "cloud-layer c1" }), el("div", { class: "cloud-layer c2" }),
+    positioned("moon-glow", 1265, 205, 260),
+    GLOWS.map(([x, y, size, kind], i) => positioned(`glow ${kind} g${i % 5}`, x, y, size)),
+    el("div", { class: "bat bat1" }), el("div", { class: "bat bat2" }), el("div", { class: "bat bat3" }),
+    el("div", { class: "fog-layer f1" }), el("div", { class: "fog-layer f2" }));
+  const rain = el("canvas", { class: "rain" });
+  const bolt = el("canvas", { class: "bolt" });
+  const flash = el("div", { class: "flash" });
+  const scene = el("div", { class: "scene" }, stage, rain, bolt, flash);
   const box = el("div", { class: "room-box", role: "status", "aria-live": "assertive" });
   const hud = el("div", { class: "room-hud" });
   const controls = el("div", { class: "room-controls" });
-  roomShell = { scene, box, hud, controls };
+  roomShell = { scene, stage, rain, bolt, flash, box, hud, controls };
   app.replaceChildren(scene, hud, box, controls);
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    startRain(rain);
+    scheduleLightning();
+  }
+}
+
+// ---- rain: thin slanted streaks on a canvas
+function startRain(canvas) {
+  const ctx = canvas.getContext("2d");
+  let drops = [];
+  function resize() {
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+    drops = Array.from({ length: Math.round(innerWidth / 4) }, () => newDrop(true));
+  }
+  function newDrop(anywhere) {
+    return { x: Math.random() * (innerWidth + 200) - 100, y: anywhere ? Math.random() * innerHeight : -20,
+      len: 10 + Math.random() * 18, speed: 14 + Math.random() * 10, alpha: 0.08 + Math.random() * 0.22 };
+  }
+  function frame() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.lineWidth = 1;
+    for (const d of drops) {
+      ctx.strokeStyle = `rgba(190, 200, 225, ${d.alpha})`;
+      ctx.beginPath();
+      ctx.moveTo(d.x, d.y);
+      ctx.lineTo(d.x - d.len * 0.25, d.y + d.len);
+      ctx.stroke();
+      d.y += d.speed;
+      d.x -= d.speed * 0.25;
+      if (d.y > canvas.height) Object.assign(d, newDrop(false));
+    }
+    requestAnimationFrame(frame);
+  }
+  addEventListener("resize", resize);
+  resize();
+  requestAnimationFrame(frame);
+}
+
+// ---- lightning: a jagged bolt, a double flash that lights up the house, then thunder
+function drawBolt(canvas) {
+  const ctx = canvas.getContext("2d");
+  canvas.width = innerWidth;
+  canvas.height = innerHeight;
+  let x = innerWidth * (0.1 + Math.random() * 0.8);
+  let y = 0;
+  const end = innerHeight * (0.25 + Math.random() * 0.2);
+  ctx.strokeStyle = "rgba(235, 235, 255, 0.95)";
+  ctx.shadowColor = "#c8c8ff";
+  ctx.shadowBlur = 25;
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  while (y < end) {
+    x += (Math.random() - 0.5) * 60;
+    y += 15 + Math.random() * 30;
+    ctx.lineTo(x, y);
+    if (Math.random() < 0.25) {          // a little fork
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + (Math.random() - 0.5) * 120, y + 40 + Math.random() * 60);
+      ctx.moveTo(x, y);
+    }
+  }
+  ctx.stroke();
+  setTimeout(() => ctx.clearRect(0, 0, canvas.width, canvas.height), 350);
+}
+
+function strikeLightning(strong = false) {
+  if (!roomShell) return;
+  const { scene, bolt } = roomShell;
+  scene.classList.remove("lightning", "lightning-strong");
+  void scene.offsetWidth;
+  scene.classList.add(strong ? "lightning-strong" : "lightning");
+  drawBolt(bolt);
+  if (strong) setTimeout(() => drawBolt(bolt), 220);
+  // Thunder follows the flash; skip it while the voice is talking so announcements stay clear
+  if (roomSoundOn && !strong && !speaking) {
+    setTimeout(() => { if (!speaking) rumble(0.7 + Math.random() * 0.5); }, 600 + Math.random() * 1500);
+  }
+}
+
+function scheduleLightning() {
+  setTimeout(() => { strikeLightning(); scheduleLightning(); }, 9000 + Math.random() * 14000);
+}
+
+function rumble(volume) {
+  if (!audioCtx) return;
+  thunder(0, 3 + Math.random() * 2, volume);
 }
 
 function showBox(content, sound) {
@@ -1232,14 +1352,6 @@ function showBox(content, sound) {
   box.classList.remove("show");
   void box.offsetWidth;                        // restart the pop-in animation
   box.classList.add("show");
-}
-
-function strikeLightning() {
-  const flash = roomShell && roomShell.scene.querySelector(".lightning");
-  if (!flash) return;
-  flash.classList.remove("strike");
-  void flash.getBoundingClientRect();
-  flash.classList.add("strike");
 }
 
 function renderRoom() {
