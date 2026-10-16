@@ -258,9 +258,8 @@ function notebookEntry(q) {
     body);
 }
 
-function investigationPanel() {
+function questionsScreen() {
   const inv = me.investigation;
-  if (!inv || !["investigation", "accusation", "reveal"].includes(me.game.phase)) return null;
   const choice = (mode) => {
     const info = ASK[mode];
     const left = me.tokens[info.token];
@@ -273,19 +272,33 @@ function investigationPanel() {
       el("span", { class: "ask-verb" }, info.verb),
       el("span", { class: left ? "ask-count" : "ask-count none" }, `${left} left`));
   };
-  return el("section", { class: "card investigate" },
-    el("h2", {}, me.game.phase === "investigation" ? `Investigate · Round ${me.game.round}` : "Your investigation"),
-    !inv.open && me.game.phase === "investigation" && el("p", { class: "small warn" }, "Paused: questions are closed for now."),
-    me.game.phase !== "investigation" && el("p", { class: "small muted" }, "Questions are closed. Your notebook is below."),
-    el("div", { class: "ask-choices" }, choice("remember"), choice("interrogate")),
-    askMode && inv.open && askForm(inv),
-    inv.evidence.length > 0 && el("details", { class: "contact" },
-      el("summary", {}, `Your evidence (${inv.evidence.length})`),
-      el("ul", {}, inv.evidence.map((ev) => el("li", {}, el("strong", {}, ev.name), ev.description ? `: ${ev.description}` : "")))),
-    cluesSection(inv),
-    inv.notebook.length > 0 && el("div", {},
-      el("h3", {}, "Your notebook"),
-      el("ul", { class: "plain notebook" }, inv.notebook.map(notebookEntry))));
+  return [
+    questionedCards(),
+    el("section", { class: "card investigate" },
+      el("h2", {}, me.game.phase === "investigation" ? `Investigate · Round ${me.game.round}` : "Your investigation"),
+      !inv.open && me.game.phase === "investigation" && el("p", { class: "small warn" }, "Paused: questions are closed for now."),
+      me.game.phase !== "investigation" && el("p", { class: "small muted" }, "Questions are closed. Your notebook is below."),
+      el("div", { class: "ask-choices" }, choice("remember"), choice("interrogate")),
+      askMode && inv.open && askForm(inv)),
+    el("section", { class: "card" },
+      el("h2", {}, "Your notebook"),
+      inv.notebook.length
+        ? el("ul", { class: "plain notebook" }, inv.notebook.map(notebookEntry))
+        : el("p", { class: "muted" }, "Questions you ask, and their answers, are kept here.")),
+  ];
+}
+
+function cluesScreen() {
+  const inv = me.investigation;
+  return [
+    el("section", { class: "card" }, cluesSection(inv)),
+    el("section", { class: "card" },
+      el("h2", {}, `Your evidence (${inv.evidence.length})`),
+      el("p", { class: "note" }, "You can show evidence when you question someone. The right evidence can make a guilty person confess."),
+      inv.evidence.length
+        ? el("ul", {}, inv.evidence.map((ev) => el("li", {}, el("strong", {}, ev.name), ev.description ? `: ${ev.description}` : "")))
+        : el("p", { class: "muted" }, "No evidence yet. Some clues add evidence when you find them.")),
+  ];
 }
 
 // ---- P05: clues and secret missions
@@ -341,7 +354,8 @@ function cluesSection(inv) {
 
 function missionsCard() {
   const inv = me.investigation;
-  if (!inv || !inv.missions.length) return null;
+  if (!inv || !inv.missions.length) return el("section", { class: "card" }, el("h2", {}, "Your secret missions"),
+    el("p", { class: "muted" }, "You have no secret missions."));
   return el("section", { class: "card secret" },
     el("h2", {}, "Your secret missions"),
     el("p", { class: "note" }, "Only you can see these. When you've done one, tell the host quietly: they'll confirm it and you'll get a bonus clue."),
@@ -390,7 +404,7 @@ async function loadCluePage() {
     return show(errorCard("Open your game link first",
       "This phone doesn't know who you are yet. Open the personal link the host sent you, then scan the clue again."));
   }
-  const back = el("a", { class: "button wide", href: `/play/${authKey}` }, "Back to my game");
+  const back = el("a", { class: "button wide", href: `/play/${authKey}#clues` }, "Back to my game");
   let view;
   try {
     view = await api("POST", "/api/me/clues/find", { code, source: "scan" });
@@ -499,15 +513,6 @@ function messagesSection() {
     el("ul", { class: "plain" }, msgs.map((m) => el("li", { class: m.read ? "" : "unread" },
       el("p", { class: "small muted" }, when(m.at), m.read ? "" : " · new"),
       el("p", {}, m.body)))));
-}
-
-function newMessageBanner() {
-  const unread = (me.messages || []).filter((m) => !m.read).length;
-  if (!unread) return null;
-  return el("button", {
-    class: "wide new-message",
-    onclick: () => document.getElementById("messages").scrollIntoView({ behavior: "smooth" }),
-  }, unread === 1 ? "You have a new private message" : `You have ${unread} new private messages`);
 }
 
 async function saveAssessment(body) {
@@ -628,15 +633,85 @@ function renderAssessment() {
     back);
 }
 
-function renderCharacter() {
+// ---- The guest's game: a menu home screen and one screen per section.
+// The section lives in the address (#clues etc.), so the phone's back button works.
+
+const SECTIONS = {
+  character: { title: "My Character", blurb: "Who you are, your story and your secrets" },
+  progress: { title: "Progress & Missions", blurb: "Your objectives and secret missions" },
+  questions: { title: "Questions & Notebook", blurb: "Ask questions and see what you've learned" },
+  clues: { title: "Clues & Evidence", blurb: "Scan clues and review your evidence" },
+  messages: { title: "Messages", blurb: "Private messages from the host" },
+  dinner: { title: "Dinner Games", blurb: "Games and toasts during dinner" },
+  solve: { title: "Solve the Case", blurb: "Name the killer, the motive and the method" },
+};
+
+function currentSection() {
+  const id = location.hash.slice(1);
+  return SECTIONS[id] ? id : "home";
+}
+
+addEventListener("hashchange", () => {
+  if (mode === "play" && me && me.stage === "character") { askMode = null; renderCharacter(); }
+});
+
+function seenClues() {
+  try { return new Set(JSON.parse(localStorage.getItem(`seen-clues-${KEY.slice(0, 12)}`) || "[]")); } catch { return new Set(); }
+}
+
+function markCluesSeen(ids) {
+  try { localStorage.setItem(`seen-clues-${KEY.slice(0, 12)}`, JSON.stringify(ids)); } catch { /* fine */ }
+}
+
+// Why a section is closed right now (or null if it's open)
+function lockReason(id) {
+  const phase = me.game.phase;
+  if (id === "questions" && !["investigation", "accusation", "reveal"].includes(phase)) return "Opens after the murder";
+  if (id === "clues" && !["investigation", "accusation", "reveal"].includes(phase)) return "Opens after the murder";
+  if (id === "dinner") return "Opens at dinner";
+  if (id === "solve" && !["accusation", "reveal"].includes(phase)) return "Opens when accusations begin";
+  return null;
+}
+
+function badge(id) {
+  const inv = me.investigation;
+  if (id === "messages") return (me.messages || []).filter((m) => !m.read).length;
+  if (id === "questions") return inv.questioned.filter((q) => !q.done).length ? "!" : 0;
+  if (id === "clues") { const seen = seenClues(); return inv.clues.filter((c) => !seen.has(c.id)).length; }
+  if (id === "progress") return 0;
+  return 0;
+}
+
+function homeScreen() {
+  const tiles = Object.entries(SECTIONS).map(([id, sec]) => {
+    const locked = lockReason(id);
+    const count = locked ? 0 : badge(id);
+    return el(locked ? "div" : "a", { class: locked ? "tile locked" : "tile", href: locked ? null : `#${id}` },
+      el("span", { class: "tile-title" }, sec.title),
+      el("span", { class: "tile-blurb" }, locked || sec.blurb),
+      count ? el("span", { class: "tile-badge" }, String(count)) : null);
+  });
+  return [
+    alertsBar(),
+    el("nav", { class: "tiles", "aria-label": "Game sections" }, tiles),
+  ];
+}
+
+// Urgent things go on the home screen, above the menu
+function alertsBar() {
+  const inv = me.investigation;
+  const beingQuestioned = inv.questioned.filter((q) => !q.done);
+  const unread = (me.messages || []).filter((m) => !m.read).length;
+  return [
+    beingQuestioned.length > 0 && el("a", { class: "alert urgent", href: "#questions" },
+      el("strong", {}, "You're being questioned!"), " Tap to see what to say."),
+    unread > 0 && el("a", { class: "alert", href: "#messages" },
+      unread === 1 ? "You have a new private message" : `You have ${unread} new private messages`),
+  ];
+}
+
+function characterScreen() {
   const c = me.character;
-  if (!c) {
-    return show(guestHeader(),
-      el("div", { class: "card center" },
-        el("h1", {}, "Your character is coming"),
-        el("p", {}, "The host hasn't given you a character yet. Check back soon."),
-        el("button", { class: "wide", onclick: loadGuest }, "Check again")));
-  }
   // Deep-prep guests read their chapter first; light-prep guests can open it if they like
   if (chapterOpen === null) chapterOpen = c.prep === "deep";
   const chapter = c.chapter && (chapterOpen
@@ -646,18 +721,7 @@ function renderCharacter() {
       el("button", { class: "wide quiet", onclick: () => { chapterOpen = false; redrawQuietly(renderCharacter); } }, "Hide the story"))
     : el("button", { class: "wide quiet", onclick: () => { chapterOpen = true; redrawQuietly(renderCharacter); } },
       "Read your character's story (about 10 minutes)"));
-  show(guestHeader(),
-    statusBar(),
-    questionedCards(),
-    investigationPanel(),
-    missionsCard(),
-    newMessageBanner(),
-    murderOverlay(),
-    messagesSection(),
-    el("div", { class: "card hero" },
-      el("p", { class: "eyebrow" }, "You are playing"),
-      el("h1", {}, c.name),
-      el("p", { class: "tagline" }, c.tagline)),
+  return [
     chapter,
     el("section", { class: "card" }, el("h2", {}, "The evening"), el("p", {}, me.setting)),
     el("section", { class: "card" }, el("h2", {}, "Who you are"), el("p", {}, c.biography)),
@@ -666,7 +730,66 @@ function renderCharacter() {
     el("section", { class: "card secret" }, el("h2", {}, "Your secrets"),
       el("p", { class: "note" }, "Only you can see this. Don't show your screen to anyone."),
       list(c.secrets)),
-    el("section", { class: "card" }, el("h2", {}, "Your objectives"), list(c.objectives)));
+  ];
+}
+
+function progressScreen() {
+  const inv = me.investigation;
+  const asked = inv.notebook.filter((q) => q.status === "answered").length;
+  return [
+    el("section", { class: "card" }, el("h2", {}, "Your objectives"), list(me.character.objectives)),
+    missionsCard(),
+    el("section", { class: "card" }, el("h2", {}, "So far"),
+      el("ul", {},
+        el("li", {}, `Clues found: ${inv.clues.length}`),
+        el("li", {}, `Questions answered: ${asked}`),
+        el("li", {}, `Evidence collected: ${inv.evidence.length}`))),
+  ];
+}
+
+function messagesScreen() {
+  return messagesSection() || el("section", { class: "card" }, el("h2", {}, "Private messages from the host"),
+    el("p", { class: "muted" }, "No messages yet. The host may send you secret instructions during the game."));
+}
+
+function comingSoonScreen(id) {
+  return el("section", { class: "card center" }, el("h2", {}, SECTIONS[id].title),
+    el("p", {}, lockReason(id) || "Coming soon."));
+}
+
+const SCREENS = {
+  character: characterScreen, progress: progressScreen, questions: questionsScreen, clues: cluesScreen,
+  messages: messagesScreen, dinner: () => comingSoonScreen("dinner"), solve: () => comingSoonScreen("solve"),
+};
+
+function renderCharacter() {
+  const c = me.character;
+  if (!c) {
+    return show(guestHeader(),
+      el("div", { class: "card center" },
+        el("h1", {}, "Your character is coming"),
+        el("p", {}, "The host hasn't given you a character yet. Check back soon."),
+        el("button", { class: "wide", onclick: loadGuest }, "Check again")));
+  }
+  const section = currentSection();
+  const top = el("header", { class: "game-top" },
+    el("p", { class: "eyebrow" }, me.title),
+    el("h1", { class: "who" }, c.name),
+    el("p", { class: "tagline" }, `${c.tagline} · played by ${me.guest_name}`));
+  if (section === "home") {
+    return show(top, statusBar(), murderOverlay(), homeScreen());
+  }
+  const locked = lockReason(section);
+  const screen = locked ? comingSoonScreen(section) : SCREENS[section]();
+  if (section === "clues" && !locked) markCluesSeen(me.investigation.clues.map((cl) => cl.id));
+  show(
+    el("div", { class: "screen-top" },
+      el("a", { class: "back", href: "#" }, "‹ Menu"),
+      el("h1", { class: "screen-title" }, SECTIONS[section].title)),
+    statusBar(),
+    murderOverlay(),
+    section !== "questions" && alertsBar(),
+    screen);
 }
 
 // --------------------------------------------------------------- host page
