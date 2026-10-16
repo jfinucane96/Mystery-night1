@@ -278,3 +278,4 @@ select.room-voice { width: auto; max-width: 280px; font-size: .8rem; min-height:
   .mansion-img, .glow, .moon-glow, .cloud-layer, .fog-layer, .bat { animation: none; }
 }
 .room-link { border-top: 1px solid var(--line); margin-top: 12px; padding-top: 8px; }
+.room-box-note { font-size: clamp(1rem, 1.8vw, 1.5rem) !important; color: var(--muted); margin-top: 18px !important; font-style: italic; }

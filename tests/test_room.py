@@ -37,6 +37,15 @@ class Room(test_p04.P04):
                        self.s.story["solution"]["motive"]):
             self.assertNotIn(secret, raw)
 
+    def test_room_knows_when_the_question_has_been_answered(self):
+        status, view = self.ask(self.alice, "interrogate", "Where were you during the toast?", target=self.cara)
+        ev = self.room()[1]["events"][0]
+        self.assertEqual((ev["question"], ev["target"], ev["done"]),
+                         ("Where were you during the toast?", "Juniper Vale", False))
+        qid = self.latest(view)["id"]
+        self.s.call("POST", f"/api/me/interrogations/{qid}/done", self.cara["token"], {})
+        self.assertTrue(self.room()[1]["events"][0]["done"])
+
     def test_confession_is_announced_without_naming_anyone(self):
         self.s.host("POST", f"/api/host/guests/{self.alice['id']}/evidence", {"evidence_id": "vial"})
         self.ask(self.alice, "interrogate", "Explain this vial!", target=self.bob, evidence="vial")

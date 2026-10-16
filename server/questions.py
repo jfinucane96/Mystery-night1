@@ -260,5 +260,6 @@ def room_events(t, story, limit=20):
                         "text": "Someone has confessed!"})
         # The question is public (it's asked out loud anyway); who asked, and the answer, are not
         out.append({"id": q["id"], "kind": "questioned", "at": q["answered_at"],
-                    "text": f"{c['name']}, you are being questioned!", "question": q["question"]})
+                    "text": f"{c['name']}, you are being questioned!", "question": q["question"],
+                    "target": c["name"], "done": bool(q["target_done_at"])})
     return out

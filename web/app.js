@@ -1182,7 +1182,8 @@ function nextAnnouncement() {
   const item = speakQueue.shift();
   if (!item) {
     speaking = false;
-    hideBoxTimer = setTimeout(() => showBox(null), 5000);   // linger, then back to the mansion
+    if (waitingFor) showBox(waitingBox(waitingFor), "chime", true);      // stays until they answer
+    else hideBoxTimer = setTimeout(() => showBox(null), 5000);          // linger, then back to the mansion
     return;
   }
   speaking = true;
@@ -1192,16 +1193,35 @@ function nextAnnouncement() {
   if (!roomSoundOn || !claimSpeaker()) return setTimeout(nextAnnouncement, 7000);
   if (audioCtx.state === "suspended") audioCtx.resume();
   SOUNDS[item.sound]();
-  setTimeout(() => {
-    const u = new SpeechSynthesisUtterance(item.text);
-    roomVoice = roomVoice || bestVoice();
-    if (roomVoice) { u.voice = roomVoice; u.lang = roomVoice.lang; }
-    u.rate = 0.92;
-    u.pitch = 0.9;
-    u.onend = () => setTimeout(nextAnnouncement, 600);
-    u.onerror = () => setTimeout(nextAnnouncement, 600);
-    speechSynthesis.speak(u);
-  }, SOUND_LENGTH[item.sound]);
+  const parts = Array.isArray(item.text) ? item.text : [item.text];
+  setTimeout(() => speakParts(parts, () => setTimeout(nextAnnouncement, 600)), SOUND_LENGTH[item.sound]);
+}
+
+// Browsers can cut speech off if the page lets go of it mid-sentence, so every
+// utterance is kept here until it has finished.
+const liveUtterances = new Set();
+
+function speakParts(parts, done) {
+  if (!parts.length) return done();
+  const [first, ...rest] = parts;
+  const u = new SpeechSynthesisUtterance(first);
+  roomVoice = roomVoice || bestVoice();
+  if (roomVoice) { u.voice = roomVoice; u.lang = roomVoice.lang; }
+  u.rate = 0.92;
+  u.pitch = 0.9;
+  liveUtterances.add(u);
+  let finished = false;
+  const next = () => {
+    if (finished) return;
+    finished = true;
+    liveUtterances.delete(u);
+    setTimeout(() => speakParts(rest, done), 450);       // a short dramatic pause between parts
+  };
+  u.onend = next;
+  u.onerror = next;
+  // Safety net: if the browser never reports the end, move on anyway
+  setTimeout(next, 4000 + first.length * 120);
+  speechSynthesis.speak(u);
 }
 
 function roomChanges(before, now) {
@@ -1229,8 +1249,11 @@ async function loadRoom() {
     return show(errorCard("Couldn't load", e.message), el("button", { class: "wide", onclick: loadRoom }, "Try again"));
   }
   room.events.forEach((ev) => roomSeen.add(ev.id));      // don't replay what happened before this page opened
+  const pending = room.events.find((ev) => ev.kind === "questioned" && !ev.done);
+  if (pending && room.phase === "investigation") waitFor(pending);
   await buildRoomShell();
   renderRoom();
+  if (waitingFor) showBox(waitingBox(waitingFor), "chime", true);
   startPolling(() => api("GET", "/api/room"), (fresh) => {
     const before = room;
     room = fresh;
@@ -1238,10 +1261,12 @@ async function loadRoom() {
     fresh.events.slice().reverse().forEach((ev) => {     // oldest first
       if (roomSeen.has(ev.id)) return;
       roomSeen.add(ev.id);
-      if (ev.kind === "confession") announce("confession", ev.text);
-      else announce("chime", ev.question ? `${ev.text} ${ev.question}` : ev.text,
+      if (ev.kind === "confession") return announce("confession", ev.text);
+      if (!ev.done) waitFor(ev);
+      announce("chime", ev.question ? [ev.text, `The question is: ${ev.question}`] : ev.text,
         { title: ev.text, text: ev.question ? `“${ev.question}”` : "" });
     });
+    checkAnswered(fresh);
     renderRoom();
   }, 3000);
 }
@@ -1396,16 +1421,43 @@ function rumble(volume) {
   thunder(0, 3 + Math.random() * 2, volume);
 }
 
-function showBox(content, sound) {
+function showBox(content, sound, quietly = false) {
   if (!roomShell) return;
   const { box } = roomShell;
   if (!content) { box.classList.remove("show"); return; }
   box.replaceChildren(el("div", { class: `room-box-inner ${sound || ""}` },
     content.title && el("h1", {}, content.title),
-    el("p", {}, content.text)));
+    content.text && el("p", {}, content.text),
+    content.note && el("p", { class: "room-box-note" }, content.note)));
+  if (quietly && box.classList.contains("show")) return;   // already up: just update the words
   box.classList.remove("show");
   void box.offsetWidth;                        // restart the pop-in animation
   box.classList.add("show");
+}
+
+// ---- a public question stays on screen until the questioned guest taps "Done, I've answered"
+let waitingFor = null;
+let waitingSince = 0;
+const WAIT_AT_MOST = 10 * 60 * 1000;          // never get stuck: give up after 10 minutes
+
+function waitFor(ev) {
+  waitingFor = ev;
+  waitingSince = Date.now();
+  clearTimeout(hideBoxTimer);
+}
+
+function waitingBox(ev) {
+  return { title: ev.text, text: ev.question ? `“${ev.question}”` : "", note: `Waiting for ${ev.target} to answer…` };
+}
+
+function checkAnswered(fresh) {
+  if (!waitingFor) return;
+  const ev = fresh.events.find((e) => e.id === waitingFor.id);
+  const answered = !ev || ev.done;
+  const stale = Date.now() - waitingSince > WAIT_AT_MOST || fresh.phase !== "investigation";
+  if (!answered && !stale) return;
+  waitingFor = null;
+  if (!speaking) hideBoxTimer = setTimeout(() => showBox(null), 1500);
 }
 
 function renderRoom() {
