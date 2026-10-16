@@ -4,6 +4,7 @@ reaches a phone, so privacy is decided here and nowhere else."""
 
 import json
 import os
+import re
 
 STORY_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                           "content", "story.json")
@@ -58,6 +59,50 @@ def check(story):
         if not d.get("text"):
             problems.append(f"direction '{d.get('id')}' has no text")
     problems += check_knowledge(story, ids)
+    problems += check_clues(story, ids)
+    return problems
+
+
+CODE_PATTERN = re.compile(r"^[A-Z0-9-]{4,12}$")
+
+
+def check_clues(story, ids):
+    """QR clues and secret missions (P05)."""
+    problems = []
+    evidence_ids = {e["id"] for e in story.get("evidence", [])}
+    clue_ids, codes = set(), set()
+    for c in story.get("clues", []):
+        where = f"clue '{c.get('id')}'"
+        if not c.get("id") or c["id"] in clue_ids:
+            problems.append(f"{where}: id is missing or used twice")
+        clue_ids.add(c.get("id"))
+        if not (c.get("title") and c.get("text")):
+            problems.append(f"{where}: needs a title and text")
+        if c.get("code") is not None:
+            if not CODE_PATTERN.match(c["code"]) or c["code"] in codes:
+                problems.append(f"{where}: code must be 4-12 capital letters/digits/dashes and unique")
+            codes.add(c["code"])
+            if not c.get("prop"):
+                problems.append(f"{where}: a clue with a QR code needs a 'prop' (what to stick the label on)")
+        for who in c.get("views", {}):
+            if who not in ids:
+                problems.append(f"{where}: view for unknown character '{who}'")
+        if c.get("evidence") and c["evidence"] not in evidence_ids:
+            problems.append(f"{where}: unknown evidence '{c['evidence']}'")
+        if c.get("essential") and not c.get("backup"):
+            problems.append(f"{where}: essential clues need a 'backup' route")
+    mission_ids = set()
+    for m in story.get("missions", []):
+        where = f"mission '{m.get('id')}'"
+        if not m.get("id") or m["id"] in mission_ids:
+            problems.append(f"{where}: id is missing or used twice")
+        mission_ids.add(m.get("id"))
+        if m.get("character") not in ids:
+            problems.append(f"{where}: unknown character '{m.get('character')}'")
+        if not m.get("text"):
+            problems.append(f"{where}: needs text")
+        if m.get("reward_clue") not in clue_ids:
+            problems.append(f"{where}: reward_clue must be a clue id")
     return problems
 
 

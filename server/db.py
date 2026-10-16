@@ -134,6 +134,22 @@ MIGRATIONS = [
     [
         "ALTER TABLE game ADD COLUMN room_key TEXT NOT NULL DEFAULT ''",
     ],
+    # 9. P05: clues each guest has found, and secret missions the host has confirmed
+    [
+        """CREATE TABLE IF NOT EXISTS clue_finds (
+            guest_id TEXT NOT NULL,
+            clue_id TEXT NOT NULL,
+            source TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            PRIMARY KEY (guest_id, clue_id)
+        )""",
+        """CREATE TABLE IF NOT EXISTS missions_done (
+            guest_id TEXT NOT NULL,
+            mission_id TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            PRIMARY KEY (guest_id, mission_id)
+        )""",
+    ],
 ]
 
 

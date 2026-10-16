@@ -180,6 +180,8 @@ def remove_guest(t, guest_id):
     t.run("DELETE FROM balances WHERE guest_id = ?", (guest_id,))
     t.run("DELETE FROM messages WHERE guest_id = ?", (guest_id,))
     t.run("DELETE FROM guest_evidence WHERE guest_id = ?", (guest_id,))
+    t.run("DELETE FROM clue_finds WHERE guest_id = ?", (guest_id,))
+    t.run("DELETE FROM missions_done WHERE guest_id = ?", (guest_id,))
     t.run("DELETE FROM guests WHERE id = ?", (guest_id,))
 
 

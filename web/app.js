@@ -5,6 +5,14 @@
 
 const [, mode, KEY] = location.pathname.split("/");
 const app = document.getElementById("app");
+const GUEST_LINK_KEY = "mm-guest-link";   // remembered so a scanned QR knows who is scanning
+
+function rememberedGuest() {
+  try { return localStorage.getItem(GUEST_LINK_KEY); } catch { return null; }
+}
+
+// A clue page (/c/CODE) acts as the guest whose link was last opened on this phone
+let authKey = mode === "c" ? rememberedGuest() : KEY;
 
 // ------------------------------------------------------------------ helpers
 
@@ -24,7 +32,7 @@ function el(tag, attrs, ...children) {
 }
 
 async function api(method, path, body) {
-  const opts = { method, headers: { "X-Key": KEY } };
+  const opts = { method, headers: { "X-Key": authKey } };
   if (body !== undefined) {
     opts.headers["Content-Type"] = "application/json";
     opts.body = JSON.stringify(body);
@@ -97,6 +105,7 @@ let guestMsg = null;
 let chapterOpen = null;  // light-prep guests: has the guest opened their chapter?
 
 async function loadGuest() {
+  try { localStorage.setItem(GUEST_LINK_KEY, KEY); } catch { /* storage blocked: typed codes still work */ }
   try {
     me = await api("GET", "/api/me");
   } catch (e) {
@@ -273,9 +282,156 @@ function investigationPanel() {
     inv.evidence.length > 0 && el("details", { class: "contact" },
       el("summary", {}, `Your evidence (${inv.evidence.length})`),
       el("ul", {}, inv.evidence.map((ev) => el("li", {}, el("strong", {}, ev.name), ev.description ? `: ${ev.description}` : "")))),
+    cluesSection(inv),
     inv.notebook.length > 0 && el("div", {},
       el("h3", {}, "Your notebook"),
       el("ul", { class: "plain notebook" }, inv.notebook.map(notebookEntry))));
+}
+
+// ---- P05: clues and secret missions
+
+let lastFound = null;
+let clueCode = "";
+let clueError = null;
+let finding = false;
+
+async function findClue(code, source) {
+  if (finding) return;
+  finding = true;
+  clueError = null;
+  try {
+    me = await api("POST", "/api/me/clues/find", { code, source });
+    lastFound = me.found.id;
+    clueCode = "";
+    if (!me.found.new) clueError = "You've already found this one. It's in your journal.";
+  } catch (e) {
+    clueError = e.message;
+  }
+  finding = false;
+  rerender();
+  const card = document.getElementById("latest-clue");
+  if (card) card.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function clueCard(c, latest) {
+  return el("li", { class: latest ? "clue latest" : "clue", id: latest ? "latest-clue" : null },
+    el("p", { class: "small muted" }, c.source, c.at ? ` · ${when(c.at)}` : ""),
+    el("p", {}, el("strong", {}, c.title)),
+    el("p", {}, c.text),
+    c.mine && el("p", { class: "you-notice" }, el("strong", {}, "You notice: "), c.mine),
+    c.evidence && el("p", { class: "small ok-text" }, `Added to your evidence: ${c.evidence}`));
+}
+
+function cluesSection(inv) {
+  const box = el("input", { type: "text", placeholder: "e.g. VIAL-7K", "aria-label": "Clue code", value: clueCode,
+    autocapitalize: "characters", autocomplete: "off", spellcheck: "false" });
+  box.addEventListener("input", () => { clueCode = box.value; });
+  const canScan = "BarcodeDetector" in window && navigator.mediaDevices;
+  return el("div", { class: "clues" },
+    el("h3", {}, `Clues (${inv.clues.length})`),
+    inv.open && el("div", {},
+      el("p", { class: "small muted" }, "Found a QR code on a prop? Point your phone's camera at it, or:"),
+      el("div", { class: "row" },
+        canScan && el("button", { class: "small", onclick: openScanner }, "Scan a clue"),
+        box,
+        el("button", { class: "small", disabled: finding, onclick: () => findClue(clueCode, "code") }, finding ? "…" : "Open")),
+      clueError && el("p", { class: "small warn", role: "alert" }, clueError)),
+    inv.clues.length > 0 && el("ul", { class: "plain journal" }, inv.clues.map((c) => clueCard(c, c.id === lastFound))));
+}
+
+function missionsCard() {
+  const inv = me.investigation;
+  if (!inv || !inv.missions.length) return null;
+  return el("section", { class: "card secret" },
+    el("h2", {}, "Your secret missions"),
+    el("p", { class: "note" }, "Only you can see these. When you've done one, tell the host quietly: they'll confirm it and you'll get a bonus clue."),
+    el("ul", { class: "plain missions" }, inv.missions.map((m) => el("li", { class: m.done ? "done" : "" },
+      el("span", { class: m.done ? "pill ok" : "pill empty" }, m.done ? "Done" : "To do"), " ", m.text))));
+}
+
+// In-page scanner, for browsers that can read QR codes themselves (most Android phones)
+async function openScanner() {
+  let stream;
+  const video = el("video", { playsinline: true, muted: true, class: "scanner-video" });
+  const close = () => { if (stream) stream.getTracks().forEach((tr) => tr.stop()); overlay.remove(); };
+  const overlay = el("div", { class: "overlay" }, el("div", { class: "overlay-inner" },
+    el("p", { class: "eyebrow" }, "Point at the clue's QR code"), video,
+    el("button", { class: "wide quiet", onclick: close }, "Cancel")));
+  document.body.append(overlay);
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+    video.srcObject = stream;
+    await video.play();
+    const detector = new BarcodeDetector({ formats: ["qr_code"] });
+    const look = async () => {
+      if (!overlay.isConnected) return;
+      try {
+        const [hit] = await detector.detect(video);
+        if (hit) {
+          close();
+          const match = hit.rawValue.match(/\/c\/([A-Za-z0-9-]+)/);
+          return findClue(match ? match[1] : hit.rawValue, "scan");
+        }
+      } catch { /* keep looking */ }
+      setTimeout(look, 250);
+    };
+    look();
+  } catch {
+    close();
+    clueError = "Couldn't open the camera. Use your phone's Camera app, or type the code.";
+    rerender();
+  }
+}
+
+// The page a QR label opens: /c/CODE
+async function loadCluePage() {
+  const code = KEY;
+  if (!authKey) {
+    return show(errorCard("Open your game link first",
+      "This phone doesn't know who you are yet. Open the personal link the host sent you, then scan the clue again."));
+  }
+  const back = el("a", { class: "button wide", href: `/play/${authKey}` }, "Back to my game");
+  let view;
+  try {
+    view = await api("POST", "/api/me/clues/find", { code, source: "scan" });
+  } catch (e) {
+    return show(errorCard("Can't examine this clue", e.message), back);
+  }
+  const clue = view.investigation.clues.find((c) => c.id === view.found.id);
+  document.title = clue.title;
+  show(el("header", {}, el("p", { class: "eyebrow" }, view.title), el("p", { class: "muted" }, `Hello, ${view.guest_name}`)),
+    el("p", { class: view.found.new ? "notice" : "small muted" },
+      view.found.new ? "New clue! It's saved in your journal." : "You've already found this one."),
+    el("ul", { class: "plain" }, clueCard(clue, false)),
+    back);
+}
+
+// ---- host: printable QR labels (/labels/<host link>)
+async function loadLabels() {
+  let data;
+  try {
+    data = await api("GET", "/api/host/labels");
+  } catch (e) {
+    return show(errorCard("Couldn't load labels", e.message));
+  }
+  document.title = `QR labels · ${data.title}`;
+  document.body.classList.add("labels-mode");
+  const qr = (svg) => { const box = el("div", { class: "qr" }); box.innerHTML = svg; return box; };   // our own server's QR drawing
+  show(
+    el("div", { class: "no-print" },
+      el("h1", {}, "QR labels"),
+      el("p", {}, "Print this page, cut out the labels and stick each one on its prop. The labels show only a number, so they give nothing away. The list on the last page tells you which prop each number goes on."),
+      el("button", { onclick: () => window.print() }, "Print")),
+    el("div", { class: "label-grid" }, data.labels.map((l) => el("div", { class: "label" },
+      el("p", { class: "label-n" }, `Clue #${l.n}`), qr(l.svg), el("p", { class: "label-code" }, l.code),
+      el("p", { class: "label-help" }, "Scan with your phone's camera")))),
+    el("section", { class: "host-list" },
+      el("h2", {}, "Host list: where each label goes (keep this private)"),
+      el("table", {},
+        el("thead", {}, el("tr", {}, ["#", "Stick it on", "Hide it", "Can be found"].map((h) => el("th", {}, h)))),
+        el("tbody", {}, data.labels.map((l) => el("tr", {},
+          el("td", {}, `#${l.n}`), el("td", {}, l.prop), el("td", {}, l.where || ""),
+          el("td", {}, l.from_round > 1 ? `From round ${l.from_round}` : "From the murder")))))));
 }
 
 // ---- P03: status, messages, the murder announcement
@@ -494,6 +650,7 @@ function renderCharacter() {
     statusBar(),
     questionedCards(),
     investigationPanel(),
+    missionsCard(),
     newMessageBanner(),
     murderOverlay(),
     messagesSection(),
@@ -770,6 +927,48 @@ function evidencePanel(g, s) {
   return details;
 }
 
+let openClues = false;
+
+function cluesPanel(s) {
+  if (!s.clues.length) return null;
+  const details = el("details", { class: "card feed", open: openClues },
+    el("summary", {}, `Clues (${s.clues.filter((c) => c.found_by.length).length} of ${s.clues.length} found)`),
+    el("p", {}, el("a", { class: "button small", href: `/labels/${KEY}`, target: "_blank", rel: "noopener" }, "Print QR labels")),
+    el("ul", { class: "plain" }, s.clues.map((c) => el("li", {},
+      el("p", {}, el("strong", {}, `#${c.n} ${c.title}`), c.essential ? el("span", { class: "pill" }, " essential") : "",
+        c.code ? "" : el("span", { class: "small muted" }, " · bonus clue (missions / host only)")),
+      c.prop && el("p", { class: "small muted" }, `On: ${c.prop}${c.where ? ` · ${c.where}` : ""}${c.from_round > 1 ? ` · from round ${c.from_round}` : ""}`),
+      el("p", { class: "small" }, c.found_by.length ? `Found by: ${c.found_by.join(", ")}` : "Not found yet")))));
+  details.addEventListener("toggle", () => { openClues = details.open; });
+  return details;
+}
+
+const openMissions = new Set();
+
+function missionsPanel(g, s) {
+  if (!g.character_id) return null;
+  const pick = el("select", { "aria-label": `Clue to release to ${g.name}` },
+    el("option", { value: "" }, "Release a clue to them…"),
+    s.clues.filter((c) => !g.clues_found.includes(c.id)).map((c) => el("option", { value: c.id }, `#${c.n} ${c.title}`)));
+  const details = el("details", { class: "contact", open: openMissions.has(g.id) },
+    el("summary", {}, `Missions & clues (${g.missions.filter((m) => m.done).length}/${g.missions.length} missions, ${g.clues_found.length} clues)`),
+    el("ul", { class: "plain directions" }, g.missions.map((m) => el("li", {},
+      el("p", { class: "small" }, m.text, el("span", { class: "muted" }, ` (reward: ${m.reward})`)),
+      m.done ? el("span", { class: "pill ok" }, "Done") : el("button", {
+        class: "small", disabled: !!busy,
+        onclick: () => confirm(`Confirm ${g.name} completed this mission? They'll get the bonus clue: ${m.reward}.`)
+          && hostAction("POST", `/api/host/guests/${g.id}/mission`, { mission_id: m.id }, `mission-${g.id}`),
+      }, "Confirm done")))),
+    el("div", { class: "row" }, pick, el("button", {
+      class: "small quiet", disabled: !!busy,
+      onclick: () => pick.value && hostAction("POST", `/api/host/guests/${g.id}/clue`, { clue_id: pick.value }, `clue-${g.id}`),
+    }, "Give")));
+  details.addEventListener("toggle", () => {
+    if (details.open) openMissions.add(g.id); else openMissions.delete(g.id);
+  });
+  return details;
+}
+
 function tokenLine(g, s) {
   const give = (kind) => hostAction("POST", "/api/host/grant",
     { request_id: newRequestId(), target: g.id, public: kind === "public" ? 1 : 0, private: kind === "private" ? 1 : 0 }, `grant-${g.id}`);
@@ -960,6 +1159,7 @@ function guestCard(s, g) {
     s.released && tokenLine(g, s),
     s.released && messagesPanel(g, s),
     s.released && evidencePanel(g, s),
+    s.released && missionsPanel(g, s),
     contactPanel(g, s),
     el("div", { class: "row buttons" },
       inviteButton(g, s),
@@ -1039,6 +1239,7 @@ function renderHost() {
     textPromptLine(s),
     gamePanel(s),
     questionsFeed(s),
+    cluesPanel(s),
     suggestionPanel(s),
     el("section", {},
       el("div", { class: "row" },
@@ -1487,3 +1688,5 @@ function renderRoom() {
 if (mode === "play") loadGuest();
 else if (mode === "host") loadHost();
 else if (mode === "room") loadRoom();
+else if (mode === "c") loadCluePage();
+else if (mode === "labels") loadLabels();

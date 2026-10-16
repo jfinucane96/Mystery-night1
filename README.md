@@ -3,7 +3,7 @@
 A small web app for running one murder-mystery party. Each guest gets a private
 link that shows only their own character. The host gets a separate link to run the game.
 
-**Current milestone: P04. AI memory and interrogations**, using a placeholder story.
+**Current milestone: P05. QR clues and secret missions**, using a placeholder story.
 
 How a game runs so far: the host adds guests and sends each their link, guests answer six quick
 questions and set their limits, the host assigns characters (the app warns about poor fits and
@@ -23,6 +23,7 @@ speaker or TV: it plays sounds and announces the murder, rounds, who is being qu
 | `server/game.py` | Game rules: guests, links, answers, assigning and releasing characters |
 | `server/play.py` | Running the party: phases, rounds, pause, question tokens, private messages |
 | `server/questions.py` | Private and public questions: what each character may remember or say, tokens, evidence |
+| `server/clues.py` | QR clues (each character's own view), the evidence journal, secret missions, printable labels |
 | `server/ai_questions.py` | Turning a question into an answer with the AI, checked against the story (with a no-AI backup) |
 | `server/casting.py` | The assessment, and the rules comparing guests' answers with each role |
 | `server/ai_casting.py` | AI casting suggestions (Claude); suggestions only, limits still enforced |

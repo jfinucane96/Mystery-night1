@@ -279,3 +279,29 @@ select.room-voice { width: auto; max-width: 280px; font-size: .8rem; min-height:
 }
 .room-link { border-top: 1px solid var(--line); margin-top: 12px; padding-top: 8px; }
 .room-box-note { font-size: clamp(1rem, 1.8vw, 1.5rem) !important; color: var(--muted); margin-top: 18px !important; font-style: italic; }
+
+/* ---- P05: clues and missions ---- */
+.clues { border-top: 1px solid var(--line); margin-top: 12px; padding-top: 4px; }
+.clues .row input { flex: 1; min-width: 0; text-transform: uppercase; }
+.journal li { border-top: 1px solid var(--line); padding-top: 8px; margin-top: 8px; }
+.journal li.latest { border-left: 3px solid var(--accent); padding-left: 10px; }
+.you-notice { background: #2e2115; border-radius: 8px; padding: 8px 10px; }
+.missions li { margin: 8px 0; }
+.missions li.done { color: var(--muted); }
+.scanner-video { width: 100%; max-height: 60vh; border-radius: 12px; background: #000; margin: 12px 0; }
+
+/* printable QR labels */
+body.labels-mode { background: #fff; color: #111; }
+body.labels-mode main { max-width: 900px; }
+body.labels-mode .button, body.labels-mode button { color: #111; }
+.label-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+.label { border: 2px dashed #999; border-radius: 10px; padding: 10px; text-align: center; break-inside: avoid; color: #111; }
+.label .qr svg { width: 150px; height: 150px; }
+.label-n { font-weight: bold; margin: 0; }
+.label-code { font-family: monospace; font-size: 1.2rem; letter-spacing: .1em; margin: 4px 0 0; }
+.label-help { font-size: .75rem; color: #555; margin: 0; }
+.host-list { break-before: page; color: #111; }
+.host-list h2 { color: #111; }
+.host-list table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.host-list th, .host-list td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; }
+@media print { .no-print { display: none; } body.labels-mode main { padding: 0; } }

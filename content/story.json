@@ -621,6 +621,16 @@
       "id": "napkin",
       "name": "A stained napkin",
       "description": "Crumpled by the fireplace, with a white powdery smear. (PLACEHOLDER)"
+    },
+    {
+      "id": "letter",
+      "name": "A sealed letter",
+      "description": "Addressed simply to 'J'. (PLACEHOLDER)"
+    },
+    {
+      "id": "ledger",
+      "name": "The wine cellar ledger",
+      "description": "Neat columns of bottles, some crossed out. (PLACEHOLDER)"
     }
   ],
   "suggested_questions": {
@@ -639,5 +649,110 @@
   "core_topics": {
     "alibi": "Where they were during the murder (true or a lie)",
     "victim": "Their relationship with the victim"
-  }
+  },
+  "clues": [
+    {
+      "id": "vial-clue",
+      "title": "An empty glass vial",
+      "text": "A small glass vial, empty, with a faint bitter smell. Someone dropped it under the dining table. (PLACEHOLDER)",
+      "code": "VIAL-7K",
+      "prop": "A small empty glass bottle",
+      "where": "Under the dining table",
+      "from_round": 1,
+      "evidence": "vial",
+      "views": {
+        "doctor": "Your stomach drops. That's the vial from your medical bag.",
+        "butler": "You've seen vials like this in the doctor's bag when he visits."
+      },
+      "essential": true,
+      "backup": "The host can release it from the host page."
+    },
+    {
+      "id": "napkin-clue",
+      "title": "A stained napkin",
+      "text": "A crumpled linen napkin with a white powdery smear, tucked behind the fireplace screen. (PLACEHOLDER)",
+      "code": "NPKN-4R",
+      "prop": "A crumpled napkin dusted with flour",
+      "where": "Behind the fireplace screen",
+      "from_round": 1,
+      "evidence": "napkin",
+      "views": {
+        "painter": "This is the napkin you saw the doctor wiping his hands on right after the toast."
+      },
+      "essential": true,
+      "backup": "The host can release it from the host page."
+    },
+    {
+      "id": "letter-clue",
+      "title": "A sealed letter",
+      "text": "An unopened letter in Lady Ravenscroft's handbag, addressed simply to 'J'. (PLACEHOLDER)",
+      "code": "LTTR-9D",
+      "prop": "A sealed envelope marked 'J'",
+      "where": "Inside a handbag on the sideboard",
+      "from_round": 2,
+      "evidence": "letter",
+      "views": {
+        "niece": "That's your aunt's handwriting. Who on earth is 'J'?",
+        "painter": "Your heart races. 'J'... this must be for you."
+      },
+      "essential": false
+    },
+    {
+      "id": "ledger-clue",
+      "title": "The wine cellar ledger",
+      "text": "A leather ledger listing every bottle in the cellar. Several rare vintages are crossed out in a different ink. (PLACEHOLDER)",
+      "code": "LDGR-2M",
+      "prop": "An old notebook with handwritten columns",
+      "where": "On the bar cart",
+      "from_round": 1,
+      "evidence": "ledger",
+      "views": {
+        "butler": "Your own corrections. Anyone who looks closely will see they don't match."
+      },
+      "essential": false
+    },
+    {
+      "id": "will-draft",
+      "title": "A draft of a new will",
+      "text": "A draft will in Lady Ravenscroft's hand: everything is to go to 'my granddaughter, Juniper Vale'. (PLACEHOLDER bonus clue)",
+      "from_round": 1,
+      "views": {},
+      "essential": false
+    },
+    {
+      "id": "passport-clue",
+      "title": "A second passport",
+      "text": "In Dr. Thorne's coat: a passport with his photo under the name 'Dr. Simon Thorp'. (PLACEHOLDER bonus clue)",
+      "from_round": 1,
+      "views": {},
+      "essential": false
+    }
+  ],
+  "missions": [
+    {
+      "id": "pike-mission",
+      "character": "butler",
+      "text": "Refill three guests' glasses and casually ask each where they were during the toast.",
+      "reward_clue": "passport-clue"
+    },
+    {
+      "id": "rosalind-mission",
+      "character": "niece",
+      "text": "Find out who 'J' is without ever saying the letter J out loud.",
+      "reward_clue": "will-draft"
+    },
+    {
+      "id": "thorne-mission",
+      "character": "doctor",
+      "text": "Convince two guests that Pike had more access to the champagne than anyone.",
+      "reward_clue": "ledger-clue"
+    },
+    {
+      "id": "juniper-mission",
+      "character": "painter",
+      "text": "Make a toast to Lady Ravenscroft that mentions her portrait.",
+      "reward_clue": "will-draft"
+    }
+  ],
+  "clues_note": "clues: things guests find. With a 'code' it has a printable QR label for a prop (prop/where are for the host only). 'text' is what everyone sees; 'views' adds what a specific character notices. 'evidence' is added to the finder's evidence (for confessions). Essential clues need a 'backup' route. Clues without a code are bonus clues, given by missions or by the host. missions: secret tasks the host confirms; each rewards one clue."
 }

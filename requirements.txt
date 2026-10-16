@@ -2,3 +2,5 @@
 psycopg[binary]>=3.2,<4
 # Anthropic's official library: only needed for AI casting suggestions.
 anthropic>=1.13,<2
+# Draws the QR codes on the printable clue labels.
+segno>=1.6,<2

@@ -14,7 +14,7 @@ import threading
 import traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from . import ai_casting, ai_questions, casting, db as dbmod, game, play, questions, story as storymod, texting
+from . import ai_casting, ai_questions, casting, clues, db as dbmod, game, play, questions, story as storymod, texting
 from .game import GameError
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -24,7 +24,8 @@ STATIC = {
     "/static/style.css": ("style.css", "text/css; charset=utf-8"),
     "/static/mansion.webp": ("mansion.webp", "image/webp"),
 }
-PAGE_PATTERN = re.compile(r"^/(play|host|room)/[A-Za-z0-9_-]{20,100}$")
+PAGE_PATTERN = re.compile(r"^/(play|host|room|labels)/[A-Za-z0-9_-]{20,100}$")
+CLUE_PAGE = re.compile(r"^/c/[A-Za-z0-9-]{4,12}$")      # what a QR label opens
 MAX_BODY = 16 * 1024
 
 SECURITY_HEADERS = {
@@ -99,6 +100,8 @@ def investigation_view(ctx, t, guest, s):
                      for e in questions.evidence_of(t, guest["id"]) if e in evidence],
         "notebook": notebook,
         "questioned": aimed,
+        "clues": clues.journal(t, ctx.story, guest),
+        "missions": clues.guest_missions(t, ctx.story, guest),
     }
 
 
@@ -139,6 +142,15 @@ def guest_ask(ctx, _t, body, guest):
 def guest_interrogation_done(ctx, t, body, guest, qid):
     questions.mark_target_done(t, guest["id"], qid)
     return guest_state(ctx, t, guest)
+
+
+@route("POST", r"/api/me/clues/find", "guest")
+def guest_find_clue(ctx, t, body, guest):
+    source = "scan" if body.get("source") == "scan" else "code"
+    clue, new = clues.find(t, ctx.story, guest, body.get("code"), source)
+    state = guest_state(ctx, t, guest)
+    state["found"] = {"id": clue["id"], "new": new}
+    return state
 
 
 @route("POST", r"/api/me/messages/read", "guest")
@@ -196,6 +208,7 @@ def host_state(ctx, t):
                            for d in play.directions_for(ctx.story, g["character_id"])],
             "message_alert": texting.message_alert_text(title, g["name"], link),
             "evidence": questions.evidence_of(t, g["id"]),
+            **clues.host_guest_extras(t, ctx.story, g),
         }
 
     return {
@@ -214,6 +227,7 @@ def host_state(ctx, t):
         "room_key": game.room_key(t),
         "evidence": [{"id": e["id"], "name": e["name"]} for e in ctx.story.get("evidence", [])],
         "questions": questions.host_log(t, ctx.story),
+        "clues": clues.host_overview(t, ctx.story),
         "guests": [guest_row(g) for g in game.list_guests(t)],
     }
 
@@ -420,6 +434,27 @@ def room_get(ctx, t, body, _):
     }
 
 
+@route("POST", r"/api/host/guests/(?P<gid>g[0-9a-f]{8})/clue", "host")
+def host_release_clue(ctx, t, body, _, gid):
+    new = clues.release(t, ctx.story, gid, body.get("clue_id"))
+    state = host_state(ctx, t)
+    state["notice"] = "Clue released." if new else "They already have that clue."
+    return state
+
+
+@route("POST", r"/api/host/guests/(?P<gid>g[0-9a-f]{8})/mission", "host")
+def host_confirm_mission(ctx, t, body, _, gid):
+    new = clues.confirm_mission(t, ctx.story, gid, body.get("mission_id"))
+    state = host_state(ctx, t)
+    state["notice"] = "Mission confirmed. Their bonus clue is on their phone." if new else "Already confirmed."
+    return state
+
+
+@route("GET", r"/api/host/labels", "host")
+def host_labels(ctx, t, body, _):
+    return {"title": ctx.story["title"], "labels": clues.labels(ctx.story, ctx.base_url)}
+
+
 @route("POST", r"/api/host/suggest/apply", "host")
 def host_apply_suggestion(ctx, t, body, _):
     game.apply_suggestion(t, ctx.story, ctx.assessment, confirm=bool(body.get("confirm")))
@@ -497,7 +532,7 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, "ok", "text/plain")
         if path == "/":
             return self._file("home.html", "text/html; charset=utf-8")
-        if PAGE_PATTERN.match(path):
+        if PAGE_PATTERN.match(path) or CLUE_PAGE.match(path):
             return self._file("index.html", "text/html; charset=utf-8")
         if path in STATIC:
             return self._file(*STATIC[path])
