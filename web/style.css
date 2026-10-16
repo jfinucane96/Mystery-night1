@@ -296,7 +296,7 @@ body.labels-mode main { max-width: 900px; }
 body.labels-mode .button, body.labels-mode button { color: #111; }
 .label-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
 .label { border: 2px dashed #999; border-radius: 10px; padding: 10px; text-align: center; break-inside: avoid; color: #111; }
-.label .qr svg { width: 150px; height: 150px; }
+.label .qr svg { width: 180px; height: 180px; display: block; margin: 0 auto; shape-rendering: crispEdges; }
 .label-n { font-weight: bold; margin: 0; }
 .label-code { font-family: monospace; font-size: 1.2rem; letter-spacing: .1em; margin: 4px 0 0; }
 .label-help { font-size: .75rem; color: #555; margin: 0; }

@@ -142,5 +142,5 @@ def labels(story, base_url):
         url = f"{base_url}/c/{c['code']}"
         out.append({"n": n, "code": c["code"], "url": url, "prop": c.get("prop", ""), "where": c.get("where", ""),
                     "from_round": c.get("from_round", 1),
-                    "svg": segno.make(url, error="m").svg_inline(scale=5, border=2, dark="#111", light="#fff")})
+                    "svg": segno.make(url, error="m").svg_inline(scale=1, border=4, omitsize=True, dark="#000", light="#fff")})
     return out
