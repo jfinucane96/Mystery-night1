@@ -73,6 +73,7 @@ def guest_state(ctx, t, guest):
     view["stage"] = "waiting" if guest["assessment_done"] else "assessment"
     view["assessment"] = {
         "intro": a["intro"],
+        "invitation": a.get("invitation"),
         "questions": [{"id": q["id"], "prompt": q["prompt"], "options": q["options"]} for q in a["questions"]],
         "limits": a["limits"],
         "answers": casting.answers_of(guest),

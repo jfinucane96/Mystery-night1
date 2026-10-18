@@ -553,9 +553,31 @@ function renderWaiting() {
 }
 
 // The assessment is a series of screens: 0..5 = questions, 6 = limits.
+let inviteAccepted = false;
+
+function renderInvitation(inv) {
+  document.body.classList.add("invite-mode");
+  show(el("div", { class: "invitation-wrap" },
+    el("article", { class: "invitation" },
+      el("div", { class: "seal", "aria-hidden": "true" }, "F"),
+      el("p", { class: "invite-kicker" }, inv.kicker),
+      el("h1", { class: "invite-title" }, me.title),
+      el("p", { class: "invite-dear" }, `Dear ${me.guest_name.split(" ")[0]},`),
+      inv.body.map((para) => el("p", { class: "invite-body" }, para)),
+      el("button", {
+        class: "invite-button",
+        onclick: () => { inviteAccepted = true; document.body.classList.remove("invite-mode"); renderGuest(); },
+      }, inv.button),
+      el("p", { class: "invite-small" }, inv.small_print))));
+}
+
 function renderAssessment() {
   const a = me.assessment;
   const qs = a.questions;
+  // First visit (nothing answered yet): the invitation, with one obvious button to begin
+  if (a.invitation && !inviteAccepted && Object.keys(a.answers).length === 0 && step === null) {
+    return renderInvitation(a.invitation);
+  }
   if (step === null) {
     const firstUnanswered = qs.findIndex((q) => !(q.id in a.answers));
     step = firstUnanswered === -1 ? qs.length : firstUnanswered;
