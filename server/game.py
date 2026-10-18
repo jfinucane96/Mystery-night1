@@ -185,6 +185,24 @@ def remove_guest(t, guest_id):
     t.run("DELETE FROM guests WHERE id = ?", (guest_id,))
 
 
+# ------------------------------------------------------------ starting over
+
+GAME_TABLES = ("texts", "balances", "grants", "messages", "questions", "guest_evidence",
+               "clue_finds", "missions_done", "ai_suggestions")
+
+
+def reset_game(t):
+    """Start the party over: keep the guest list (names, phones, who is the host),
+    the host link and the room link; wipe answers, characters and all game
+    progress, and give every guest a fresh link (old links stop working)."""
+    for table in GAME_TABLES:
+        t.run(f"DELETE FROM {table}")
+    for g in list_guests(t):
+        t.run("UPDATE guests SET token = ?, answers = '{}', limits = '{}', limits_note = '', "
+              "assessment_done = 0, character_id = NULL WHERE id = ?", (_new_secret(), g["id"]))
+    t.run("UPDATE game SET released_at = NULL, release_round = 0, phase = 'setup', round = 0, paused = 0 WHERE id = 1")
+
+
 # ------------------------------------------------------------ contact details
 
 def update_contact(t, guest_id, phone, consent, is_host):

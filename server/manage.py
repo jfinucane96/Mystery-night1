@@ -2,6 +2,9 @@
 
     py -m server.manage new-host-link            replace the host link (local test game)
     py -m server.manage new-host-link --online   same, for the online game (uses DATABASE_URL from .env)
+    py -m server.manage reset-game --yes [--online]
+        start the party over: keeps guests' names/phones, the host link and the room link;
+        wipes answers, characters and all game progress; every guest gets a fresh link
 
 The old host link stops working straight away. The online app prints the new
 link in its Render logs on its next restart, or copy it from this output.
@@ -29,8 +32,10 @@ def load_dotenv():
 
 
 def main(argv):
-    if not argv or argv[0] != "new-host-link":
+    if not argv or argv[0] not in ("new-host-link", "reset-game"):
         sys.exit(__doc__)
+    if argv[0] == "reset-game" and "--yes" not in argv:
+        sys.exit("This wipes all answers and game progress. Add --yes to confirm.")
     online = "--online" in argv
     if online:
         load_dotenv()
@@ -40,10 +45,16 @@ def main(argv):
         os.environ.pop("DATABASE_URL", None)
     database = dbmod.from_env()
     database.init_schema()
+    print(f"Database: {database.describe()}")
+    if argv[0] == "reset-game":
+        with database.tx() as t:
+            game.reset_game(t)
+            names = [g["name"] for g in game.list_guests(t)]
+        print(f"Game reset. Guests kept (each has a fresh link): {', '.join(names) or 'none'}")
+        return
     with database.tx() as t:
         key = game.reset_host_key(t)
     base = os.environ.get("MM_PUBLIC_URL") or ("https://YOUR-APP.onrender.com" if online else public_base_url(8000))
-    print(f"Database: {database.describe()}")
     print(f"New host link (old one no longer works): {base.rstrip('/')}/host/{key}")
 
 
