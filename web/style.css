@@ -327,3 +327,18 @@ a.tile:hover, a.tile:focus-visible { border-color: var(--accent); }
 .screen-top { display: flex; align-items: center; gap: 12px; margin: 4px 0 12px; }
 .screen-top .back { color: var(--accent); text-decoration: none; font-size: 1rem; padding: 8px 10px 8px 0; min-height: 44px; display: inline-flex; align-items: center; }
 .screen-title { font-size: 1.3rem; margin: 0; }
+
+/* ---- Guest pages: the haunted mansion behind everything ---- */
+body.play-mode { background: #08060c; }
+.backdrop {                        /* a fixed element works on phones, unlike background-attachment: fixed */
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: linear-gradient(180deg, #0a070e59 0%, #0a070e8c 40%, #0a070ecc 100%),
+              url("/static/mansion.webp") center 35% / cover no-repeat;
+}
+body.play-mode main { position: relative; z-index: 1; }
+body.play-mode .card, body.play-mode .status {
+  background: #1d1724b8;
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
+body.play-mode .card.secret { background: #3a1f26e0; }
+body.play-mode header .eyebrow { font-size: .85rem; text-shadow: 0 1px 6px #000; }

@@ -1808,7 +1808,11 @@ function renderRoom() {
     el("button", { class: "small quiet", onclick: () => announce("chime", "Testing, testing.", { text: "Testing…" }) }, "Test sound")));
 }
 
-if (mode === "play") loadGuest();
+if (mode === "play") {
+  document.body.classList.add("play-mode");
+  document.body.prepend(el("div", { class: "backdrop", "aria-hidden": "true" }));   // the mansion behind everything
+  loadGuest();
+}
 else if (mode === "host") loadHost();
 else if (mode === "room") loadRoom();
 else if (mode === "c") loadCluePage();
