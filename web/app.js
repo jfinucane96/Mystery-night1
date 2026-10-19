@@ -556,15 +556,13 @@ function renderWaiting() {
 let inviteAccepted = false;
 
 function renderInvitation(inv) {
+  // The invitation fills the screen; the button sits on the invitation itself
   document.body.classList.add("invite-mode");
   const begin = () => { inviteAccepted = true; document.body.classList.remove("invite-mode"); renderGuest(); };
   show(el("div", { class: "invitation-page" },
-    el("img", { class: "invite-image", src: inv.image, alt: inv.image_text }),
-    el("div", { class: "invite-actions" },
-      el("p", { class: "invite-dear" }, `Dear ${me.guest_name.split(" ")[0]},`),
-      el("p", { class: "invite-line" }, inv.line),
-      el("button", { class: "invite-button", onclick: begin }, inv.button),
-      el("p", { class: "invite-small" }, inv.small_print))));
+    el("div", { class: "invite-frame" },
+      el("img", { class: "invite-image", src: inv.image, alt: inv.image_text }),
+      el("button", { class: "invite-button", onclick: begin }, inv.button))));
 }
 
 function renderAssessment() {

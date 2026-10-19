@@ -2,9 +2,7 @@
   "invitation": {
     "image": "/static/invitation.jpg",
     "image_text": "You are cordially invited to Murder at the Manor. An evening of secrets, suspicion, and murder. Dinner will be served. Trust no one. Friday, October 30th at 6:30 PM. The Finucane Manor.",
-    "line": "Before you arrive, we must learn a little about you, so that we can give you the perfect character to play.",
-    "button": "Begin the questionnaire",
-    "small_print": "6 quick questions · about 2 minutes · nobody else sees your answers"
+    "button": "RSVP and begin the questionnaire"
   },
   "intro": "Six quick questions so the host can give you a character you'll enjoy. There are no wrong answers, and nobody else sees them.",
   "questions": [
