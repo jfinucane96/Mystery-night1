@@ -557,17 +557,13 @@ let inviteAccepted = false;
 
 function renderInvitation(inv) {
   document.body.classList.add("invite-mode");
-  show(el("div", { class: "invitation-wrap" },
-    el("article", { class: "invitation" },
-      el("div", { class: "seal", "aria-hidden": "true" }, "F"),
-      el("p", { class: "invite-kicker" }, inv.kicker),
-      el("h1", { class: "invite-title" }, me.title),
+  const begin = () => { inviteAccepted = true; document.body.classList.remove("invite-mode"); renderGuest(); };
+  show(el("div", { class: "invitation-page" },
+    el("img", { class: "invite-image", src: inv.image, alt: inv.image_text }),
+    el("div", { class: "invite-actions" },
       el("p", { class: "invite-dear" }, `Dear ${me.guest_name.split(" ")[0]},`),
-      inv.body.map((para) => el("p", { class: "invite-body" }, para)),
-      el("button", {
-        class: "invite-button",
-        onclick: () => { inviteAccepted = true; document.body.classList.remove("invite-mode"); renderGuest(); },
-      }, inv.button),
+      el("p", { class: "invite-line" }, inv.line),
+      el("button", { class: "invite-button", onclick: begin }, inv.button),
       el("p", { class: "invite-small" }, inv.small_print))));
 }
 

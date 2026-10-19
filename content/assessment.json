@@ -1,10 +1,8 @@
 {
   "invitation": {
-    "kicker": "You are cordially invited",
-    "body": [
-      "The Finucane family requests the pleasure of your company for an evening of dinner, deception and death.",
-      "Before you arrive, we must learn a little about you, so that we can give you the perfect character to play."
-    ],
+    "image": "/static/invitation.jpg",
+    "image_text": "You are cordially invited to Murder at the Manor. An evening of secrets, suspicion, and murder. Dinner will be served. Trust no one. Friday, October 30th at 6:30 PM. The Finucane Manor.",
+    "line": "Before you arrive, we must learn a little about you, so that we can give you the perfect character to play.",
     "button": "Begin the questionnaire",
     "small_print": "6 quick questions · about 2 minutes · nobody else sees your answers"
   },

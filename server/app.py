@@ -23,6 +23,7 @@ STATIC = {
     "/static/app.js": ("app.js", "text/javascript; charset=utf-8"),
     "/static/style.css": ("style.css", "text/css; charset=utf-8"),
     "/static/mansion.webp": ("mansion.webp", "image/webp"),
+    "/static/invitation.jpg": ("invitation.jpg", "image/jpeg"),
 }
 PAGE_PATTERN = re.compile(r"^/(play|host|room|labels)/[A-Za-z0-9_-]{20,100}$")
 CLUE_PAGE = re.compile(r"^/c/[A-Za-z0-9-]{4,12}$")      # what a QR label opens
