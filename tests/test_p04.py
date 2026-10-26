@@ -166,7 +166,7 @@ class P04(unittest.TestCase):
         self.ask(self.alice, "interrogate", "Explain this vial!", target=self.bob, evidence="vial")
         card = self.me(self.bob)["investigation"]["questioned"][0]
         self.assertIn("I put it in her glass", card["spoken"], "...the authored confession is used")
-        log = self.s.host("GET", "/api/host")["questions"][0]
+        log = self.s.host("GET", "/api/host")["question_log"][0]
         self.assertEqual(log["delivery"], "confessing")
 
     # P04-4 AI and token fallback

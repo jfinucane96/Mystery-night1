@@ -18,7 +18,7 @@ class Reset(_P04):
         state = self.s.host("GET", "/api/host")          # host link still works
         self.assertEqual(state["room_key"], room_before)
         self.assertEqual((state["game"]["phase"], state["game"]["round"], state["released"]), ("setup", 0, False))
-        self.assertEqual(state["questions"], [])
+        self.assertEqual(state["question_log"], [])
         alice = next(g for g in state["guests"] if g["name"] == "Alice")
         self.assertEqual((alice["phone"], alice["is_host"], alice["character_id"], alice["assessment_done"]),
                          ("+15551234567", True, None, False))

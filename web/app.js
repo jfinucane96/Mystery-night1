@@ -1028,11 +1028,11 @@ const DELIVERY = { truthful: "truth", evasive: "dodged", lying: "LIED", confessi
 
 // Every question asked, newest first, so the host can follow the game (and step in)
 function questionsFeed(s) {
-  if (!s.questions.length && s.game.phase !== "investigation") return null;
+  if (!s.question_log.length && s.game.phase !== "investigation") return null;
   const details = el("details", { class: "card feed", open: openFeed },
-    el("summary", {}, `Questions asked (${s.questions.length})`),
-    !s.questions.length && el("p", { class: "small muted" }, "Nothing yet. Guests' questions appear here as they ask them."),
-    el("ul", { class: "plain" }, s.questions.map((q) => el("li", {},
+    el("summary", {}, `Questions asked (${s.question_log.length})`),
+    !s.question_log.length && el("p", { class: "small muted" }, "Nothing yet. Guests' questions appear here as they ask them."),
+    el("ul", { class: "plain" }, s.question_log.map((q) => el("li", {},
       el("p", { class: "small muted" },
         q.kind === "remember" ? `${q.asker} · private memory` : `${q.asker} → ${q.target} · public`,
         q.evidence ? ` · showed ${q.evidence}` : "", ` · ${when(q.at)}`,

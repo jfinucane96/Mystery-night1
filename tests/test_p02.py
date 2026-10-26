@@ -169,3 +169,19 @@ class Upgrade(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class HostSeesQuestionLabels(unittest.TestCase):
+    """Regression: the question feed once overwrote the questionnaire list on the host page."""
+
+    def test_host_state_has_both(self):
+        d = tempfile.mkdtemp()
+        try:
+            s = Server(os.path.join(d, "t.db"))
+            state = s.host("GET", "/api/host")
+            self.assertEqual(len(state["questions"]), 6)
+            self.assertIn("label", state["questions"][0])
+            self.assertEqual(state["question_log"], [])
+            s.stop()
+        finally:
+            shutil.rmtree(d, ignore_errors=True)

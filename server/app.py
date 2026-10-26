@@ -228,7 +228,7 @@ def host_state(ctx, t):
         "solution": storymod.host_solution(ctx.story),
         "room_key": game.room_key(t),
         "evidence": [{"id": e["id"], "name": e["name"]} for e in ctx.story.get("evidence", [])],
-        "questions": questions.host_log(t, ctx.story),
+        "question_log": questions.host_log(t, ctx.story),
         "clues": clues.host_overview(t, ctx.story),
         "guests": [guest_row(g) for g in game.list_guests(t)],
     }
