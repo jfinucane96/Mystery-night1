@@ -203,6 +203,15 @@ def reset_game(t):
     t.run("UPDATE game SET released_at = NULL, release_round = 0, phase = 'setup', round = 0, paused = 0 WHERE id = 1")
 
 
+def reset_progress(t):
+    """Back to before characters were released: keep guests, their links and their
+    questionnaire answers; clear role assignments and all game progress."""
+    for table in GAME_TABLES:
+        t.run(f"DELETE FROM {table}")
+    t.run("UPDATE guests SET character_id = NULL")
+    t.run("UPDATE game SET released_at = NULL, release_round = 0, phase = 'setup', round = 0, paused = 0 WHERE id = 1")
+
+
 # ------------------------------------------------------------ contact details
 
 def update_contact(t, guest_id, phone, consent, is_host):

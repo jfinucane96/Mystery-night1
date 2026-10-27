@@ -5,6 +5,9 @@
     py -m server.manage reset-game --yes [--online]
         start the party over: keeps guests' names/phones, the host link and the room link;
         wipes answers, characters and all game progress; every guest gets a fresh link
+    py -m server.manage reset-progress --yes [--online]
+        back to before characters were released: keeps guests, links and questionnaire
+        answers; clears role assignments and all game progress
 
 The old host link stops working straight away. The online app prints the new
 link in its Render logs on its next restart, or copy it from this output.
@@ -32,9 +35,9 @@ def load_dotenv():
 
 
 def main(argv):
-    if not argv or argv[0] not in ("new-host-link", "reset-game"):
+    if not argv or argv[0] not in ("new-host-link", "reset-game", "reset-progress"):
         sys.exit(__doc__)
-    if argv[0] == "reset-game" and "--yes" not in argv:
+    if argv[0] in ("reset-game", "reset-progress") and "--yes" not in argv:
         sys.exit("This wipes all answers and game progress. Add --yes to confirm.")
     online = "--online" in argv
     if online:
@@ -46,6 +49,12 @@ def main(argv):
     database = dbmod.from_env()
     database.init_schema()
     print(f"Database: {database.describe()}")
+    if argv[0] == "reset-progress":
+        with database.tx() as t:
+            game.reset_progress(t)
+            names = [g["name"] for g in game.list_guests(t)]
+        print(f"Progress reset; answers and links kept for: {', '.join(names) or 'none'}")
+        return
     if argv[0] == "reset-game":
         with database.tx() as t:
             game.reset_game(t)

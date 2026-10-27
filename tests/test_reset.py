@@ -29,6 +29,25 @@ class Reset(_P04):
         self.assertEqual(view["assessment"]["answers"], {})
 
 
+    def test_reset_progress_keeps_answers_and_links(self):
+        self.ask(self.alice, "remember", "What did I see?")
+        self.s.host("POST", "/api/host/unrelease", {})          # answers can only be saved before release
+        status, _ = self.s.call("POST", "/api/me/assessment", self.alice["token"], {
+            "answers": {"spotlight": 2, "acting": 2, "investigation": 2, "deception": 2, "missions": 2, "preparation": 2},
+            "limits": {"killer": "ok", "romance": "ok"}, "submit": True})
+        self.assertEqual(status, 200)
+        self.s.host("POST", "/api/host/release", {})
+        with self.s.db.tx() as t:
+            game.reset_progress(t)
+        state = self.s.host("GET", "/api/host")
+        self.assertEqual((state["released"], state["game"]["phase"]), (False, "setup"))
+        alice = next(g for g in state["guests"] if g["name"] == "Alice")
+        self.assertEqual((alice["character_id"], alice["assessment_done"], alice["token"]),
+                         (None, True, self.alice["token"]))
+        self.assertEqual(state["question_log"], [])
+        self.assertEqual(json.loads(self.s.call("GET", "/api/me", self.alice["token"])[1])["stage"], "waiting")
+
+
 for _name in [n for n in dir(_P04) if n.startswith("test_")]:
     setattr(Reset, _name, None)
 del _P04
