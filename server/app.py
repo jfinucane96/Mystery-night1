@@ -27,6 +27,7 @@ STATIC = {
 }
 PAGE_PATTERN = re.compile(r"^/(play|host|room|labels)/[A-Za-z0-9_-]{20,100}$")
 CLUE_PAGE = re.compile(r"^/c/[A-Za-z0-9-]{4,12}$")      # what a QR label opens
+PORTRAIT = re.compile(r"^/static/portraits/([a-z]{2,20})\.webp$")   # character portraits (web/portraits)
 MAX_BODY = 16 * 1024
 
 SECURITY_HEADERS = {
@@ -547,6 +548,9 @@ class Handler(BaseHTTPRequestHandler):
             return self._file("index.html", "text/html; charset=utf-8")
         if path in STATIC:
             return self._file(*STATIC[path])
+        portrait = PORTRAIT.match(path)
+        if portrait and os.path.exists(os.path.join(WEB, "portraits", portrait.group(1) + ".webp")):
+            return self._file(os.path.join("portraits", portrait.group(1) + ".webp"), "image/webp")
         self._send(404, "Not found", "text/plain")
 
     def do_POST(self):

@@ -68,7 +68,7 @@
         "childhood_memory": "Childhood summers at the manor, endless competitions with Grant, and a fragmented memory of the night of the east-wing fire.",
         "motto": "Every great fortune begins with someone willing to take a risk.",
         "costume": "Tailored Victorian evening coat, waistcoat, pocket watch.",
-        "photo": ""
+        "photo": "/static/portraits/jonathan.webp"
       }
     },
     {
@@ -125,7 +125,7 @@
         "childhood_memory": "Forbidden rooms, and grown-ups insisting that the children must never discuss their final summer.",
         "motto": "Good manners are simply the most elegant form of control.",
         "costume": "Elegant late-Victorian evening dress, gloves, understated jewellery.",
-        "photo": ""
+        "photo": "/static/portraits/danielle.webp"
       }
     },
     {
@@ -182,7 +182,7 @@
         "childhood_memory": "Passages and rooms that are missing from the current estate plans, and your parents' anxiety after the fire.",
         "motto": "I am not arguing. I am explaining why you are mistaken.",
         "costume": "Structured Victorian suit, measuring tools or a rolled map.",
-        "photo": ""
+        "photo": "/static/portraits/grant.webp"
       }
     },
     {
@@ -239,7 +239,7 @@
         "childhood_memory": "A greenhouse locked up after the fire, and smoke drifting across the garden.",
         "motto": "Nature is rarely cruel without a reason. People are another matter.",
         "costume": "Botanical brooch, dark green gown, pressed-flower notebook.",
-        "photo": ""
+        "photo": "/static/portraits/caroline.webp"
       }
     },
     {
@@ -296,7 +296,7 @@
         "childhood_memory": "Sealed family ledgers, and adults behaving strangely after the fire.",
         "motto": "Everything has a price. The trick is discovering who is willing to pay it.",
         "costume": "Rich waistcoat, signet ring, a ledger or an antique coin.",
-        "photo": ""
+        "photo": "/static/portraits/nanor.webp"
       }
     },
     {
@@ -353,7 +353,7 @@
         "childhood_memory": "Candlelit gatherings, a ceremonial flame, and a feeling of fear before the fire.",
         "motto": "Wealth means very little if one has nothing worthwhile to do with it.",
         "costume": "Elegant jewel-toned gown, with a candle or charity-ribbon motif.",
-        "photo": ""
+        "photo": "/static/portraits/taylor.webp"
       }
     },
     {
@@ -410,7 +410,7 @@
         "childhood_memory": "A forbidden book in the library, strange carved symbols, and something you still cannot explain in the east wing.",
         "motto": "The absence of evidence is often merely evidence that someone has hidden it.",
         "costume": "Tweed Victorian suit, spectacles, notebook, an old book.",
-        "photo": ""
+        "photo": "/static/portraits/griff.webp"
       }
     },
     {
@@ -467,7 +467,7 @@
         "childhood_memory": "A locked cabinet, a disputed object, and raised voices before the fire.",
         "motto": "Extraordinary claims are considerably more interesting when accompanied by proof.",
         "costume": "Refined Victorian dress, cameo, a magnifying glass or an artefact sketch.",
-        "photo": ""
+        "photo": "/static/portraits/grace.webp"
       }
     }
   ],
