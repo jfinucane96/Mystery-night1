@@ -6,8 +6,8 @@ import json
 import os
 import re
 
-STORY_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                          "content", "story.json")
+STORY_PATH = os.environ.get("MM_STORY") or os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "content", "story.json")
 
 
 class StoryError(Exception):
@@ -44,11 +44,13 @@ def check(story):
         for r in c.get("relationships", []):
             if r.get("with") not in ids:
                 problems.append(f"character '{c.get('id')}' has a relationship with unknown id '{r.get('with')}'")
-    if story["solution"].get("killer") not in ids:
+    plot_ready = not plot_tbd(story)
+    if plot_ready and story["solution"].get("killer") not in ids:
         problems.append("solution.killer is not a character id")
     m = story.get("murder_announcement", {})
-    if not (m.get("title") and m.get("text")):
+    if plot_ready and not (m.get("title") and m.get("text")):
         problems.append("murder_announcement needs a title and text")
+    problems += check_cards(story, ids)
     seen = set()
     for d in story.get("directions", []):
         if d.get("id") in seen or not d.get("id"):
@@ -140,10 +142,34 @@ def check_knowledge(story, ids):
             if w.get("confess_with") and not w.get("confession"):
                 problems.append(f"{where}: has confess_with but no confession text")
         # Every role must be able to answer the basics everyone asks
+        if plot_tbd(story):
+            continue
         topics = {tp for f in c.get("knowledge", []) for tp in f.get("topics", [])}
         for core, meaning in story.get("core_topics", {}).items():
             if core not in topics:
                 problems.append(f"character '{c['id']}' needs a fact with topic '{core}' ({meaning})")
+    return problems
+
+
+def plot_tbd(story):
+    """True while the murder plot is still being written (cards can go out before it)."""
+    return story.get("murder_plot") == "tbd"
+
+
+CARD_FIELDS = ("occupation", "personality", "background", "how_met", "childhood_memory", "motto", "costume")
+
+
+def check_cards(story, ids):
+    problems = []
+    for c in story["characters"]:
+        card = c.get("card")
+        if not card:
+            continue
+        for field in CARD_FIELDS:
+            if not card.get(field):
+                problems.append(f"character '{c['id']}': card is missing '{field}'")
+        if card.get("spouse") and card["spouse"] not in ids:
+            problems.append(f"character '{c['id']}': card.spouse '{card['spouse']}' is not a character id")
     return problems
 
 
@@ -163,6 +189,8 @@ def guest_view(story, guest, released, prep="light"):
         "guest_name": guest["name"],
         "character": None,
     }
+    if story.get("story_name"):
+        view["story_name"] = story["story_name"]
     c = story["by_id"].get(guest.get("character_id") or "")
     if c and released:
         names = story["by_id"]
@@ -170,18 +198,38 @@ def guest_view(story, guest, released, prep="light"):
             "name": c["name"],
             "tagline": c["tagline"],
             "biography": c["biography"],
-            "relationships": [{"name": names[r["with"]]["name"], "text": r["text"]}
-                              for r in c["relationships"]],
+            "relationships": [{"name": names[r["with"]]["name"], "player": names[r["with"]].get("player", ""),
+                               "text": r["text"]} for r in c["relationships"]],
             "secrets": list(c["secrets"]),
             "objectives": list(c["objectives"]),
             "chapter": c.get("chapter") or None,
             "prep": prep,
+            "card": character_card(story, c),
         }
+        if story.get("background"):
+            view["background"] = list(story["background"])
     return view
+
+
+def character_card(story, c):
+    """The player-safe character card (only the guest's own)."""
+    card = c.get("card")
+    if not card:
+        return None
+    out = {k: card[k] for k in CARD_FIELDS}
+    out["photo"] = card.get("photo") or ""
+    out["player"] = c.get("player", "")
+    spouse = story["by_id"].get(card.get("spouse") or "")
+    if spouse:
+        out["spouse"] = {"name": spouse["name"], "player": spouse.get("player", "")}
+    return out
 
 
 def host_solution(story):
     s = story["solution"]
+    if plot_tbd(story) or not s.get("killer"):
+        return {"victim": story["victim"], "killer": "Not decided yet", "motive": s.get("motive", ""),
+                "method": s.get("method", ""), "summary": s.get("summary", "")}
     return {
         "victim": story["victim"],
         "killer": story["by_id"][s["killer"]]["name"],

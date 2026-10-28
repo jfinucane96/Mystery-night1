@@ -67,7 +67,7 @@ def guest_state(ctx, t, guest):
         view["messages"] = [{"id": m["id"], "body": m["body"], "at": m["created_at"], "read": m["read_at"] is not None}
                             for m in msgs]
         if s["phase"] in ("investigation", "accusation", "reveal"):
-            view["murder"] = ctx.story["murder_announcement"]
+            view["murder"] = ctx.story.get("murder_announcement") or {"title": "", "text": ""}
         view["investigation"] = investigation_view(ctx, t, guest, s)
         return view
     a = ctx.assessment
@@ -416,6 +416,15 @@ def host_evidence(ctx, t, body, _, gid):
     return host_state(ctx, t)
 
 
+@route("GET", r"/api/host/preview/(?P<gid>g[0-9a-f]{8})", "host")
+def host_preview(ctx, t, body, _, gid):
+    """The host sees exactly what a guest's character screen will show, before releasing."""
+    g = game.guest_for_id(t, gid)
+    view = storymod.guest_view(ctx.story, g, True, casting.prep_level(g))
+    view["preview"] = True
+    return view
+
+
 @route("POST", r"/api/host/room/new-link", "host")
 def host_new_room_link(ctx, t, body, _):
     game.reset_room_key(t)
@@ -431,7 +440,7 @@ def room_get(ctx, t, body, _):
         "title": ctx.story["title"],
         "phase": s["phase"], "phase_name": play.PHASE_NAMES[s["phase"]],
         "round": s["round"], "rounds": play.config(ctx.story)["rounds"], "paused": s["paused"],
-        "murder": ctx.story["murder_announcement"],
+        "murder": ctx.story.get("murder_announcement") or {"title": "", "text": ""},
         "events": questions.room_events(t, ctx.story),
     }
 

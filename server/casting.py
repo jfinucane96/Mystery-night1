@@ -47,7 +47,7 @@ def check_story(story, assessment):
         for item in cast.get("content", []):
             if item not in assessment["limit_ids"]:
                 problems.append(f"character '{c['id']}': casting.content '{item}' is not a limit id")
-    killer = story["by_id"].get(story["solution"]["killer"])
+    killer = story["by_id"].get(story["solution"].get("killer") or "")
     if killer and "killer" not in killer.get("casting", {}).get("content", []):
         problems.append("the killer's casting.content must include 'killer'")
     return problems

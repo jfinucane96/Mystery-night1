@@ -1,578 +1,482 @@
 {
   "title": "Murder Mystery at the Finucane Manor",
-  "placeholder": true,
-  "note": "PLACEHOLDER story for testing the app. The real mystery replaces this in P07.",
-  "setting": "A stormy evening at Ravenscroft Manor. Lady Ravenscroft has invited old friends to celebrate her 60th birthday. Halfway through her toast, she collapses.",
-  "victim": "Lady Cordelia Ravenscroft",
-  "murder_announcement": {
-    "title": "There has been a murder!",
-    "text": "As Lady Ravenscroft raised her glass for the birthday toast, she faltered, gasped, and collapsed. Dr. Thorne rushed to her side, but it was too late. Lady Cordelia Ravenscroft is dead, and the doors of the manor are locked against the storm. Someone in this room is a murderer. (PLACEHOLDER announcement.)"
-  },
+  "story_name": "The Hollow Order",
+  "placeholder": false,
+  "murder_plot": "tbd",
+  "note": "The Hollow Order: player-safe character cards only. The murder plot, blackmail letters, clues and tribunal are still being written (see the host plan document). Nothing here may reveal the murderer.",
+  "setting": "Hollowmere Manor, Blackthorn Hollow, England · Autumn 1892",
+  "background": [
+    "Blackthorn Hollow, England. Autumn, 1892.",
+    "Twenty-five years ago, eight children from four old families spent their summers together at Hollowmere Manor, running wild through its gardens, its library and the corridors their parents told them never to enter.",
+    "Those summers ended suddenly. During the last of them, a fire swept through the manor's east wing. Afterwards the families closed ranks: the east wing was sealed, the children were sent home, and nobody ever properly explained what had happened that night.",
+    "The eight children grew up, and grew closer in other ways: four of them married the other four. Now Sir Jonathan Pemberwick has inherited Hollowmere from his great-uncle, Lord Edmund Hollowmere, and has invited his oldest friends back to the manor for the first time since that final summer, to celebrate, to reminisce, and to hear his plans for the estate's future.",
+    "Formal evening dress is expected. Old friendships will be renewed. Old questions may be asked."
+  ],
+  "victim": "To be revealed",
   "characters": [
     {
-      "id": "butler",
-      "name": "Mr. Edmund Pike",
-      "tagline": "The loyal butler",
+      "id": "jonathan",
+      "player": "Jonathan",
+      "name": "Sir Jonathan Reginald Pemberwick",
+      "tagline": "House Pemberwick · Keeper of the Manor",
+      "casting": {
+        "load": "major",
+        "needs": {},
+        "content": []
+      },
+      "biography": "You have recently inherited Hollowmere Manor from your great-uncle, Lord Edmund, and have invited your old friends back to reconnect and to consider restoring and developing the estate.",
+      "relationships": [
+        {
+          "with": "danielle",
+          "text": "Your wife. Sharper than you and politer than you; she has rescued more of your schemes than she lets you know."
+        },
+        {
+          "with": "grant",
+          "text": "Your oldest friend and favourite rival. You have competed at everything since you were boys, and he still disputes who won the great boat race on the Hollowmere lake."
+        },
+        {
+          "with": "caroline",
+          "text": "Grant's wife, and the only person alive who can make him lose an argument. You find this deeply entertaining."
+        },
+        {
+          "with": "nanor",
+          "text": "He understands your appetite for opportunity better than anyone. A natural partner for the estate plans, if you can trust his numbers."
+        },
+        {
+          "with": "taylor",
+          "text": "Nanor's wife: warm, generous and quietly unconvinced by your grander ideas. Winning her support would mean a great deal."
+        },
+        {
+          "with": "griff",
+          "text": "Overly fascinated with the manor's history. You need him enthusiastic about the estate's future, not poking around its sealed rooms."
+        },
+        {
+          "with": "grace",
+          "text": "Griff's wife: practical and hard to impress. If anyone can value the manor's collection honestly, it is her."
+        }
+      ],
+      "secrets": [],
+      "objectives": [
+        "Win support for the estate's future and establish yourself as the natural leader."
+      ],
+      "card": {
+        "occupation": "Entrepreneur and property investor",
+        "spouse": "danielle",
+        "personality": "Charming, bold, persuasive and relentlessly optimistic; occasionally reckless.",
+        "background": "You have recently inherited Hollowmere Manor from your great-uncle, Lord Edmund, and have invited your old friends back to reconnect and to consider restoring and developing the estate.",
+        "how_met": "You turned up at the Ashford midsummer ball in 1884 without an invitation (yours, you insisted, had been lost in the post). Danielle recognised you at once from those Hollowmere summers, covered for you with her mother, and spent the rest of the night pretending not to be amused by you. Six months later you proposed in a box at Covent Garden. She said yes before you had finished the speech you had rehearsed for a week.",
+        "childhood_memory": "Childhood summers at the manor, endless competitions with Grant, and a fragmented memory of the night of the east-wing fire.",
+        "motto": "Every great fortune begins with someone willing to take a risk.",
+        "costume": "Tailored Victorian evening coat, waistcoat, pocket watch.",
+        "photo": ""
+      }
+    },
+    {
+      "id": "danielle",
+      "player": "Dani",
+      "name": "Lady Danielle Cordelia Pemberwick (née Ashford)",
+      "tagline": "Ashford bloodline · Keeper of the Covenant",
+      "casting": {
+        "load": "major",
+        "needs": {},
+        "content": []
+      },
+      "biography": "You were raised among families that prized discretion and tradition. You manage society occasions, and sometimes the fallout from Jonathan's ambitions.",
+      "relationships": [
+        {
+          "with": "jonathan",
+          "text": "Your ambitious husband: charming, bold and occasionally reckless. You manage the consequences more often than he realises."
+        },
+        {
+          "with": "grant",
+          "text": "Jonathan's oldest rival. You have watched the two of them compete since childhood, and you keep the peace when it matters."
+        },
+        {
+          "with": "caroline",
+          "text": "You adore her wit. The two of you have shared many a look across a dinner table while your husbands argue."
+        },
+        {
+          "with": "nanor",
+          "text": "Charming and calculating. He and Jonathan get along a little too well whenever money is involved."
+        },
+        {
+          "with": "taylor",
+          "text": "You value her warmth and her genuine goodness. One of the very few people you trust completely."
+        },
+        {
+          "with": "griff",
+          "text": "Brilliant and dramatic. He asks the questions about those old summers that everyone else has learned not to ask."
+        },
+        {
+          "with": "grace",
+          "text": "You value her practicality. Like you, she prefers facts to theatrics."
+        }
+      ],
+      "secrets": [],
+      "objectives": [
+        "Protect your family's dignity, support the reunion, and discover why the older generation guarded its traditions so closely."
+      ],
+      "card": {
+        "occupation": "Society hostess and patron of the arts",
+        "spouse": "jonathan",
+        "personality": "Sophisticated, observant, composed and devastatingly polite.",
+        "background": "You were raised among families that prized discretion and tradition. You manage society occasions, and sometimes the fallout from Jonathan's ambitions.",
+        "how_met": "Jonathan Pemberwick appeared at your family's midsummer ball in 1884 without an invitation. You recognised him instantly, the same boy who once dared everyone to climb Hollowmere's bell tower, and you covered for him with your mother. Six months later he proposed at Covent Garden in the middle of a speech so long you said yes just to save the second act. Your mother, unusually, raised no objection at all.",
+        "childhood_memory": "Forbidden rooms, and grown-ups insisting that the children must never discuss their final summer.",
+        "motto": "Good manners are simply the most elegant form of control.",
+        "costume": "Elegant late-Victorian evening dress, gloves, understated jewellery.",
+        "photo": ""
+      }
+    },
+    {
+      "id": "grant",
+      "player": "Grant",
+      "name": "Lord Grant Bartholomew Blackthorne III",
+      "tagline": "House Blackthorne · Keeper of the Passage",
+      "casting": {
+        "load": "major",
+        "needs": {},
+        "content": []
+      },
+      "biography": "You come from a family that kept the estate's boundaries, maps and routes. You believe you know Hollowmere far better than its new owner does.",
+      "relationships": [
+        {
+          "with": "caroline",
+          "text": "Your wife: the rare person who can out-argue you. You would never say so aloud."
+        },
+        {
+          "with": "jonathan",
+          "text": "Your lifelong rival and oldest friend. He thinks he knows Hollowmere because he owns it. You know it because your family mapped it."
+        },
+        {
+          "with": "danielle",
+          "text": "Jonathan's wife: elegant, observant, and far too clever for him."
+        },
+        {
+          "with": "nanor",
+          "text": "A rival intellect. You enjoy matching wits with him, and checking his arithmetic."
+        },
+        {
+          "with": "taylor",
+          "text": "Kind and principled. She has a way of making you behave better than you intended to."
+        },
+        {
+          "with": "griff",
+          "text": "His wild theories amuse you endlessly. You enjoy dismantling them; he enjoys rebuilding them."
+        },
+        {
+          "with": "grace",
+          "text": "Griff's wife. You both respect evidence, which makes her far more dangerous in an argument than her husband."
+        }
+      ],
+      "secrets": [],
+      "objectives": [
+        "Protect Blackthorne interests and establish the real boundaries and history of the estate."
+      ],
+      "card": {
+        "occupation": "Surveyor and cartographer",
+        "spouse": "caroline",
+        "personality": "Precise, competitive, arrogant in a charming way, and loyal to the friends he chooses.",
+        "background": "You come from a family that kept the estate's boundaries, maps and routes. You believe you know Hollowmere far better than its new owner does.",
+        "how_met": "In 1885 you attended Caroline's lecture at the Royal Botanic Society (not entirely by chance) and challenged her findings from the floor. She took your argument apart in front of two hundred people. You asked her to dinner to 'continue the discussion'. You have been continuing it ever since; you married the following spring.",
+        "childhood_memory": "Passages and rooms that are missing from the current estate plans, and your parents' anxiety after the fire.",
+        "motto": "I am not arguing. I am explaining why you are mistaken.",
+        "costume": "Structured Victorian suit, measuring tools or a rolled map.",
+        "photo": ""
+      }
+    },
+    {
+      "id": "caroline",
+      "player": "Caroline",
+      "name": "Lady Caroline Evangeline Blackthorne (née Whitmore)",
+      "tagline": "Whitmore bloodline · Keeper of the Garden",
+      "casting": {
+        "load": "major",
+        "needs": {},
+        "content": []
+      },
+      "biography": "You spent your childhood afternoons in the manor's gardens and later pursued rare and unconventional botanical specimens.",
+      "relationships": [
+        {
+          "with": "grant",
+          "text": "Your husband: brilliant and exhausting. You still win most of your arguments."
+        },
+        {
+          "with": "jonathan",
+          "text": "Grant's lifelong rival. Charming, impulsive, and always selling something."
+        },
+        {
+          "with": "danielle",
+          "text": "You love her humour: dry, quick and perfectly polite."
+        },
+        {
+          "with": "nanor",
+          "text": "Always alert to a deal. You have learned to keep your research notes well out of his sight."
+        },
+        {
+          "with": "taylor",
+          "text": "Her warmth is genuine, and you treasure it."
+        },
+        {
+          "with": "griff",
+          "text": "You share his curiosity about Hollowmere's old plants and older histories. He is the one person who never finds your specimens strange."
+        },
+        {
+          "with": "grace",
+          "text": "Practical, sceptical and excellent company. The two of you get along famously."
+        }
+      ],
+      "secrets": [],
+      "objectives": [
+        "Learn what happened to the gardens, and preserve your research."
+      ],
+      "card": {
+        "occupation": "Botanist and horticultural researcher",
+        "spouse": "grant",
+        "personality": "Independent, sharp-witted, curious and thoroughly unimpressed by pomp.",
+        "background": "You spent your childhood afternoons in the manor's gardens and later pursued rare and unconventional botanical specimens.",
+        "how_met": "In 1885 a pompous surveyor stood up at your Royal Botanic Society lecture and announced that your soil maps were wrong. It was Grant Blackthorne, the boy who used to trample your seedlings at Hollowmere. You took his argument apart in front of two hundred people, and he asked you to dinner to 'continue the discussion'. You said yes mostly so you could win. You married the following spring.",
+        "childhood_memory": "A greenhouse locked up after the fire, and smoke drifting across the garden.",
+        "motto": "Nature is rarely cruel without a reason. People are another matter.",
+        "costume": "Botanical brooch, dark green gown, pressed-flower notebook.",
+        "photo": ""
+      }
+    },
+    {
+      "id": "nanor",
+      "player": "Nanor",
+      "name": "Baron Nanor Percival Ravenscroft",
+      "tagline": "House Ravenscroft · Keeper of the Treasury",
+      "casting": {
+        "load": "major",
+        "needs": {},
+        "content": []
+      },
+      "biography": "You were raised to manage fortunes, and you have always been fascinated by the strange traditions attached to inherited wealth.",
+      "relationships": [
+        {
+          "with": "taylor",
+          "text": "Your perceptive wife. She sees through you more often than you would like, and she worries about your risks."
+        },
+        {
+          "with": "jonathan",
+          "text": "A potential partner. He has the manor; you understand money. Together, the possibilities are considerable."
+        },
+        {
+          "with": "danielle",
+          "text": "Jonathan's wife: composed and impossible to read. You suspect she is the real negotiator in that marriage."
+        },
+        {
+          "with": "grant",
+          "text": "A rival intellect. You enjoy sparring with him, and you never let him near your ledgers."
+        },
+        {
+          "with": "caroline",
+          "text": "Grant's wife: sharp and entirely immune to your charm. A rare challenge."
+        },
+        {
+          "with": "griff",
+          "text": "He shares your curiosity about the occult and the strange traditions of old families."
+        },
+        {
+          "with": "grace",
+          "text": "Griff's wife. She knows what things are really worth, which makes her useful, and dangerous, at a negotiating table."
+        }
+      ],
+      "secrets": [],
+      "objectives": [
+        "Determine the estate's true value, and keep Ravenscroft influence over the fortune."
+      ],
+      "card": {
+        "occupation": "Financier, investor and occasional gambler",
+        "spouse": "taylor",
+        "personality": "Charming, calculating, comfortable with risk and always alert to a deal.",
+        "background": "You were raised to manage fortunes, and you have always been fascinated by the strange traditions attached to inherited wealth.",
+        "how_met": "In 1886 Taylor held a charity auction for a children's hospital. You bid an outrageous sum for a truly dreadful painting of a horse, partly to impress her and partly because you cannot resist winning. She thanked you sweetly, then talked you into funding an entire new ward. You have never closed a worse deal, or a better one. You married the following summer.",
+        "childhood_memory": "Sealed family ledgers, and adults behaving strangely after the fire.",
+        "motto": "Everything has a price. The trick is discovering who is willing to pay it.",
+        "costume": "Rich waistcoat, signet ring, a ledger or an antique coin.",
+        "photo": ""
+      }
+    },
+    {
+      "id": "taylor",
+      "player": "Taylor",
+      "name": "Lady Taylor Beatrice Ravenscroft (née Bellamy)",
+      "tagline": "Bellamy bloodline · Keeper of the Flame",
       "casting": {
         "load": "low-pressure",
         "needs": {},
         "content": []
       },
-      "biography": "You have served the Ravenscroft family for thirty years. You know every corridor of the manor, and every secret whispered in it.",
+      "biography": "You are known for supporting schools and hospitals, and you grew up hearing that wealth requires duty and sacrifice.",
       "relationships": [
         {
-          "with": "niece",
-          "text": "You watched her grow up. Lately she has been asking odd questions about the wine cellar."
+          "with": "nanor",
+          "text": "Your husband. His risk-taking worries you; his charm still works on you, which worries you more."
         },
         {
-          "with": "doctor",
-          "text": "He visits Lady Ravenscroft weekly. You don't trust his smile."
+          "with": "jonathan",
+          "text": "Ambitious and persuasive. You would like to believe his plans for the estate will do some good."
+        },
+        {
+          "with": "danielle",
+          "text": "You admire her competence. She is the person you would call in a crisis."
+        },
+        {
+          "with": "grant",
+          "text": "Proud and clever, but loyal underneath it all, if he has chosen you as a friend."
+        },
+        {
+          "with": "caroline",
+          "text": "Her humour is a delight; she makes every evening feel shorter."
+        },
+        {
+          "with": "griff",
+          "text": "Endlessly enthusiastic. His stories of the old summers bring back memories you had half forgotten."
+        },
+        {
+          "with": "grace",
+          "text": "You value her steadiness. When everyone else panics, Grace does not."
         }
       ],
-      "secrets": [
-        "TEST SECRET for PIKE: You have been quietly selling old bottles from the wine cellar for years."
-      ],
+      "secrets": [],
       "objectives": [
-        "Keep anyone from looking closely at the wine cellar records.",
-        "Find out who moved the birthday champagne."
+        "Reconnect the group, and advocate for using the inheritance responsibly."
       ],
-      "chapter": "PLACEHOLDER CHAPTER. The real chapter (about 10 minutes of reading) is written with the story in P07.\n\nThe rain had not stopped since noon. You moved through the east corridor of Ravenscroft Manor the way you always did, silently, counting the portraits as you passed. Thirty years in this house had taught you which floorboards complained and which doors were best left closed.\n\nTonight the house was full again. Voices drifted up from the drawing room, and somewhere below, the wine cellar waited in the dark, keeping your secret as faithfully as you had kept everyone else's.",
-      "knowledge": [
-        {
-          "id": "pike-alibi",
-          "text": "During the toast you stood by the dining-room door holding the tray of spare glasses, as you always do.",
-          "source": "firsthand",
-          "certainty": "certain",
-          "from_round": 1,
-          "topics": [
-            "alibi",
-            "toast",
-            "where",
-            "during",
-            "door",
-            "standing"
-          ],
-          "when_asked": {
-            "stance": "truth",
-            "says": "During the toast? By the dining-room door with the spare glasses, where I always stand. I saw the whole room."
-          }
-        },
-        {
-          "id": "pike-victim",
-          "text": "You served Lady Ravenscroft for thirty years. She was demanding but fair, and you were loyal to her.",
-          "source": "firsthand",
-          "certainty": "certain",
-          "from_round": 1,
-          "topics": [
-            "victim",
-            "relationship",
-            "lady",
-            "ravenscroft",
-            "cordelia",
-            "employer",
-            "know"
-          ],
-          "when_asked": {
-            "stance": "truth",
-            "says": "Thirty years I served Her Ladyship. Demanding, yes, but fair. I was loyal to the end."
-          }
-        },
-        {
-          "id": "pike-saw-thorne",
-          "text": "Ten minutes before the toast, you saw Dr. Thorne alone by the champagne tray in the dining room, rummaging in his medical bag.",
-          "source": "firsthand",
-          "certainty": "certain",
-          "from_round": 1,
-          "topics": [
-            "champagne",
-            "doctor",
-            "thorne",
-            "tray",
-            "bag",
-            "toast",
-            "dining"
-          ],
-          "when_asked": {
-            "stance": "truth",
-            "says": "I'll tell you what I saw. Dr. Thorne, alone at the champagne tray, ten minutes before the toast, with his hand in that bag of his."
-          }
-        },
-        {
-          "id": "pike-cellar",
-          "text": "You have been quietly selling old bottles from the wine cellar for years.",
-          "source": "firsthand",
-          "certainty": "certain",
-          "from_round": 1,
-          "topics": [
-            "cellar",
-            "wine",
-            "bottles",
-            "money",
-            "selling"
-          ],
-          "when_asked": {
-            "stance": "lie",
-            "says": "The cellar? Everything is exactly as Her Ladyship left it. I keep meticulous records."
-          }
-        },
-        {
-          "id": "pike-solicitor",
-          "text": "Rosalind told you this afternoon that the family solicitor visited Lady Ravenscroft this week.",
-          "source": "heard",
-          "heard_from": "niece",
-          "certainty": "unsure",
-          "from_round": 1,
-          "topics": [
-            "will",
-            "solicitor",
-            "lawyer",
-            "inheritance"
-          ],
-          "when_asked": {
-            "stance": "evade",
-            "says": "Family business is not mine to discuss, I'm afraid."
-          }
-        }
-      ]
+      "card": {
+        "occupation": "Philanthropist and charitable patron",
+        "spouse": "nanor",
+        "personality": "Warm, socially adept, principled but not naive.",
+        "background": "You are known for supporting schools and hospitals, and you grew up hearing that wealth requires duty and sacrifice.",
+        "how_met": "In 1886 you organised a charity auction for a children's hospital, and Nanor Ravenscroft bid a ridiculous sum for the worst painting in the room, a lopsided horse. Afterwards you persuaded him to fund a whole new ward as well. He still claims it was his idea. You married the following summer.",
+        "childhood_memory": "Candlelit gatherings, a ceremonial flame, and a feeling of fear before the fire.",
+        "motto": "Wealth means very little if one has nothing worthwhile to do with it.",
+        "costume": "Elegant jewel-toned gown, with a candle or charity-ribbon motif.",
+        "photo": ""
+      }
     },
     {
-      "id": "niece",
-      "name": "Rosalind Ravenscroft",
-      "tagline": "The ambitious niece",
+      "id": "griff",
+      "player": "Griff",
+      "name": "Professor Griffin Thaddeus Wraithmore",
+      "tagline": "House Wraithmore · Keeper of the Records",
       "casting": {
         "load": "major",
-        "needs": {
-          "spotlight": 3,
-          "acting": 3
-        },
-        "content": [
-          "romance"
-        ]
+        "needs": {},
+        "content": []
       },
-      "biography": "You are Lady Ravenscroft's only niece and, you have always assumed, her heir. You run a struggling art gallery in the city.",
+      "biography": "You study ancient civilisations, hidden societies and unexplained events. Your family's records tie you to Blackthorn Hollow.",
       "relationships": [
         {
-          "with": "butler",
-          "text": "Pike has known you since childhood. He is kind, but he notices everything."
+          "with": "grace",
+          "text": "Your wife. She keeps you grounded and demands proof for everything, which makes her approval worth having."
         },
         {
-          "with": "painter",
-          "text": "A painter your aunt has taken a sudden liking to. You find this suspicious."
+          "with": "jonathan",
+          "text": "He owns the manor you have longed to explore since you were a boy. Stay on his good side."
+        },
+        {
+          "with": "danielle",
+          "text": "Jonathan's wife: gracious, and she watches everything. You suspect she remembers more of those summers than she says."
+        },
+        {
+          "with": "grant",
+          "text": "He debates every theory you have ever had. You secretly enjoy it."
+        },
+        {
+          "with": "caroline",
+          "text": "A fellow lover of forgotten things. She found the strangest plants in those gardens."
+        },
+        {
+          "with": "nanor",
+          "text": "He shares your fascination with the occult. Possibly the only one who takes your theories seriously."
+        },
+        {
+          "with": "taylor",
+          "text": "Kind and patient; she listens to your stories longer than anyone else."
         }
       ],
-      "secrets": [
-        "TEST SECRET for ROSALIND: Your gallery is bankrupt and you owe money to dangerous people."
-      ],
+      "secrets": [],
       "objectives": [
-        "Find out whether your aunt changed her will.",
-        "Hide your money troubles from everyone."
+        "Investigate the fire, locate the lost records, and make a historic discovery."
       ],
-      "chapter": "PLACEHOLDER CHAPTER. The real chapter (about 10 minutes of reading) is written with the story in P07.\n\nYou arrived late on purpose. An entrance, after all, is half the battle. Your coat was soaked and your smile was perfect as you swept into the hall, already scanning the room for your aunt.\n\nSomewhere in this house was the answer to the only question that mattered: had she changed her will? You had come to find out, and you did not intend to leave without knowing.",
-      "knowledge": [
-        {
-          "id": "rosalind-alibi",
-          "text": "During the toast you were standing beside your aunt, closest of anyone, smiling for the guests.",
-          "source": "firsthand",
-          "certainty": "certain",
-          "from_round": 1,
-          "topics": [
-            "alibi",
-            "toast",
-            "where",
-            "during",
-            "standing",
-            "beside"
-          ],
-          "when_asked": {
-            "stance": "truth",
-            "says": "I was right beside my aunt during the toast. Closer than anyone. I saw her fall."
-          }
-        },
-        {
-          "id": "rosalind-victim",
-          "text": "You resented your aunt's control over your life and money, but you also loved her.",
-          "source": "firsthand",
-          "certainty": "certain",
-          "from_round": 1,
-          "topics": [
-            "victim",
-            "relationship",
-            "aunt",
-            "lady",
-            "ravenscroft",
-            "cordelia",
-            "know"
-          ],
-          "when_asked": {
-            "stance": "evade",
-            "says": "She was my aunt. Family is... complicated. That's all."
-          }
-        },
-        {
-          "id": "rosalind-champagne",
-          "text": "You never touched the champagne tray; Pike served everyone's glass.",
-          "source": "firsthand",
-          "certainty": "certain",
-          "from_round": 1,
-          "topics": [
-            "champagne",
-            "glass",
-            "tray",
-            "drink",
-            "served"
-          ],
-          "when_asked": {
-            "stance": "truth",
-            "says": "I didn't touch the champagne. Pike served everyone. Ask him."
-          }
-        },
-        {
-          "id": "rosalind-will",
-          "text": "At lunch, your aunt told you she was 'making some changes' to her will.",
-          "source": "firsthand",
-          "certainty": "certain",
-          "from_round": 1,
-          "topics": [
-            "will",
-            "inheritance",
-            "changes",
-            "money",
-            "heir"
-          ],
-          "when_asked": {
-            "stance": "lie",
-            "says": "My aunt and I never discussed money. Never."
-          }
-        },
-        {
-          "id": "rosalind-letter",
-          "text": "Before dinner you saw Juniper slip a sealed letter into your aunt's handbag.",
-          "source": "firsthand",
-          "certainty": "certain",
-          "from_round": 1,
-          "topics": [
-            "letter",
-            "juniper",
-            "painter",
-            "handbag",
-            "envelope"
-          ],
-          "when_asked": {
-            "stance": "truth",
-            "says": "I saw that painter, Juniper, slip a sealed letter into my aunt's handbag before dinner. Ask her about that."
-          }
-        },
-        {
-          "id": "rosalind-gallery",
-          "text": "Your gallery is bankrupt and you owe money to dangerous people.",
-          "source": "firsthand",
-          "certainty": "certain",
-          "from_round": 1,
-          "topics": [
-            "gallery",
-            "debt",
-            "money",
-            "bankrupt",
-            "owe"
-          ],
-          "when_asked": {
-            "stance": "evade",
-            "says": "The art world has its ups and downs, darling. Next question."
-          }
-        }
-      ]
+      "card": {
+        "occupation": "Historian, explorer and antiquarian",
+        "spouse": "grace",
+        "personality": "Eccentric, brilliant, dramatic, and wildly excitable about forgotten history.",
+        "background": "You study ancient civilisations, hidden societies and unexplained events. Your family's records tie you to Blackthorn Hollow.",
+        "how_met": "In 1887, in a gallery of the British Museum, you were explaining (loudly) to a small crowd why a carved stone was a genuine Druidic relic. A woman in the crowd calmly informed you it was a forgery from the 1840s. It was Grace Sinclair, whom you had last seen hiding from you in Hollowmere's library. You argued for three hours. The next morning you returned with flowers and a twelve-page rebuttal. She read both. You married the following year.",
+        "childhood_memory": "A forbidden book in the library, strange carved symbols, and something you still cannot explain in the east wing.",
+        "motto": "The absence of evidence is often merely evidence that someone has hidden it.",
+        "costume": "Tweed Victorian suit, spectacles, notebook, an old book.",
+        "photo": ""
+      }
     },
     {
-      "id": "doctor",
-      "name": "Dr. Silas Thorne",
-      "tagline": "The family doctor",
+      "id": "grace",
+      "player": "Grace",
+      "name": "Lady Grace Ophelia Wraithmore (née Sinclair)",
+      "tagline": "Sinclair bloodline · Keeper of the Relics",
       "casting": {
         "load": "major",
-        "needs": {
-          "deception": 3,
-          "preparation": 3
-        },
-        "content": [
-          "killer"
-        ]
+        "needs": {},
+        "content": []
       },
-      "biography": "You have been Lady Ravenscroft's doctor for a decade. You are charming, careful, and always carry your medical bag.",
+      "biography": "You are an expert in authenticating rare artefacts, and you much prefer physical proof to your husband's dramatic supernatural theories.",
       "relationships": [
         {
-          "with": "butler",
-          "text": "The butler watches you too closely. You suspect he dislikes you."
+          "with": "griff",
+          "text": "Your husband: brilliant but distractible. You love him; you also check his sources."
         },
         {
-          "with": "niece",
-          "text": "Rosalind once asked you, oddly, how long her aunt might live."
+          "with": "jonathan",
+          "text": "The new owner of Hollowmere, and of its collection. You would very much like to see it."
+        },
+        {
+          "with": "danielle",
+          "text": "You respect her judgement. She never wastes a word."
+        },
+        {
+          "with": "grant",
+          "text": "Arrogant, but he respects evidence. That makes him tolerable."
+        },
+        {
+          "with": "caroline",
+          "text": "You enjoy her company enormously, and her refusal to be impressed by anyone."
+        },
+        {
+          "with": "nanor",
+          "text": "He will want to know what everything is worth. You would rather know where it came from."
+        },
+        {
+          "with": "taylor",
+          "text": "Warm and steady; you are very fond of her."
         }
       ],
-      "secrets": [
-        "TEST SECRET for THORNE: You lost your medical licence in another country under a different name."
-      ],
+      "secrets": [],
       "objectives": [
-        "Keep your past hidden.",
-        "Find out who opened your medical bag during dinner."
+        "Assess the manor's collection, and protect the provenance of important relics."
       ],
-      "chapter": "PLACEHOLDER CHAPTER. The real chapter (about 10 minutes of reading) is written with the story in P07.\n\nYour medical bag sat by your feet at dinner, as it always did. The guests found it reassuring. A doctor at the table, just in case.\n\nYou smiled, passed the salt, and listened. A careful man listens more than he speaks, and you had been careful for a very long time.",
-      "knowledge": [
-        {
-          "id": "thorne-alibi",
-          "text": "During the toast you stood next to Lady Ravenscroft, close enough to swap her glass. You claim you were by the fireplace.",
-          "source": "firsthand",
-          "certainty": "certain",
-          "from_round": 1,
-          "topics": [
-            "alibi",
-            "toast",
-            "where",
-            "during",
-            "fireplace",
-            "standing"
-          ],
-          "when_asked": {
-            "stance": "lie",
-            "says": "Where was I? By the fireplace, warming my hands, nowhere near her."
-          }
-        },
-        {
-          "id": "thorne-victim",
-          "text": "Lady Ravenscroft was your patient for ten years and paid you generously.",
-          "source": "firsthand",
-          "certainty": "certain",
-          "from_round": 1,
-          "topics": [
-            "victim",
-            "relationship",
-            "patient",
-            "lady",
-            "ravenscroft",
-            "cordelia",
-            "know"
-          ],
-          "when_asked": {
-            "stance": "truth",
-            "says": "She was my patient for ten years. A generous woman. This is a great loss."
-          }
-        },
-        {
-          "id": "thorne-poison",
-          "text": "You added powder from a glass vial in your medical bag to Lady Ravenscroft's champagne just before the toast.",
-          "source": "firsthand",
-          "certainty": "certain",
-          "from_round": 1,
-          "topics": [
-            "champagne",
-            "poison",
-            "vial",
-            "bag",
-            "toast",
-            "glass",
-            "powder"
-          ],
-          "when_asked": {
-            "stance": "lie",
-            "says": "I never went near the champagne. I was by the fireplace the whole time.",
-            "confess_with": [
-              "vial"
-            ],
-            "confession": "That vial... all right. Yes. I put it in her glass. She knew who I really was, and she was going to ruin me."
-          }
-        },
-        {
-          "id": "thorne-past",
-          "text": "Last week Lady Ravenscroft confronted you about the name you used to practise under abroad.",
-          "source": "firsthand",
-          "certainty": "certain",
-          "from_round": 1,
-          "topics": [
-            "past",
-            "name",
-            "identity",
-            "licence",
-            "argument",
-            "confronted"
-          ],
-          "when_asked": {
-            "stance": "lie",
-            "says": "We had a perfectly cordial relationship. She was my patient and my friend."
-          }
-        },
-        {
-          "id": "thorne-pike",
-          "text": "You noticed Pike watching you closely all evening.",
-          "source": "firsthand",
-          "certainty": "certain",
-          "from_round": 1,
-          "topics": [
-            "pike",
-            "butler",
-            "watching"
-          ],
-          "when_asked": {
-            "stance": "truth",
-            "says": "That butler hasn't taken his eyes off me all night. Ask him why."
-          }
-        }
-      ]
-    },
-    {
-      "id": "painter",
-      "name": "Juniper Vale",
-      "tagline": "The rising painter",
-      "casting": {
-        "load": "low-pressure",
-        "needs": {
-          "missions": 2
-        },
-        "content": [
-          "romance"
-        ]
-      },
-      "biography": "You are a young painter whom Lady Ravenscroft recently 'discovered'. She commissioned her birthday portrait from you.",
-      "relationships": [
-        {
-          "with": "niece",
-          "text": "Rosalind runs a gallery and has been cold to you all evening."
-        },
-        {
-          "with": "doctor",
-          "text": "The doctor looked startled when he first saw you, as if he recognised you."
-        }
-      ],
-      "secrets": [
-        "TEST SECRET for JUNIPER: You are Lady Ravenscroft's secret granddaughter, and she told you so last week."
-      ],
-      "objectives": [
-        "Decide whether to reveal who you really are.",
-        "Learn why the doctor seemed to recognise you."
-      ],
-      "chapter": "PLACEHOLDER CHAPTER. The real chapter (about 10 minutes of reading) is written with the story in P07.\n\nThe portrait was finished, wrapped in brown paper, leaning against the wall of the guest room you had been given. You had painted her eyes three times before they looked right.\n\nShe had told you a secret last week, one that changed everything you thought you knew about yourself. Tonight, among all these strangers who were not quite strangers, you would have to decide what to do with it.",
-      "knowledge": [
-        {
-          "id": "juniper-alibi",
-          "text": "During the toast you stood at the back of the room beside your covered portrait.",
-          "source": "firsthand",
-          "certainty": "certain",
-          "from_round": 1,
-          "topics": [
-            "alibi",
-            "toast",
-            "where",
-            "during",
-            "back",
-            "portrait",
-            "standing"
-          ],
-          "when_asked": {
-            "stance": "truth",
-            "says": "I was at the back, next to my portrait. I was waiting to unveil it after the toast."
-          }
-        },
-        {
-          "id": "juniper-victim",
-          "text": "Lady Ravenscroft commissioned your portrait and treated you with unusual warmth.",
-          "source": "firsthand",
-          "certainty": "certain",
-          "from_round": 1,
-          "topics": [
-            "victim",
-            "relationship",
-            "lady",
-            "ravenscroft",
-            "cordelia",
-            "know",
-            "commission"
-          ],
-          "when_asked": {
-            "stance": "truth",
-            "says": "She commissioned my portrait. She was... unusually kind to me."
-          }
-        },
-        {
-          "id": "juniper-champagne",
-          "text": "You were handed a glass by Pike but didn't drink; you were too nervous about the unveiling.",
-          "source": "firsthand",
-          "certainty": "certain",
-          "from_round": 1,
-          "topics": [
-            "champagne",
-            "glass",
-            "drink",
-            "served"
-          ],
-          "when_asked": {
-            "stance": "truth",
-            "says": "Pike handed me a glass, but I didn't drink it. I was too nervous about the unveiling."
-          }
-        },
-        {
-          "id": "juniper-granddaughter",
-          "text": "Last week Lady Ravenscroft told you that you are her granddaughter.",
-          "source": "firsthand",
-          "certainty": "certain",
-          "from_round": 1,
-          "topics": [
-            "granddaughter",
-            "family",
-            "secret",
-            "letter",
-            "related"
-          ],
-          "when_asked": {
-            "stance": "evade",
-            "says": "She was very kind to me. That's all I'll say for now."
-          }
-        },
-        {
-          "id": "juniper-napkin",
-          "text": "Right after the toast you saw Dr. Thorne wipe his hands on a napkin, looking pale.",
-          "source": "firsthand",
-          "certainty": "certain",
-          "from_round": 1,
-          "topics": [
-            "doctor",
-            "thorne",
-            "napkin",
-            "after",
-            "pale",
-            "hands"
-          ],
-          "when_asked": {
-            "stance": "truth",
-            "says": "Right after the toast, the doctor was wiping his hands on a napkin. He looked white as a sheet."
-          }
-        },
-        {
-          "id": "juniper-bottles",
-          "text": "In the hallway you overheard Pike muttering about 'missing bottles'.",
-          "source": "heard",
-          "heard_from": "butler",
-          "certainty": "certain",
-          "from_round": 2,
-          "topics": [
-            "cellar",
-            "wine",
-            "bottles",
-            "pike",
-            "butler",
-            "missing"
-          ],
-          "when_asked": {
-            "stance": "truth",
-            "says": "I heard Pike in the hallway muttering about 'missing bottles'. I don't know what he meant."
-          }
-        }
-      ]
+      "card": {
+        "occupation": "Antiquities collector and preservation specialist",
+        "spouse": "griff",
+        "personality": "Practical, sceptical, independent and quietly observant.",
+        "background": "You are an expert in authenticating rare artefacts, and you much prefer physical proof to your husband's dramatic supernatural theories.",
+        "how_met": "In 1887 you were consulting at the British Museum when a man in tweed began lecturing a crowd about a 'genuine Druidic relic'. You informed him it was an 1840s forgery. It was Griffin Wraithmore, the boy who once chased you round Hollowmere's library with a 'cursed' book. You argued for three hours. He came back the next morning with flowers and a twelve-page rebuttal. The rebuttal was wrong; the flowers were lovely. You married the following year.",
+        "childhood_memory": "A locked cabinet, a disputed object, and raised voices before the fire.",
+        "motto": "Extraordinary claims are considerably more interesting when accompanied by proof.",
+        "costume": "Refined Victorian dress, cameo, a magnifying glass or an artefact sketch.",
+        "photo": ""
+      }
     }
   ],
   "solution": {
-    "killer": "doctor",
-    "motive": "Lady Ravenscroft discovered Dr. Thorne's false identity and planned to expose him after the party.",
-    "method": "He added poison from his medical bag to her champagne glass while everyone gathered for the toast.",
-    "summary": "PLACEHOLDER solution for testing only."
+    "killer": "",
+    "motive": "To be decided",
+    "method": "To be decided",
+    "summary": "The murder plot is still being written."
   },
-  "casting_note": "casting.load is 'major' or 'low-pressure'. casting.needs: the minimum answer (1-4) a guest should give on that question. casting.content: sensitive content ('killer', 'romance') that guests can refuse.",
   "game": {
     "start_tokens": {
       "public": 2,
@@ -584,175 +488,18 @@
     },
     "rounds": 3
   },
-  "directions": [
-    {
-      "id": "pike-cellar",
-      "character": "butler",
-      "phase": "investigation",
-      "text": "PLACEHOLDER: Excuse yourself and 'check the wine cellar'. Come back looking flustered, but don't explain why."
-    },
-    {
-      "id": "rosalind-will",
-      "character": "niece",
-      "phase": "investigation",
-      "text": "PLACEHOLDER: Ask Pike, loudly enough to be overheard, whether your aunt's solicitor visited this week."
-    },
-    {
-      "id": "thorne-calm",
-      "character": "doctor",
-      "phase": "investigation",
-      "text": "PLACEHOLDER: Offer to 'examine' the champagne glass. Keep everyone else away from it."
-    },
-    {
-      "id": "juniper-portrait",
-      "character": "painter",
-      "phase": "arrival",
-      "text": "PLACEHOLDER: Unveil the birthday portrait to the room and say something kind about Lady Ravenscroft."
-    }
-  ],
-  "game_note": "game.start_tokens are given when the investigation starts; game.round_tokens when each later round starts. directions: pre-written private instructions the host can send with one tap.",
-  "evidence": [
-    {
-      "id": "vial",
-      "name": "An empty glass vial",
-      "description": "Found under the dining table. It smells faintly bitter. (PLACEHOLDER)"
-    },
-    {
-      "id": "napkin",
-      "name": "A stained napkin",
-      "description": "Crumpled by the fireplace, with a white powdery smear. (PLACEHOLDER)"
-    },
-    {
-      "id": "letter",
-      "name": "A sealed letter",
-      "description": "Addressed simply to 'J'. (PLACEHOLDER)"
-    },
-    {
-      "id": "ledger",
-      "name": "The wine cellar ledger",
-      "description": "Neat columns of bottles, some crossed out. (PLACEHOLDER)"
-    }
-  ],
+  "directions": [],
+  "evidence": [],
+  "clues": [],
+  "missions": [],
   "suggested_questions": {
     "remember": [
-      "What did I see near the champagne?",
-      "What do I know about the will?",
-      "Who was acting strangely tonight?"
+      "What do I remember about the night of the fire?",
+      "What do I remember about the east wing?"
     ],
     "interrogate": [
-      "Where were you during the toast?",
-      "What was your relationship with the victim?",
-      "What did you see tonight?"
+      "What do you remember about the night of the fire?",
+      "Have you been to the east wing tonight?"
     ]
-  },
-  "knowledge_note": "knowledge: what each character knows. 'text' is the private truth (used for REMEMBER). when_asked.stance (truth/evade/lie) and when_asked.says decide what they say when INTERROGATED; the AI only ever sees 'says' for lies and evasions. confess_with lists evidence ids that unlock the confession.",
-  "core_topics": {
-    "alibi": "Where they were during the murder (true or a lie)",
-    "victim": "Their relationship with the victim"
-  },
-  "clues": [
-    {
-      "id": "vial-clue",
-      "title": "An empty glass vial",
-      "text": "A small glass vial, empty, with a faint bitter smell. Someone dropped it under the dining table. (PLACEHOLDER)",
-      "code": "VIAL-7K",
-      "prop": "A small empty glass bottle",
-      "where": "Under the dining table",
-      "from_round": 1,
-      "evidence": "vial",
-      "views": {
-        "doctor": "Your stomach drops. That's the vial from your medical bag.",
-        "butler": "You've seen vials like this in the doctor's bag when he visits."
-      },
-      "essential": true,
-      "backup": "The host can release it from the host page."
-    },
-    {
-      "id": "napkin-clue",
-      "title": "A stained napkin",
-      "text": "A crumpled linen napkin with a white powdery smear, tucked behind the fireplace screen. (PLACEHOLDER)",
-      "code": "NPKN-4R",
-      "prop": "A crumpled napkin dusted with flour",
-      "where": "Behind the fireplace screen",
-      "from_round": 1,
-      "evidence": "napkin",
-      "views": {
-        "painter": "This is the napkin you saw the doctor wiping his hands on right after the toast."
-      },
-      "essential": true,
-      "backup": "The host can release it from the host page."
-    },
-    {
-      "id": "letter-clue",
-      "title": "A sealed letter",
-      "text": "An unopened letter in Lady Ravenscroft's handbag, addressed simply to 'J'. (PLACEHOLDER)",
-      "code": "LTTR-9D",
-      "prop": "A sealed envelope marked 'J'",
-      "where": "Inside a handbag on the sideboard",
-      "from_round": 2,
-      "evidence": "letter",
-      "views": {
-        "niece": "That's your aunt's handwriting. Who on earth is 'J'?",
-        "painter": "Your heart races. 'J'... this must be for you."
-      },
-      "essential": false
-    },
-    {
-      "id": "ledger-clue",
-      "title": "The wine cellar ledger",
-      "text": "A leather ledger listing every bottle in the cellar. Several rare vintages are crossed out in a different ink. (PLACEHOLDER)",
-      "code": "LDGR-2M",
-      "prop": "An old notebook with handwritten columns",
-      "where": "On the bar cart",
-      "from_round": 1,
-      "evidence": "ledger",
-      "views": {
-        "butler": "Your own corrections. Anyone who looks closely will see they don't match."
-      },
-      "essential": false
-    },
-    {
-      "id": "will-draft",
-      "title": "A draft of a new will",
-      "text": "A draft will in Lady Ravenscroft's hand: everything is to go to 'my granddaughter, Juniper Vale'. (PLACEHOLDER bonus clue)",
-      "from_round": 1,
-      "views": {},
-      "essential": false
-    },
-    {
-      "id": "passport-clue",
-      "title": "A second passport",
-      "text": "In Dr. Thorne's coat: a passport with his photo under the name 'Dr. Simon Thorp'. (PLACEHOLDER bonus clue)",
-      "from_round": 1,
-      "views": {},
-      "essential": false
-    }
-  ],
-  "missions": [
-    {
-      "id": "pike-mission",
-      "character": "butler",
-      "text": "Refill three guests' glasses and casually ask each where they were during the toast.",
-      "reward_clue": "passport-clue"
-    },
-    {
-      "id": "rosalind-mission",
-      "character": "niece",
-      "text": "Find out who 'J' is without ever saying the letter J out loud.",
-      "reward_clue": "will-draft"
-    },
-    {
-      "id": "thorne-mission",
-      "character": "doctor",
-      "text": "Convince two guests that Pike had more access to the champagne than anyone.",
-      "reward_clue": "ledger-clue"
-    },
-    {
-      "id": "juniper-mission",
-      "character": "painter",
-      "text": "Make a toast to Lady Ravenscroft that mentions her portrait.",
-      "reward_clue": "will-draft"
-    }
-  ],
-  "clues_note": "clues: things guests find. With a 'code' it has a printable QR label for a prop (prop/where are for the host only). 'text' is what everyone sees; 'views' adds what a specific character notices. 'evidence' is added to the finder's evidence (for confessions). Essential clues need a 'backup' route. Clues without a code are bonus clues, given by missions or by the host. missions: secret tasks the host confirms; each rewards one clue."
+  }
 }

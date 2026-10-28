@@ -726,8 +726,54 @@ function alertsBar() {
   ];
 }
 
+// The character card: portrait, who you are, your spouse, your oldest friends
+function initials(name) {
+  return name.replace(/\(.*?\)/g, "").split(/\s+/).filter((w) => /^[A-Z]/.test(w) && !/^(Sir|Lord|Lady|Baron|Professor)$/.test(w))
+    .map((w) => w[0]).slice(0, 2).join("");
+}
+
+function cardScreen() {
+  const c = me.character;
+  const card = c.card;
+  const portrait = card.photo
+    ? el("img", { class: "portrait", src: card.photo, alt: `Portrait of ${c.name}` })
+    : el("div", { class: "portrait placeholder", "aria-hidden": "true" }, el("span", {}, initials(c.name)));
+  return [
+    el("section", { class: "card char-card" },
+      portrait,
+      el("p", { class: "eyebrow" }, c.tagline),
+      el("h2", { class: "char-name" }, c.name),
+      el("p", { class: "char-occupation" }, card.occupation),
+      el("p", { class: "char-motto" }, `“${card.motto}”`)),
+    me.background && el("section", { class: "card" },
+      el("h2", {}, me.story_name || "The story so far"),
+      me.background.map((para, i) => el("p", { class: i === 0 ? "eyebrow" : "" }, para))),
+    el("section", { class: "card" },
+      el("h2", {}, "Who you are"),
+      el("p", {}, el("strong", {}, "Personality: "), card.personality),
+      el("p", {}, card.background)),
+    card.spouse && el("section", { class: "card" },
+      el("h2", {}, "Your spouse"),
+      el("p", {}, el("strong", {}, card.spouse.name), card.spouse.player ? ` (played by ${card.spouse.player})` : ""),
+      el("p", { class: "eyebrow" }, "How you met"),
+      el("p", {}, card.how_met)),
+    el("section", { class: "card" }, el("h2", {}, "Your oldest friends"),
+      el("dl", {}, c.relationships.filter((r) => !card.spouse || r.name !== card.spouse.name)
+        .map((r) => [el("dt", {}, r.name, r.player ? el("span", { class: "muted small" }, ` · ${r.player}`) : ""), el("dd", {}, r.text)]))),
+    el("section", { class: "card" }, el("h2", {}, "Childhood memory"), el("p", {}, card.childhood_memory)),
+    el("section", { class: "card" }, el("h2", {}, "Tonight's objective"), list(c.objectives)),
+    el("section", { class: "card" }, el("h2", {}, "Dress the part"),
+      el("p", {}, card.costume),
+      el("p", { class: "note" }, "Formal late-Victorian evening attire.")),
+    c.secrets.length > 0 && el("section", { class: "card secret" }, el("h2", {}, "Your secrets"),
+      el("p", { class: "note" }, "Only you can see this. Don't show your screen to anyone."),
+      list(c.secrets)),
+  ];
+}
+
 function characterScreen() {
   const c = me.character;
+  if (c.card) return cardScreen();
   // Deep-prep guests read their chapter first; light-prep guests can open it if they like
   if (chapterOpen === null) chapterOpen = c.prep === "deep";
   const chapter = c.chapter && (chapterOpen
@@ -864,7 +910,24 @@ function showHostDenied() {
     "This host link isn't valid. If you replaced it, use the newest one."));
 }
 
+// Host preview of one guest's character card (before or after release): /host/<key>#preview=<guest id>
+async function loadPreview(gid) {
+  try {
+    me = await api("GET", `/api/host/preview/${gid}`);
+  } catch (e) {
+    return show(errorCard("Couldn't load the preview", e.message));
+  }
+  document.body.classList.add("play-mode");
+  document.body.prepend(el("div", { class: "backdrop", "aria-hidden": "true" }));
+  document.title = `Preview · ${me.character ? me.character.name : me.guest_name}`;
+  show(el("p", { class: "notice" }, `Preview of ${me.guest_name}'s card. `,
+      me.character ? "This is exactly what they will see once you release characters." : "No character assigned yet."),
+    me.character && characterScreen());
+}
+
 async function loadHost() {
+  const preview = location.hash.match(/^#preview=(g[0-9a-f]{8})$/);
+  if (preview) return loadPreview(preview[1]);
   try {
     hostState = await api("GET", "/api/host");
   } catch (e) {
@@ -1304,6 +1367,7 @@ function guestCard(s, g) {
       inviteButton(g, s),
       copyBtn,
       el("a", { class: "button", href: guestLink(g), target: "_blank", rel: "noopener" }, "Open"),
+      g.character_id && el("a", { class: "button", href: `${location.pathname}#preview=${g.id}`, target: "_blank", rel: "noopener" }, "Preview card"),
       el("button", {
         class: "quiet",
         onclick: () => confirm(`Make a new link for ${g.name}? Their old link will stop working.`)

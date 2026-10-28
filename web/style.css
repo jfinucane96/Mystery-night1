@@ -356,3 +356,15 @@ button.invite-button { position: absolute; left: 50%; bottom: 3.5%; transform: t
   box-shadow: 0 6px 24px #000c, 0 0 24px #d9a44166; animation: beckon 2.6s ease-in-out infinite; }
 @keyframes beckon { 0%, 100% { box-shadow: 0 6px 24px #000c, 0 0 16px #d9a44144; } 50% { box-shadow: 0 6px 24px #000c, 0 0 36px #d9a441bb; } }
 @media (prefers-reduced-motion: reduce) { button.invite-button { animation: none; } }
+
+/* ---- Character cards (The Hollow Order) ---- */
+.char-card { text-align: center; padding-top: 22px; }
+.portrait { display: block; width: 62%; max-width: 260px; aspect-ratio: 3 / 4; object-fit: cover; object-position: top;
+  margin: 0 auto 14px; border-radius: 6px; border: 2px solid var(--accent);
+  box-shadow: 0 0 0 5px #120c18, 0 0 0 6px #d9a44166, 0 12px 30px #000c; }
+.portrait.placeholder { display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(ellipse at 50% 30%, #3a2a3e, #140e19); }
+.portrait.placeholder span { font-size: 3.2rem; color: var(--accent); font-style: italic; letter-spacing: .05em; }
+.char-name { color: var(--text); font-size: 1.55rem; margin: 4px 0; }
+.char-occupation { color: var(--muted); margin: 0 0 8px; }
+.char-motto { font-style: italic; color: #e8d9b8; margin: 10px 0 0; }
