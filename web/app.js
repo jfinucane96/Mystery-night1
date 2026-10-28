@@ -757,9 +757,6 @@ function cardScreen() {
       el("p", {}, el("strong", {}, card.spouse.name), card.spouse.player ? ` (played by ${card.spouse.player})` : ""),
       el("p", { class: "eyebrow" }, "How you met"),
       el("p", {}, card.how_met)),
-    el("section", { class: "card" }, el("h2", {}, "Your oldest friends"),
-      el("dl", {}, c.relationships.filter((r) => !card.spouse || r.name !== card.spouse.name)
-        .map((r) => [el("dt", {}, r.name, r.player ? el("span", { class: "muted small" }, ` · ${r.player}`) : ""), el("dd", {}, r.text)]))),
     el("section", { class: "card" }, el("h2", {}, "Childhood memory"), el("p", {}, card.childhood_memory)),
     el("section", { class: "card" }, el("h2", {}, "Tonight's objective"), list(c.objectives)),
     el("section", { class: "card" }, el("h2", {}, "Dress the part"),
