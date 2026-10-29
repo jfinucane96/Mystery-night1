@@ -1060,10 +1060,13 @@
           "show": "portraits"
         },
         {
+          "wait": 2500
+        },
+        {
           "say": "One of you eight killed my sister."
         },
         {
-          "wait": 3000
+          "wait": 9000
         },
         {
           "show": "shadow"
