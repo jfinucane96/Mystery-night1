@@ -368,3 +368,56 @@ button.invite-button { position: absolute; left: 50%; bottom: 3.5%; transform: t
 .char-name { color: var(--text); font-size: 1.55rem; margin: 4px 0; }
 .char-occupation { color: var(--muted); margin: 0 0 8px; }
 .char-motto { font-style: italic; color: #e8d9b8; margin: 10px 0 0; }
+
+/* ---- The Hollow Order (v2) ---- */
+.h-now { border-color: var(--accent); }
+.h-now a, .h-host a { color: var(--accent); }
+.h-host button.danger { background: #6b2a33; color: #fbe9ec; border-color: var(--danger); }
+.h-field { display: block; margin: 8px 0; }
+.h-field > span { display: block; font-size: .9rem; color: var(--muted); margin-bottom: 4px; }
+.h-ballot { border-top: 1px solid var(--line); margin-top: 10px; padding-top: 8px; }
+.h-offer, .h-turn { border-top: 1px solid var(--line); margin-top: 8px; padding-top: 8px; }
+.h-timer { font-variant-numeric: tabular-nums; color: var(--accent); font-size: 1.1rem; margin: 4px 0; }
+.h-truth { border: 2px solid var(--danger); background: #2a0f14; }
+.h-truth h2 { color: var(--danger); }
+.h-evidence p { margin: 4px 0; }
+.h-deals li { border-top: 1px solid var(--line); padding: 8px 0; }
+.h-deals .deal-honored { border-left: 3px solid #2f8d4a; padding-left: 10px; }
+.h-deals .deal-broken { border-left: 3px solid var(--danger); padding-left: 10px; }
+.h-host .h-current { color: var(--accent); font-weight: bold; }
+.row.wrap { flex-wrap: wrap; }
+button.danger.grow, button.wide.danger { background: #6b2a33; color: #fbe9ec; border-color: var(--danger); }
+
+/* TV */
+.h-tv { position: fixed; inset: 4vh 3vw 9vh 3vw; z-index: 3; display: flex; gap: 2vw; align-items: flex-start;
+  pointer-events: none; }
+.h-main { flex: 1; max-width: 1100px; background: #0c0812d9; border: 2px solid #d9a44188; border-radius: 16px;
+  padding: clamp(14px, 2.4vw, 36px); max-height: 100%; overflow: hidden; text-shadow: 0 2px 6px #000; }
+.h-main h1 { font-size: clamp(1.6rem, 3.6vw, 3.4rem); color: var(--accent); margin: 4px 0 10px; }
+.h-main p { font-size: clamp(1rem, 1.7vw, 1.6rem); line-height: 1.4; margin: 6px 0; }
+.h-phase { text-transform: uppercase; letter-spacing: .14em; font-size: clamp(.8rem, 1.1vw, 1rem) !important; color: var(--muted); }
+.h-side { width: clamp(220px, 24vw, 380px); display: grid; gap: 1.4vw; }
+.h-board { background: #0c0812e6; border: 2px solid var(--accent); border-radius: 14px; padding: 12px 18px; }
+.h-board h3 { margin: 0 0 6px; font-size: clamp(.9rem, 1.3vw, 1.3rem); }
+.h-board ol { margin: 0; padding-left: 1.4em; font-size: clamp(.95rem, 1.4vw, 1.4rem); line-height: 1.5; }
+.h-main .h-board { margin-top: 12px; display: inline-block; vertical-align: top; margin-right: 1vw; }
+.h-guests, .h-polls { list-style: none; padding: 0; columns: 2; font-size: clamp(1rem, 1.6vw, 1.5rem); }
+.h-guests li, .h-polls li { margin-bottom: 8px; break-inside: avoid; }
+.h-guests span { color: var(--muted); }
+.h-order span { margin-right: 14px; color: var(--muted); }
+.h-order span.now { color: var(--accent); font-weight: bold; text-decoration: underline; }
+.h-order span.past { opacity: .5; }
+.h-card { background: #1a1222ee; border: 1px solid var(--accent); border-radius: 12px; padding: 12px 16px; margin: 10px 0; }
+.h-card h3 { margin: 0 0 4px; }
+.h-card p { font-size: clamp(.9rem, 1.4vw, 1.3rem) !important; margin: 2px 0 !important; }
+.h-evidence-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+.h-accused { color: var(--danger); font-size: clamp(1.4rem, 2.6vw, 2.4rem) !important; }
+.h-verdict { color: var(--accent); font-size: clamp(1.2rem, 2.2vw, 2rem) !important; }
+.tb-lied { color: var(--danger); font-weight: bold; }
+.tb-told { color: #8fd19e; }
+.h-note { color: var(--accent); }
+body.room-mode.blackout .scene, body.room-mode.blackout .h-tv, body.room-mode.blackout .room-hud { opacity: 0; transition: opacity .2s; }
+body.room-mode.blackout { background: #000; }
+@media (max-width: 800px) { .h-tv { flex-direction: column; overflow: auto; } .h-side { width: 100%; } }
+.h-reveal { display: grid; grid-template-columns: 3fr 2fr; gap: 2vw; align-items: start; }
+.h-recon p { font-size: clamp(.9rem, 1.25vw, 1.25rem) !important; }

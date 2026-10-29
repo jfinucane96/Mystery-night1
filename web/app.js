@@ -830,6 +830,7 @@ function renderCharacter() {
         el("p", {}, "The host hasn't given you a character yet. Check back soon."),
         el("button", { class: "wide", onclick: loadGuest }, "Check again")));
   }
+  if (me.hollow) return renderHollowGuest();          // The Hollow Order (web/hollow.js)
   const section = currentSection();
   const top = el("header", { class: "game-top" },
     el("p", { class: "eyebrow" }, me.title),
@@ -1437,9 +1438,7 @@ function renderHost() {
     hostMsg && el("p", { class: "error", role: "alert" }, hostMsg),
     hostNotice && el("p", { class: "notice", role: "status" }, hostNotice),
     textPromptLine(s),
-    gamePanel(s),
-    questionsFeed(s),
-    cluesPanel(s),
+    s.hollow ? hollowHostPanel(s) : [gamePanel(s), questionsFeed(s), cluesPanel(s)],
     suggestionPanel(s),
     el("section", {},
       el("div", { class: "row" },
@@ -1450,7 +1449,7 @@ function renderHost() {
         : el("p", { class: "muted" }, "No guests yet. Add one below. If you're playing too, add yourself."),
       addForm),
     releasePanel(s),
-    el("details", { class: "card secret" },
+    !s.hollow && el("details", { class: "card secret" },
       el("summary", {}, "Solution (host only, tap to show)"),
       el("dl", {},
         el("dt", {}, "Victim"), el("dd", {}, sol.victim),
@@ -1650,6 +1649,7 @@ async function loadRoom() {
     return show(errorCard("Couldn't load", e.message), el("button", { class: "wide", onclick: loadRoom }, "Try again"));
   }
   room.events.forEach((ev) => roomSeen.add(ev.id));      // don't replay what happened before this page opened
+  if (room.hollow) hollowRoomStart(room.hollow);
   const pending = room.events.find((ev) => ev.kind === "questioned" && !ev.done);
   if (pending && room.phase === "investigation") waitFor(pending);
   await buildRoomShell();
@@ -1658,6 +1658,10 @@ async function loadRoom() {
   startPolling(() => api("GET", "/api/room"), (fresh) => {
     const before = room;
     room = fresh;
+    if (fresh.hollow) {                                   // The Hollow Order drives the TV (web/hollow.js)
+      hollowRoomTick(fresh.hollow);
+      return renderRoom();
+    }
     roomChanges(before, fresh);
     fresh.events.slice().reverse().forEach((ev) => {     // oldest first
       if (roomSeen.has(ev.id)) return;
@@ -1868,6 +1872,7 @@ function renderRoom() {
   roomShell.hud.replaceChildren(
     el("p", { class: "room-title" }, room.title),
     el("p", { class: "room-phase" }, phaseLine, room.paused ? " · Paused" : ""));
+  if (room.hollow) renderHollowTv(room.hollow);
   if (!roomSoundOn) {
     roomShell.controls.replaceChildren(
       el("button", { class: "room-start", onclick: () => { startRoomSound(); renderRoom(); } }, "Click to start sound"));

@@ -14,13 +14,14 @@ import threading
 import traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from . import ai_casting, ai_questions, casting, clues, db as dbmod, game, play, questions, story as storymod, texting
+from . import ai_casting, ai_questions, casting, clues, db as dbmod, game, hollow, hollow_content, play, questions, story as storymod, texting
 from .game import GameError
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WEB = os.path.join(ROOT, "web")
 STATIC = {
     "/static/app.js": ("app.js", "text/javascript; charset=utf-8"),
+    "/static/hollow.js": ("hollow.js", "text/javascript; charset=utf-8"),
     "/static/style.css": ("style.css", "text/css; charset=utf-8"),
     "/static/mansion.webp": ("mansion.webp", "image/webp"),
     "/static/invitation.jpg": ("invitation.jpg", "image/jpeg"),
@@ -70,6 +71,8 @@ def guest_state(ctx, t, guest):
         if s["phase"] in ("investigation", "accusation", "reveal"):
             view["murder"] = ctx.story.get("murder_announcement") or {"title": "", "text": ""}
         view["investigation"] = investigation_view(ctx, t, guest, s)
+        if ctx.hollow:
+            view["hollow"] = hollow.guest_view(t, ctx.hollow, ctx.story, guest)
         return view
     a = ctx.assessment
     view["stage"] = "waiting" if guest["assessment_done"] else "assessment"
@@ -162,6 +165,14 @@ def guest_read_messages(ctx, t, body, guest):
     return guest_state(ctx, t, guest)
 
 
+@route("POST", r"/api/me/hollow/(?P<action>[a-z_]{3,20})", "guest")
+def guest_hollow(ctx, t, body, guest, action):
+    if not ctx.hollow or not game.is_released(t):
+        raise GameError(409, "The game hasn't started.")
+    hollow.act(t, ctx.hollow, ctx.story, guest, action, body)
+    return guest_state(ctx, t, guest)
+
+
 @route("POST", r"/api/me/assessment", "guest")
 def guest_save_assessment(ctx, t, body, guest):
     game.save_assessment(t, ctx.assessment, guest, body.get("answers"), body.get("limits"),
@@ -232,6 +243,7 @@ def host_state(ctx, t):
         "question_log": questions.host_log(t, ctx.story),
         "clues": clues.host_overview(t, ctx.story),
         "guests": [guest_row(g) for g in game.list_guests(t)],
+        "hollow": hollow.host_view(t, ctx.hollow, ctx.story) if ctx.hollow else None,
     }
 
 
@@ -303,6 +315,8 @@ def host_release(ctx, _t, body, _):
     """Release characters, then text everyone who has a character (once per release)."""
     with ctx.db.tx() as t:
         game.release(t, ctx.story, ctx.assessment)
+        if ctx.hollow:
+            hollow.ensure_culprit(t, ctx.hollow)      # chosen in secret; never shown to the host
         round_ = game.release_round(t)
         jobs = []
         if texting.is_automatic():
@@ -443,7 +457,51 @@ def room_get(ctx, t, body, _):
         "round": s["round"], "rounds": play.config(ctx.story)["rounds"], "paused": s["paused"],
         "murder": ctx.story.get("murder_announcement") or {"title": "", "text": ""},
         "events": questions.room_events(t, ctx.story),
+        "hollow": hollow.room_view(t, ctx.hollow, ctx.story) if ctx.hollow else None,
     }
+
+
+# ------------------------------------------------- The Hollow Order: host controls (spoiler-free)
+
+@route("POST", r"/api/host/hollow/step", "host")
+def host_hollow_step(ctx, t, body, _):
+    hollow.set_step(t, ctx.hollow, ctx.story, body.get("step"))
+    return host_state(ctx, t)
+
+
+@route("POST", r"/api/host/hollow/timer", "host")
+def host_hollow_timer(ctx, t, body, _):
+    hollow.set_timer(t, body.get("minutes"))
+    return host_state(ctx, t)
+
+
+@route("POST", r"/api/host/hollow/pause", "host")
+def host_hollow_pause(ctx, t, body, _):
+    hollow.set_paused(t, bool(body.get("paused")))
+    return host_state(ctx, t)
+
+
+@route("POST", r"/api/host/hollow/cue", "host")
+def host_hollow_cue(ctx, t, body, _):
+    hollow.cue(t, body.get("cue"))
+    return host_state(ctx, t)
+
+
+@route("POST", r"/api/host/hollow/skip-turn", "host")
+def host_hollow_skip(ctx, t, body, _):
+    hollow.skip_turn(t, ctx.hollow)
+    return host_state(ctx, t)
+
+
+@route("POST", r"/api/host/hollow/restart", "host")
+def host_hollow_restart(ctx, t, body, _):
+    """Back to the start of the evening for a rehearsal. A new murderer is chosen in
+    secret, so a rehearsal that reached the reveal never spoils the real party."""
+    hollow.reset(t)
+    hollow.forget_culprit(t)
+    if game.is_released(t):
+        hollow.ensure_culprit(t, ctx.hollow)
+    return host_state(ctx, t)
 
 
 @route("POST", r"/api/host/guests/(?P<gid>g[0-9a-f]{8})/clue", "host")
@@ -494,8 +552,9 @@ def host_remove(ctx, t, body, _, gid):
 # ------------------------------------------------------------- HTTP plumbing
 
 class Context:
-    def __init__(self, database, story, assessment, ai_ask=None, send_text=None, ai_ask_q=None):
+    def __init__(self, database, story, assessment, ai_ask=None, send_text=None, ai_ask_q=None, hollow_data=None):
         self.db = database
+        self.hollow = hollow_data                    # The Hollow Order content (None: the older game only)
         self.story = story
         self.assessment = assessment
         self.base_url = None                         # start of guest links; set in make_server
@@ -619,11 +678,12 @@ def load_content():
     return story, assessment
 
 
-def make_server(database, story, assessment, host, port, ai_ask=None, send_text=None, ai_ask_q=None):
+def make_server(database, story, assessment, host, port, ai_ask=None, send_text=None, ai_ask_q=None,
+                hollow_data=None):
     database.init_schema()
     with database.tx() as t:
         host_key = game.ensure_game(t)
-    ctx = Context(database, story, assessment, ai_ask, send_text, ai_ask_q)
+    ctx = Context(database, story, assessment, ai_ask, send_text, ai_ask_q, hollow_data)
     server = ThreadingHTTPServer((host, port), type("BoundHandler", (Handler,), {"ctx": ctx}))
     ctx.base_url = public_base_url(server.server_address[1])
     return server, host_key
@@ -655,10 +715,11 @@ def main():
     bind = "0.0.0.0" if on_host_service else os.environ.get("MM_HOST", "127.0.0.1")
     try:
         story, assessment = load_content()
-    except (storymod.StoryError, casting.AssessmentError) as e:
+        hollow_data = hollow_content.load()
+    except (storymod.StoryError, casting.AssessmentError, hollow_content.HollowError) as e:
         sys.exit(str(e))
     database = dbmod.from_env()
-    server, host_key = make_server(database, story, assessment, bind, port)
+    server, host_key = make_server(database, story, assessment, bind, port, hollow_data=hollow_data)
     print(f"Mystery Night: '{story['title']}'", flush=True)
     print(f"Database: {database.describe()}", flush=True)
     print("Texting: " + ("automatic (Twilio)" if texting.is_automatic()

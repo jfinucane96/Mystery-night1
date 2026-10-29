@@ -188,7 +188,9 @@ def remove_guest(t, guest_id):
 # ------------------------------------------------------------ starting over
 
 GAME_TABLES = ("texts", "balances", "grants", "messages", "questions", "guest_evidence",
-               "clue_finds", "missions_done", "ai_suggestions")
+               "clue_finds", "missions_done", "ai_suggestions",
+               "h_polls", "h_ballots", "h_interrogations", "h_investigations", "h_deals", "h_hotseat",
+               "h_wagers", "h_votes", "h_events", "hollow_state")
 
 
 def reset_game(t):

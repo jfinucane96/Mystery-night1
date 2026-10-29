@@ -150,6 +150,50 @@ MIGRATIONS = [
             PRIMARY KEY (guest_id, mission_id)
         )""",
     ],
+    # 10. The Hollow Order v2: the six-phase game (state, polls, ballots, deals, interrogations...)
+    [
+        """CREATE TABLE IF NOT EXISTS hollow_state (
+            id INTEGER PRIMARY KEY,
+            step TEXT NOT NULL,
+            culprit TEXT NOT NULL DEFAULT '',
+            timer_end TEXT NOT NULL DEFAULT '',
+            paused INTEGER NOT NULL DEFAULT 0,
+            turn_order TEXT NOT NULL DEFAULT '',
+            ledger TEXT NOT NULL DEFAULT '',
+            extra TEXT NOT NULL DEFAULT '{}',
+            updated_at TEXT NOT NULL
+        )""",
+        """CREATE TABLE IF NOT EXISTS h_polls (
+            cid TEXT NOT NULL, poll_id TEXT NOT NULL, choice TEXT NOT NULL,
+            PRIMARY KEY (cid, poll_id)
+        )""",
+        """CREATE TABLE IF NOT EXISTS h_ballots (
+            kind TEXT NOT NULL, round INTEGER NOT NULL, voter TEXT NOT NULL, picks TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            PRIMARY KEY (kind, round, voter)
+        )""",
+        """CREATE TABLE IF NOT EXISTS h_interrogations (
+            id TEXT PRIMARY KEY, turn INTEGER NOT NULL, interrogator TEXT NOT NULL, target TEXT NOT NULL,
+            track TEXT NOT NULL, qid TEXT NOT NULL, answer TEXT NOT NULL DEFAULT '',
+            answer_text TEXT NOT NULL DEFAULT '', created_at TEXT NOT NULL
+        )""",
+        """CREATE TABLE IF NOT EXISTS h_investigations (
+            family TEXT PRIMARY KEY, opener TEXT NOT NULL, target TEXT NOT NULL, category TEXT NOT NULL,
+            status TEXT NOT NULL, offer INTEGER NOT NULL DEFAULT 0, counter INTEGER NOT NULL DEFAULT 0,
+            created_at TEXT NOT NULL
+        )""",
+        """CREATE TABLE IF NOT EXISTS h_deals (
+            id TEXT PRIMARY KEY, kind TEXT NOT NULL, payer TEXT NOT NULL, recipient TEXT NOT NULL,
+            amount INTEGER NOT NULL, terms TEXT NOT NULL DEFAULT '{}', status TEXT NOT NULL,
+            created_at TEXT NOT NULL, decided_at TEXT NOT NULL DEFAULT ''
+        )""",
+        "CREATE TABLE IF NOT EXISTS h_hotseat (cid TEXT PRIMARY KEY, choice TEXT NOT NULL, target TEXT NOT NULL)",
+        "CREATE TABLE IF NOT EXISTS h_wagers (cid TEXT PRIMARY KEY, side TEXT NOT NULL, amount INTEGER NOT NULL)",
+        "CREATE TABLE IF NOT EXISTS h_votes (cid TEXT PRIMARY KEY, vote TEXT NOT NULL)",
+        """CREATE TABLE IF NOT EXISTS h_events (
+            seq INTEGER PRIMARY KEY, kind TEXT NOT NULL, data TEXT NOT NULL DEFAULT '{}', created_at TEXT NOT NULL
+        )""",
+    ],
 ]
 
 

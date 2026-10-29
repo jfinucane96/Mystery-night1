@@ -1,0 +1,1077 @@
+{
+  "game": {
+    "title": "The Hollow Order",
+    "total_estate": 12000000,
+    "deal_step": 10000,
+    "wager_share": 0.25,
+    "rules": {
+      "failed_conviction": "lowest_influence",
+      "deal_void_if_either_eliminated": true,
+      "cap_offers_to_projection": true,
+      "extra_yes_penalty": 0,
+      "nominee_change_by_motion": false,
+      "wager_pot": "losers_fund_winners"
+    }
+  },
+  "families": {
+    "blackthorne": {
+      "name": "The Blackthornes",
+      "members": [
+        "grant",
+        "caroline"
+      ]
+    },
+    "pemberwick": {
+      "name": "The Pemberwicks",
+      "members": [
+        "jonathan",
+        "danielle"
+      ]
+    },
+    "ravenscroft": {
+      "name": "The Ravenscrofts",
+      "members": [
+        "nanor",
+        "taylor"
+      ]
+    },
+    "wraithmore": {
+      "name": "The Wraithmores",
+      "members": [
+        "griff",
+        "grace"
+      ]
+    }
+  },
+  "characters": [
+    {
+      "id": "jonathan",
+      "family": "pemberwick",
+      "traits": {
+        "feet": "boots",
+        "sleeve": "dark",
+        "scent": "lavender",
+        "hand": "right",
+        "side": "north",
+        "sigil": "moon"
+      },
+      "intro": "Ladies and gentlemen, welcome to Hollowmere! Yes, it is mine. Yes, all of it, including the damp. I am Sir Jonathan Reginald Pemberwick, property investor, visionary, and as of this spring the owner of forty-one bedrooms, nine of which still have roofs. Tonight I have gathered my oldest friends to celebrate the Order our families founded, and to announce the estate covenant: twelve million pounds, to be shared among us. Don't thank me. Well, do, a little. As your host I naturally have the final word on everything, which my wife assures me is not how marriage works.",
+      "secret": {
+        "title": "The Hidden Will",
+        "text": "When your great-uncle died, you found a later will among his papers leaving Hollowmere's farms to your cousin Thomas Pemberwick. You burned it. The older will stood, the estate came to you whole, and Thomas emigrated to Canada with nothing.",
+        "excuse": "Thomas would have sold the farms within a year. You kept Hollowmere together. Somebody had to.",
+        "proof": "A copy of the later will, witnessed by Silas himself on the day it was signed."
+      },
+      "need_alive": "Silas knows where the authoritative deed to the manor is kept. With it, the Ravenscroft claim to part of the estate collapses.",
+      "scandal": {
+        "about": "nanor",
+        "text": "Nanor owes large sums to half the people in this room while pretending to be fabulously solvent."
+      },
+      "hiding": "inside the tall clock case in the Long Gallery, beside the door to the east wing",
+      "memories": [
+        "Hide-and-seek, summer 1867. You were folded inside the tall clock in the Long Gallery, the pendulum ticking against your ear, so pleased with yourself that nobody would ever find you.",
+        "Through the clock's little glass window you watched Eleanor Vale hurry down the Long Gallery toward the east wing at ten past eight, holding something flat against her chest with both hands, as if it might blow away.",
+        "You stayed in the clock until you smelled smoke. You remember counting the clock's chimes as you climbed out: it struck the half hour, half past eight, just as the shouting started."
+      ],
+      "answers": {
+        "f1": {
+          "truth": "Hiding inside the tall clock in the Long Gallery. I didn't come out until it struck half past eight.",
+          "lie": "In the nursery with the others, nowhere near the east wing."
+        },
+        "f2": {
+          "truth": "Eleanor. She went past my clock toward the east wing at ten past eight, carrying something flat.",
+          "lie": "Nobody. I couldn't see a thing from where I was."
+        },
+        "f3": {
+          "truth": "Something flat, held to her chest. A letter or a document, I think.",
+          "lie": "Nothing. Her hands were empty."
+        },
+        "f4": {
+          "truth": "I heard raised voices from the east wing, a girl and someone else. I thought it was part of the game.",
+          "lie": "No. I heard nothing at all."
+        },
+        "f5": {
+          "truth": "I told the grown-ups I'd been in the nursery. I hadn't. I didn't want them knowing I'd climbed inside the clock.",
+          "lie": "Nothing. I was exactly where I said."
+        },
+        "s1": {
+          "truth": "In my place in the circle, on the north side, between Danielle and the altar end.",
+          "lie": "I went to the side table to find a candle."
+        },
+        "s2": {
+          "truth": "Danielle was on my left. She'd know if I'd moved.",
+          "lie": "Half the room. Everyone could see me."
+        },
+        "s3": {
+          "truth": "Behind the Black Hound last night. He wanted me to disclose an old estate schedule before the ceremony. I lost my temper.",
+          "lie": "Pleasantries. He asked after the roof."
+        },
+        "s4": {
+          "truth": "I confronted Silas behind the inn about an old beneficiary schedule. I said things I regret.",
+          "lie": "I was at home going over the guest list."
+        },
+        "s5": {
+          "truth": "Silas polished it before the ceremony and made a show of setting it on the stand. I joked he should sell it.",
+          "lie": "I never went near it."
+        }
+      },
+      "blackout": "The thunder shook the floor under your feet. In the dark you heard Silas begin a word, 'Wh-', and then a dull, heavy sound, like a sack set down hard.",
+      "last_word": "Silas favoured you as a boy. Tonight you found out he was planning to put you on trial."
+    },
+    {
+      "id": "danielle",
+      "family": "pemberwick",
+      "traits": {
+        "feet": "slippers",
+        "sleeve": "pale",
+        "scent": "lavender",
+        "hand": "left",
+        "side": "north",
+        "sigil": "sun"
+      },
+      "intro": "Good evening, darlings. Lady Danielle Pemberwick: hostess, art collector, and the only person in this house who knows which fork is for the fish. I have hung every painting at Hollowmere myself, twice, because Jonathan hung them the first time. I collect beautiful things and I keep them. That includes secrets, so do be careful what you tell me after the second glass. Tonight I intend to be gracious, charming and utterly unbothered, and if anything embarrassing happens I shall simply pretend it was planned.",
+      "secret": {
+        "title": "The Forged Farewell",
+        "text": "When your younger sister Rose fell in love with a penniless painter, Daniel Hale, you forged a letter in her hand breaking off the engagement. He left for Paris believing she had rejected him. Rose has never been happy since, and she has never known why he went.",
+        "excuse": "He had nothing. You saved her from a garret and a lifetime of debt. You were the sensible one. You always are.",
+        "proof": "Your practice sheets, copying Rose's handwriting line by line."
+      },
+      "need_alive": "Silas knows where Daniel Hale lives now. If you are ever going to put it right, you need him.",
+      "scandal": {
+        "about": "grant",
+        "text": "Grant pawned an heirloom of Caroline's to cover gambling debts, and has been wearing a paste copy ever since."
+      },
+      "hiding": "under the billiard table in the Billiard Room, directly beneath the east-wing records room",
+      "memories": [
+        "You were under the billiard table, the felt above you smelling of chalk and cigars. Right above your head, through the old iron grate in the ceiling, you could hear the floorboards of the room upstairs.",
+        "Someone upstairs was crying, a girl, behind a partition or a door. You crawled to the grate to listen. A scrap of grey cloth, singed at the edge, came fluttering down through the bars.",
+        "The grate was in the corner of the Billiard Room, and the room above it is the east-wing records room. You have always known exactly where the crying came from. You have never once said it out loud."
+      ],
+      "answers": {
+        "f1": {
+          "truth": "Under the billiard table, right beneath the records room.",
+          "lie": "In the drawing room, playing the piano."
+        },
+        "f2": {
+          "truth": "I didn't see anyone, but I heard a girl crying in the room above me.",
+          "lie": "Nobody. I didn't see a soul."
+        },
+        "f3": {
+          "truth": "I never saw her. A scrap of grey cloth fell through the grate.",
+          "lie": "Nothing that I know of."
+        },
+        "f4": {
+          "truth": "I heard crying, then something heavy scrape. Not shouting, exactly.",
+          "lie": "No. I heard nothing at all."
+        },
+        "f5": {
+          "truth": "I said I was in the drawing room. I was under the billiard table, listening at the grate, and I never told anyone what I heard.",
+          "lie": "Nothing. I was exactly where I said."
+        },
+        "s1": {
+          "truth": "In my place on the north side, between Nanor and Jonathan.",
+          "lie": "I stepped toward the vestry door. There was a draught."
+        },
+        "s2": {
+          "truth": "Jonathan on one side, Nanor on the other.",
+          "lie": "My husband was holding my hand the whole time."
+        },
+        "s3": {
+          "truth": "Yesterday, in his rooms. He handed me back my grandmother's brooch and told me to stop hiding things from Jonathan.",
+          "lie": "We discussed the flowers for tonight."
+        },
+        "s4": {
+          "truth": "I collected a family heirloom from Silas's rooms, a brooch I had pawned and redeemed through him. Jonathan doesn't know.",
+          "lie": "I was at the dressmaker's, then at home."
+        },
+        "s5": {
+          "truth": "It was on its stand when I arrived. The stand has a little velvet cushion. I noticed the velvet was dusty.",
+          "lie": "I never went near it."
+        }
+      },
+      "blackout": "The moment the lights died you smelled hot candle wax, and you felt a cold draught across your ankles, as if a door had opened somewhere behind you.",
+      "last_word": "Silas helped you hide a debt from your husband. Kindly. Which means he knows exactly where your secrets are kept."
+    },
+    {
+      "id": "grant",
+      "family": "blackthorne",
+      "traits": {
+        "feet": "boots",
+        "sleeve": "dark",
+        "scent": "camphor",
+        "hand": "left",
+        "side": "south",
+        "sigil": "moon"
+      },
+      "intro": "Lord Grant Bartholomew Blackthorne the Third, estate surveyor and cartographer. I have measured this house. Twice. It is eleven inches wider than the plans claim, and somebody owes me an explanation. I believe every dispute in human history could have been settled with a theodolite and a little patience. Wars, marriages, the matter of who took the last sherry. Tonight I shall be watching, measuring and taking notes, and if anyone moves the furniture I will know.",
+      "secret": {
+        "title": "The Warning",
+        "text": "In 1888 you received an engineer's signed warning that the Millbrook viaduct's foundations were unsound. You had money in the scheme, so you filed the warning away. The viaduct cracked, the line was closed for a year, and the junior engineer, Arthur Penn, was blamed and dismissed. Nobody was killed. You remind yourself of that often.",
+        "excuse": "Engineers always cry wolf. The warning was speculative. You had no way of knowing.",
+        "proof": "The original warning, in an envelope with your own handwriting on it: 'File. Not to be shown.'"
+      },
+      "need_alive": "Silas knows where the original Blackthorne boundary plans are kept. Without them, a neighbour's challenge could take a third of your land.",
+      "scandal": {
+        "about": "grace",
+        "text": "Grace knowingly sold a counterfeit Roman bronze to a duke as genuine."
+      },
+      "hiding": "in the secret passage behind the library shelves that runs to the old chapel and on to the east wing",
+      "memories": [
+        "You were the only child who knew about the passage behind the library shelves. You hid in the dark inside it, chalk in your pocket, marking the walls so you could find your way.",
+        "Years later you found a half-burned floor plan of the east wing in your father's desk. The passage you hid in that night is drawn on it, and it comes out in the records room itself. You had never followed it that far.",
+        "When the smoke came you ran back down the passage toward the library. You came out into an empty library at half past eight and nobody ever asked where you had been."
+      ],
+      "answers": {
+        "f1": {
+          "truth": "In the passage behind the library shelves. I came out into the library when I smelled smoke.",
+          "lie": "In the nursery with the others."
+        },
+        "f2": {
+          "truth": "I didn't see faces. It was pitch dark in the passage.",
+          "lie": "Nobody. I didn't see a soul."
+        },
+        "f3": {
+          "truth": "I don't know. I never saw her that evening.",
+          "lie": "Nothing. Her hands were empty."
+        },
+        "f4": {
+          "truth": "Muffled voices, through the wall, from the east-wing end. Couldn't make out words.",
+          "lie": "No. I heard nothing at all."
+        },
+        "f5": {
+          "truth": "I never told anyone about the passage. Not then, not since. It leads to the records room.",
+          "lie": "Nothing. I was exactly where I said."
+        },
+        "s1": {
+          "truth": "In my place on the south side, at the altar end, beside Caroline.",
+          "lie": "I went out to check the lamps."
+        },
+        "s2": {
+          "truth": "Caroline. She was on my left.",
+          "lie": "Everyone. I'm very hard to miss."
+        },
+        "s3": {
+          "truth": "He asked whether I'd ever found the old plans of the chapel passage. Odd question. I said no.",
+          "lie": "We spoke about the weather. It was going to storm."
+        },
+        "s4": {
+          "truth": "Surveying the grounds after dark. The exterior lamps were failing, so I went down to the electrical panel and fixed a loose fuse. I hid when I heard someone coming, because it isn't my house.",
+          "lie": "I was in my room reading."
+        },
+        "s5": {
+          "truth": "I measured it, if you must know. Fourteen inches, broad blade. It was on the stand at nine o'clock.",
+          "lie": "I never went near it."
+        }
+      },
+      "blackout": "By the luminous hands of your pocket watch, the lights were out for almost exactly two minutes. You counted the seconds out of habit. You could not see your own hands.",
+      "last_word": "Silas has the one document that could ruin your reputation, and the one map that could save your land."
+    },
+    {
+      "id": "caroline",
+      "family": "blackthorne",
+      "traits": {
+        "feet": "slippers",
+        "sleeve": "pale",
+        "scent": "camphor",
+        "hand": "right",
+        "side": "south",
+        "sigil": "sun"
+      },
+      "intro": "Lady Caroline Blackthorne, botanist. Fellow of absolutely everything. I have grown orchids that the Royal Horticultural Society said could not be grown, and I've won the gold medal three years running, which some people find hard to forgive. If you have a garden, I have opinions about it. If you have roses, I'm sorry. My husband measures things; I make them grow. Between us we are unbearable, and we know it.",
+      "secret": {
+        "title": "The Blighted Garden",
+        "text": "Before the Royal medal of 1889 you crept into your rival Agatha Fenn's orchid house and treated her plants with a blight of your own devising. Her collection died. Worse, people decided she had smuggled diseased plants, and she was disgraced. You won the medal.",
+        "excuse": "She was a fraud in all but name, and you were the better botanist. You only hurried along the inevitable.",
+        "proof": "An apothecary's ledger showing your purchases, and your own notes for the blight formula."
+      },
+      "need_alive": "Silas holds your notes proving that the remedy you gave him last night was harmless feverfew and willow bark. Without him, that vial looks like poison.",
+      "scandal": {
+        "about": "taylor",
+        "text": "Taylor rigged her own charity auction with a friendly bidder to make the total look bigger."
+      },
+      "hiding": "among the ferns in the conservatory, by the glass door to the terrace",
+      "memories": [
+        "You hid in the conservatory, between the potted ferns, breathing in wet earth and orange blossom. Even then you noticed every smell in a room.",
+        "Through the glass you saw the east-wing windows above the terrace. At twenty past eight, one of them, the records-room window, glowed orange for a moment, as if someone had struck a match.",
+        "You remember the time precisely because the conservatory thermometer had a clock beside it. You told yourself it was a lamp being lit. You still tell yourself that."
+      ],
+      "answers": {
+        "f1": {
+          "truth": "In the conservatory among the ferns.",
+          "lie": "In the nursery with the others."
+        },
+        "f2": {
+          "truth": "No one near the east wing, but I saw the records-room window glow orange at twenty past eight.",
+          "lie": "Nobody. I didn't see a soul."
+        },
+        "f3": {
+          "truth": "I never saw her that evening.",
+          "lie": "Nothing. Her hands were empty."
+        },
+        "f4": {
+          "truth": "No. The conservatory is too far away.",
+          "lie": "No. I heard nothing at all."
+        },
+        "f5": {
+          "truth": "I said I'd been in bed with a cold. I wasn't. I was in the conservatory.",
+          "lie": "Nothing. I was exactly where I said."
+        },
+        "s1": {
+          "truth": "In my place on the south side, between Grant and Griff.",
+          "lie": "I went to the side table for my reticule."
+        },
+        "s2": {
+          "truth": "Grant on one side, Griff on the other.",
+          "lie": "My husband was holding my hand."
+        },
+        "s3": {
+          "truth": "At the inn last night he thanked me for the headache remedy. He said I had a kinder hand than I let people see.",
+          "lie": "I barely spoke to him."
+        },
+        "s4": {
+          "truth": "Silas was unwell at the inn and asked me privately for a remedy. Feverfew and willow bark. I put a few drops in his glass.",
+          "lie": "I was at home pressing flowers."
+        },
+        "s5": {
+          "truth": "I heard a little metallic scrape from the altar when the lights went out. I'm sure of it.",
+          "lie": "I never went near it."
+        }
+      },
+      "blackout": "In the dark you heard a thin metallic scrape from the direction of the altar, the sound of something lifted off a stand.",
+      "last_word": "Someone saw you put a vial in Silas's drink. Silas is the only person who could prove what was in it."
+    },
+    {
+      "id": "nanor",
+      "family": "ravenscroft",
+      "traits": {
+        "feet": "boots",
+        "sleeve": "pale",
+        "scent": "lavender",
+        "hand": "left",
+        "side": "north",
+        "sigil": "moon"
+      },
+      "intro": "Baron Nanor Percival Ravenscroft. Financier. You may have heard of my investments; you certainly will before the night is out. I have money in railways, rubber, mines in places I can't pronounce, and a very promising scheme involving Peruvian guano. I am, as they say in the City, liquid. Extremely liquid. Practically a waterfall. Tonight I intend to make a modest fortune, a few friends, and a great deal of noise about both.",
+      "secret": {
+        "title": "The Clerk's Ledger",
+        "text": "When £8,000 went missing from your bank's accounts, you altered the ledger so the blame fell on your clerk, Edwin Marsh. He was dismissed and blacklisted across the City. The money was yours to explain, and you had spent it. Later you burned the one page that would have cleared him.",
+        "excuse": "Marsh was careless anyway. The bank would have collapsed and taken a hundred families with it. You protected far more people than you hurt.",
+        "proof": "A copy of the original ledger page, made by Marsh before it disappeared."
+      },
+      "need_alive": "Silas knows of a dormant Ravenscroft claim on the estate trust that could rescue your finances. Only he can find the paperwork.",
+      "scandal": {
+        "about": "griff",
+        "text": "Griff published another scholar's history of the Hanseatic League as his own."
+      },
+      "hiding": "in the butler's pantry at the foot of the servants' back stair",
+      "memories": [
+        "You hid in the butler's pantry among the silver, holding a brass key you had taken from your father's study. You were very proud of having a key nobody else had.",
+        "Through the crack of the pantry door you watched the foot of the servants' stair. You counted the candles on the pantry shelf to pass the time: seven, in brass sticks.",
+        "When the bell rang for the fire, the brass key was gone from your pocket. You have never found it. You think you dropped it in the pantry. You are not certain you did."
+      ],
+      "answers": {
+        "f1": {
+          "truth": "In the butler's pantry at the foot of the servants' stair.",
+          "lie": "In the billiard room."
+        },
+        "f2": {
+          "truth": "Nobody I could swear to. I was watching the servants' stair through the pantry door.",
+          "lie": "Nobody. I didn't see a soul."
+        },
+        "f3": {
+          "truth": "I didn't see her.",
+          "lie": "Nothing. Her hands were empty."
+        },
+        "f4": {
+          "truth": "No. The pantry is all stone; you hear nothing.",
+          "lie": "No. I heard nothing at all."
+        },
+        "f5": {
+          "truth": "I had stolen a brass key from my father's study, and I lost it that night. I never told him.",
+          "lie": "Nothing. I was exactly where I said."
+        },
+        "s1": {
+          "truth": "In my place on the north side, between Taylor and Danielle.",
+          "lie": "I went to the door to call for the footman."
+        },
+        "s2": {
+          "truth": "Taylor and Danielle, either side of me.",
+          "lie": "My wife, who never lets go of my arm."
+        },
+        "s3": {
+          "truth": "He told me the solicitor was right and I should stop shouting. I did not stop shouting.",
+          "lie": "He congratulated me on my investments."
+        },
+        "s4": {
+          "truth": "I argued with the solicitor, Mr Thimble, about our family's claim to part of this estate. I said some things about obstacles disappearing. Legal obstacles.",
+          "lie": "I dined alone at my club."
+        },
+        "s5": {
+          "truth": "I asked Silas what it was worth. He said, 'More than you can afford, my lord.' Cheek.",
+          "lie": "I never went near it."
+        }
+      },
+      "blackout": "A robe brushed hard across the back of your hand in the dark, someone moving fast. You smelled nothing, saw nothing, and grabbed at nothing.",
+      "last_word": "Silas knows what you did to Edwin Marsh. He also knows the one claim that could keep you solvent."
+    },
+    {
+      "id": "taylor",
+      "family": "ravenscroft",
+      "traits": {
+        "feet": "slippers",
+        "sleeve": "dark",
+        "scent": "camphor",
+        "hand": "right",
+        "side": "north",
+        "sigil": "sun"
+      },
+      "intro": "Lady Taylor Ravenscroft, philanthropist. I chair eleven committees, nine of which I founded, and two of which exist mainly to keep the other nine in order. I have raised money for orphans, widows, fallen women, distressed gentlefolk and, on one occasion, a donkey. I believe good manners are the foundation of civilisation, and I will be correcting yours all evening, purely out of love. Elbows off the table, Griffin.",
+      "secret": {
+        "title": "The Aunt's Last Will",
+        "text": "Sitting with your dying Aunt Hester, you found a new will in her writing box leaving her fortune to a children's hospital. You burned it in the grate. The older will, leaving everything to you, stood, and it has kept the Ravenscrofts afloat.",
+        "excuse": "Aunt Hester was confused at the end. The new will was a whim of her nurse's making. You only kept the family's money in the family.",
+        "proof": "The attendant's diary: 'Lady Taylor alone with the writing box. A smell of burning paper.'"
+      },
+      "need_alive": "Silas knows a witness who could show Aunt Hester was not of sound mind that week, which would mean you had done nothing so very wrong.",
+      "scandal": {
+        "about": "danielle",
+        "text": "Danielle has been sending romantic poems, under a false name, to somebody else's husband."
+      },
+      "hiding": "on the window seat in the Blue Drawing Room, behind the curtains, looking out over the terrace",
+      "memories": [
+        "You were on the window seat behind the heavy blue curtains, knees tucked up, watching rain on the terrace and practising your best curtsey in the reflection.",
+        "You saw a thread of smoke drifting from a window in the east wing, the records room, which everybody said was always locked. Then that same window was pushed open from the inside.",
+        "You are sure of the time. The hall clock struck the quarter as you settled on the seat, and you had counted slowly to six hundred, ten minutes, when the window opened. Twenty-five past eight."
+      ],
+      "answers": {
+        "f1": {
+          "truth": "On the window seat in the Blue Drawing Room, behind the curtains.",
+          "lie": "In the nursery, practising the piano."
+        },
+        "f2": {
+          "truth": "I saw smoke from the records-room window, and the window opening from inside.",
+          "lie": "Nobody. I didn't see a soul."
+        },
+        "f3": {
+          "truth": "I didn't see her.",
+          "lie": "Nothing. Her hands were empty."
+        },
+        "f4": {
+          "truth": "No. Only the rain.",
+          "lie": "No. I heard nothing at all."
+        },
+        "f5": {
+          "truth": "I saw that window open from the inside and I told no one. I thought I would be blamed for not raising the alarm.",
+          "lie": "Nothing. I was exactly where I said."
+        },
+        "s1": {
+          "truth": "In my place at the west end of the north side, next to Nanor.",
+          "lie": "I went to the side table to find a candle."
+        },
+        "s2": {
+          "truth": "Nanor. He was next to me.",
+          "lie": "Everyone could see me. I was standing up straight."
+        },
+        "s3": {
+          "truth": "He returned the money my intermediary had offered him. He said, 'I'll be there tomorrow, Lady Taylor. I've waited twenty-five years.'",
+          "lie": "We talked about the seating plan."
+        },
+        "s4": {
+          "truth": "I paid a man to persuade Silas to stay away from tonight. Silas always favoured Jonathan, and I didn't want him tipping the scales.",
+          "lie": "I was at a charity committee meeting."
+        },
+        "s5": {
+          "truth": "I saw Silas straighten it on its stand three times. He was nervous. Silas is never nervous.",
+          "lie": "I never went near it."
+        }
+      },
+      "blackout": "Somewhere across the circle, a chair creaked as if someone had stood up or sat down. Then the thunder covered everything.",
+      "last_word": "You tried to keep Silas away from tonight. If anyone finds out, it will look like you knew what he was planning."
+    },
+    {
+      "id": "griff",
+      "family": "wraithmore",
+      "traits": {
+        "feet": "slippers",
+        "sleeve": "dark",
+        "scent": "lavender",
+        "hand": "right",
+        "side": "south",
+        "sigil": "moon"
+      },
+      "intro": "Professor Griffin Thaddeus Wraithmore, historian and explorer. I have crossed the Atlas Mountains, lectured to the Royal Geographical Society, and been bitten by a camel in front of the Khedive of Egypt. All true. Mostly true. True in spirit. I have known everyone in this room since we were children, and I have a story about each of you, which I shall tell at the worst possible moment. Do stop me if you've heard this one. You won't have.",
+      "secret": {
+        "title": "The Abandoned Companion",
+        "text": "On the 1886 Atlas expedition, your colleague Dr Samuel Okafor broke his leg in a snowbound pass. You left him behind to save yourself. Shepherds found him days later. He lived, but lost the leg and his career, while you published a heroic account claiming you had gone back for him.",
+        "excuse": "Two men would have died. Somebody had to get out and raise the alarm. You simply improved the story afterwards, as historians do.",
+        "proof": "Dr Okafor's own logbook from the pass, which contradicts every word of your book."
+      },
+      "need_alive": "Silas can find the expedition's surviving guide before the Royal Geographical Society's inquiry next month. That guide could save you or ruin you.",
+      "scandal": {
+        "about": "jonathan",
+        "text": "Jonathan's 'ancient' family pedigree has a forged branch: the Norman knight never existed."
+      },
+      "hiding": "in the scullery and laundry by the kitchen yard, inside the big copper",
+      "memories": [
+        "You hid inside the great copper in the laundry, lid on, hugging your knees, keeping a notebook even then: 'Eight o'clock. Very dark. Smells of soap.'",
+        "From the copper you heard the kitchen cats yowling, and somewhere upstairs a door banged twice. You wrote it down.",
+        "Your notebook from that night still exists. The last entry, in a child's scrawl: 'Half past eight. Smoke. Everyone running.' You have never shown it to anyone."
+      ],
+      "answers": {
+        "f1": {
+          "truth": "In the laundry, inside the big copper.",
+          "lie": "In the library, reading."
+        },
+        "f2": {
+          "truth": "Nobody. I was inside a copper with the lid on.",
+          "lie": "Nobody. I didn't see a soul."
+        },
+        "f3": {
+          "truth": "I didn't see her.",
+          "lie": "Nothing. Her hands were empty."
+        },
+        "f4": {
+          "truth": "No. Just the pump.",
+          "lie": "No. I heard nothing at all."
+        },
+        "f5": {
+          "truth": "I kept a notebook that night, with times in it, and I've never shown it to anyone.",
+          "lie": "Nothing. I was exactly where I said."
+        },
+        "s1": {
+          "truth": "In my place on the south side, between Caroline and Grace.",
+          "lie": "I went to the window to look at the storm."
+        },
+        "s2": {
+          "truth": "Caroline and my wife, either side of me.",
+          "lie": "My wife was holding my hand."
+        },
+        "s3": {
+          "truth": "He asked whether I still had my notebooks from the summer of '67. I said I might.",
+          "lie": "We discussed the Atlas Mountains. At length."
+        },
+        "s4": {
+          "truth": "I paid two local toughs to recover my expedition instruments from the man who stole them. The target was the thief, not Silas.",
+          "lie": "I was writing my lecture."
+        },
+        "s5": {
+          "truth": "I told Silas it was a reproduction. He agreed, cheerfully. Grace was furious with me for spoiling it.",
+          "lie": "I never went near it."
+        }
+      },
+      "blackout": "In the dark, close by the altar, you heard Silas whisper a single word: 'Eleanor.'",
+      "last_word": "Silas has Okafor's logbook. He also knows where the one witness who could save you is living."
+    },
+    {
+      "id": "grace",
+      "family": "wraithmore",
+      "traits": {
+        "feet": "boots",
+        "sleeve": "pale",
+        "scent": "camphor",
+        "hand": "left",
+        "side": "south",
+        "sigil": "sun"
+      },
+      "intro": "Lady Grace Wraithmore. I collect antiquities: Roman bronzes, Egyptian scarabs, Etruscan mirrors, and grudges, which keep better than any of them. My husband discovers things; I acquire them, which is far more civilised. I can tell a forgery across a ballroom, and I can tell when someone is lying across a dinner table, so do sit somewhere else. I'm delighted to be here. I'm always delighted. You can tell by my face.",
+      "secret": {
+        "title": "The Child in the East Wing",
+        "text": "In the fire of 1867 you were hiding in the linen cupboard at the top of the east stair, a few steps from the records room. You heard Eleanor crying out behind the door. You could have run for help, or tried the latch. You panicked and fled. Afterwards you told everyone the passage was already full of smoke. It wasn't.",
+        "excuse": "You were a frightened child. Nobody blames a child. You tell yourself that nobody blames a child.",
+        "proof": "A child's statement taken by the parents' inquiry, and a charred key from the records-room door."
+      },
+      "need_alive": "Silas alone can tell you whether a rescue would really have been possible. You have needed to know for twenty-five years.",
+      "scandal": {
+        "about": "caroline",
+        "text": "Caroline has been sending herself anonymous love letters to make Grant jealous."
+      },
+      "hiding": "in the linen cupboard at the top of the east stair, a few steps from the records room",
+      "memories": [
+        "You hid in the linen cupboard at the top of the east stair, among the folded sheets, so close to the records room that you could hear its door rattle in the draught.",
+        "At a quarter past eight you heard the records-room door open and shut, and two voices. A few minutes later, Eleanor crying out behind the door. You held your breath and did nothing.",
+        "When the smoke came under the cupboard door, it was half past eight. You ran down the east stair. The passage was clear. You told everyone it wasn't."
+      ],
+      "answers": {
+        "f1": {
+          "truth": "In the linen cupboard at the top of the east stair, a few steps from the records room.",
+          "lie": "Outside on the terrace."
+        },
+        "f2": {
+          "truth": "I heard someone go into the records room with Eleanor at a quarter past eight. I didn't open the door to look.",
+          "lie": "Nobody. I didn't see a soul."
+        },
+        "f3": {
+          "truth": "I didn't see her. I heard her.",
+          "lie": "Nothing. Her hands were empty."
+        },
+        "f4": {
+          "truth": "Yes. Eleanor cried out. Something like 'It isn't yours to burn!' I have heard it every night since.",
+          "lie": "No. I heard nothing at all."
+        },
+        "f5": {
+          "truth": "I said the passage was full of smoke. It wasn't. I could have tried the door.",
+          "lie": "Nothing. I was exactly where I said."
+        },
+        "s1": {
+          "truth": "In my place at the west end of the south side, next to Griff.",
+          "lie": "I went to the vestry door. It was banging."
+        },
+        "s2": {
+          "truth": "Griff. My husband. Which I appreciate is not ideal.",
+          "lie": "Everyone. I was perfectly visible."
+        },
+        "s3": {
+          "truth": "He asked me, very gently, whether I still dream about the fire. I left the room.",
+          "lie": "He complimented my necklace."
+        },
+        "s4": {
+          "truth": "I threw some old letters in the river. My parents' letters, about a private arrangement with another Order family. The red on the cloth was sealing-wax pigment, not blood.",
+          "lie": "I was at home with a headache."
+        },
+        "s5": {
+          "truth": "I examined it before the ceremony. The blade is blunt. Ceremonial. You couldn't cut butter with it.",
+          "lie": "I never went near it."
+        }
+      },
+      "blackout": "You felt cold air on the back of your neck: the vestry door had blown open behind you, and then slammed shut in the wind.",
+      "last_word": "Silas knows you could have saved Eleanor. If anyone here had a reason to dread tonight, it was you."
+    }
+  ],
+  "words": {
+    "boots": "hobnailed boots",
+    "slippers": "soft house slippers",
+    "dark": "navy",
+    "pale": "cream",
+    "lavender": "lavender water",
+    "camphor": "camphor oil",
+    "left": "left",
+    "right": "right",
+    "north": "north",
+    "south": "south",
+    "sun": "golden sun",
+    "moon": "silver moon"
+  },
+  "witness_network": [
+    {
+      "witness": "grace",
+      "subject": "grant",
+      "saw": "Last night you saw Grant in the manor basement with the cover off the new electrical panel, working at the fuses. When footsteps came down the stairs he ducked behind the coal bunker and hid until they had gone.",
+      "truth": "Last night you went down to the basement electrical panel. The exterior lamps were failing and you needed them on to survey the grounds after dark, so you fixed a loose fuse. You hid when someone came because it isn't your house and you didn't want to explain yourself to Jonathan."
+    },
+    {
+      "witness": "grant",
+      "subject": "grace",
+      "saw": "Last night at dusk you saw Grace on the river bridge, alone, throwing a bundle of papers and a cloth stained red into the water. She watched until it sank.",
+      "truth": "Last night you threw a bundle of old letters into the river. They documented your parents' private arrangement with another Order family, and you were not going to let anyone find them. The red on the wrapping cloth was old sealing-wax pigment, not blood."
+    },
+    {
+      "witness": "danielle",
+      "subject": "jonathan",
+      "saw": "Last night, behind the Black Hound inn, you heard Jonathan say to Silas: 'If you tell them what you know, I'll make certain you never speak again.'",
+      "truth": "Last night you confronted Silas behind the Black Hound. You had hidden an old beneficiary schedule that suggests the Ravenscrofts have a claim to part of the estate, and Silas demanded you disclose it before the ceremony. You threatened him in anger, afraid of losing the manor. You had no idea what else he was planning."
+    },
+    {
+      "witness": "jonathan",
+      "subject": "nanor",
+      "saw": "Last night, through the inn parlour door, you heard Nanor arguing with the solicitor, Mr Thimble, about who owns this manor. Nanor said: 'Anything, or anyone, standing between me and my claim will have to disappear.'",
+      "truth": "Last night you argued with Mr Thimble the solicitor. You believe the Ravenscrofts have a genuine claim to part of the estate and you demanded he recognise it. The 'obstacles' you wanted gone were documents and lawyers."
+    },
+    {
+      "witness": "nanor",
+      "subject": "griff",
+      "saw": "Last night in the inn yard you saw Griff hand money to two rough-looking men and tell them: 'Break a few bones if you have to.' You couldn't hear who they were meant to find.",
+      "truth": "Last night you paid two local toughs to recover your expedition instruments, worth a small fortune, from the man who stole them. The bones in question belonged to the thief, not to Silas."
+    },
+    {
+      "witness": "griff",
+      "subject": "caroline",
+      "saw": "Last night at the inn you saw Caroline tip a small vial into Silas's glass when she thought nobody was looking.",
+      "truth": "Last night Silas was unwell at the inn and asked you privately for something for his headache. You gave him a tincture of feverfew and willow bark, a few drops in his glass, at his request."
+    },
+    {
+      "witness": "caroline",
+      "subject": "taylor",
+      "saw": "Last night in the churchyard you saw Taylor hand money to a stranger and say: 'Make sure Silas does not come tomorrow.'",
+      "truth": "Last night you paid an intermediary to persuade Silas to stay away from tonight. Silas favoured Jonathan when you were children and you didn't want him tipping the scales during the ceremony. Silas sent the money back."
+    },
+    {
+      "witness": "taylor",
+      "subject": "danielle",
+      "saw": "Last night you saw Danielle come out of Silas's rooms above the post office carrying a small wooden box, looking over her shoulder.",
+      "truth": "Last night you collected a family heirloom from Silas's rooms: your grandmother's sapphire brooch, which you had quietly pawned and then redeemed through Silas. The box holds only the brooch and the pawn receipt. Jonathan doesn't know about the debt."
+    }
+  ],
+  "routes": {
+    "gallery": {
+      "name": "along the Long Gallery",
+      "witness": "jonathan"
+    },
+    "servants": {
+      "name": "up the servants' back stair",
+      "witness": "nanor"
+    },
+    "passage": {
+      "name": "through the secret passage behind the library",
+      "witness": "grant"
+    }
+  },
+  "exits": {
+    "laundry": {
+      "name": "the laundry and kitchen yard",
+      "witness": "griff"
+    },
+    "conservatory": {
+      "name": "the conservatory",
+      "witness": "caroline"
+    },
+    "terrace": {
+      "name": "the terrace beneath the east wing",
+      "witness": "taylor"
+    }
+  },
+  "parents": {
+    "jonathan": "your father, Lord Pemberwick",
+    "danielle": "your father, Mr Ashford, the Order's banker",
+    "grant": "your father, Lord Blackthorne",
+    "caroline": "your father, Dr Whitmore, the Order's physician",
+    "nanor": "your father, Baron Ravenscroft",
+    "taylor": "your father, Mr Bellamy, the Order's solicitor",
+    "griff": "your father, Professor Wraithmore",
+    "grace": "your father, Mr Sinclair, the Order's land agent"
+  },
+  "cases": {
+    "jonathan": {
+      "entry": "servants",
+      "exit": "conservatory",
+      "decoy": "nanor",
+      "weapon": "the heavy iron key to the chapel, which you carry as master of the house",
+      "fire_motive": "Eleanor's letter was signed by your father, authorising money to be moved out of the servants' trust. You had been told all summer that the Pemberwick name was everything you would ever inherit.",
+      "cover": "You were in the tall clock in the Long Gallery all evening, as you have always said."
+    },
+    "danielle": {
+      "entry": "gallery",
+      "exit": "laundry",
+      "decoy": "taylor",
+      "weapon": "a jewelled stiletto hairpin from your collection, eight inches long",
+      "fire_motive": "Eleanor's letter carried your father's signature as the Order's banker. If Silas saw it, your father would be ruined and the Ashfords would be nobody.",
+      "cover": "You were under the billiard table all evening, as you have always said."
+    },
+    "grant": {
+      "entry": "gallery",
+      "exit": "terrace",
+      "decoy": "griff",
+      "weapon": "your surveyor's steel plumb bob on its cord",
+      "fire_motive": "Eleanor's letter was signed by your father. You had heard him say the trust money paid for the Blackthorne land you would one day map and own.",
+      "cover": "You were in the library passage all evening, as you have always said."
+    },
+    "caroline": {
+      "entry": "passage",
+      "exit": "terrace",
+      "decoy": "grace",
+      "weapon": "your folding pruning knife",
+      "fire_motive": "Eleanor's letter carried your father's signature as the Order's physician, certifying servants unfit so their trust money could be withdrawn. You understood exactly what it meant.",
+      "cover": "You were among the ferns in the conservatory all evening, as you have always said."
+    },
+    "nanor": {
+      "entry": "gallery",
+      "exit": "laundry",
+      "decoy": "jonathan",
+      "weapon": "your silver-topped walking cane",
+      "fire_motive": "Eleanor's letter was signed by your father, and it named the Ravenscroft bank as the place the money went. You had seen the same figures in his ledger a week before.",
+      "cover": "You were in the butler's pantry all evening, as you have always said."
+    },
+    "taylor": {
+      "entry": "servants",
+      "exit": "conservatory",
+      "decoy": "danielle",
+      "weapon": "a long pearl-headed hatpin",
+      "fire_motive": "Eleanor's letter was drawn up by your father as the Order's solicitor. If it came out, your family would be struck off and shamed, and you would be the girl whose father went to prison.",
+      "cover": "You were on the window seat in the Blue Drawing Room all evening, as you have always said."
+    },
+    "griff": {
+      "entry": "passage",
+      "exit": "conservatory",
+      "decoy": "grant",
+      "weapon": "the bone-handled knife you carried across the Atlas",
+      "fire_motive": "Eleanor's letter was signed by your father. You had read enough history even then to know what happened to families caught stealing from their servants.",
+      "cover": "You were in the laundry copper all evening, as you have always said."
+    },
+    "grace": {
+      "entry": "servants",
+      "exit": "terrace",
+      "decoy": "caroline",
+      "weapon": "a bronze Egyptian scarab paperweight from your collection",
+      "fire_motive": "Eleanor's letter carried your father's signature as the Order's land agent. She told you she would show Silas first thing, and you begged her not to.",
+      "cover": "You were in the linen cupboard at the top of the east stair, and you fled when you heard Eleanor crying. That was the story you built your whole life around."
+    }
+  },
+  "polls": [
+    {
+      "id": "p1",
+      "text": "Who is most likely to fake a noble title?"
+    },
+    {
+      "id": "p2",
+      "text": "Who is most likely to sell their spouse's portrait to pay a gambling debt?"
+    },
+    {
+      "id": "p3",
+      "text": "Who is most likely to befriend the ghost?"
+    },
+    {
+      "id": "p4",
+      "text": "Who is most likely to faint at the first sign of blood?"
+    },
+    {
+      "id": "p5",
+      "text": "Who is most likely to have hidden a body in the garden already?"
+    },
+    {
+      "id": "p6",
+      "text": "Who is most likely to survive the night by sheer arrogance?"
+    },
+    {
+      "id": "p7",
+      "text": "Who is most likely to cheat at croquet?"
+    },
+    {
+      "id": "p8",
+      "text": "Who is most likely to say 'I knew it all along' at the end?"
+    }
+  ],
+  "questions": {
+    "fire": [
+      {
+        "id": "f1",
+        "text": "Where were you when the first smoke appeared?"
+      },
+      {
+        "id": "f2",
+        "text": "Who did you see near the east wing?"
+      },
+      {
+        "id": "f3",
+        "text": "What was Eleanor carrying?"
+      },
+      {
+        "id": "f4",
+        "text": "Did you hear an argument?"
+      },
+      {
+        "id": "f5",
+        "text": "What did you conceal about your location?"
+      }
+    ],
+    "silas": [
+      {
+        "id": "s1",
+        "text": "Where were you during the blackout?"
+      },
+      {
+        "id": "s2",
+        "text": "Who can confirm it?"
+      },
+      {
+        "id": "s3",
+        "text": "What happened in your last conversation with Silas?"
+      },
+      {
+        "id": "s4",
+        "text": "What were you doing last night?"
+      },
+      {
+        "id": "s5",
+        "text": "What did you see near the dagger?"
+      }
+    ]
+  },
+  "categories": [
+    {
+      "id": "fire_memory",
+      "track": "fire",
+      "name": "Fire memory",
+      "blurb": "What they remember of the night of the fire"
+    },
+    {
+      "id": "fire_evidence",
+      "track": "fire",
+      "name": "Fire evidence",
+      "blurb": "What the 1867 inquiry recorded about them"
+    },
+    {
+      "id": "history",
+      "track": "fire",
+      "name": "Historical contradiction",
+      "blurb": "Where their story of 1867 doesn't add up"
+    },
+    {
+      "id": "motive",
+      "track": "silas",
+      "name": "Silas motive",
+      "blurb": "What Silas held over them"
+    },
+    {
+      "id": "opportunity",
+      "track": "silas",
+      "name": "Blackout opportunity",
+      "blurb": "Where they were when the lights died"
+    },
+    {
+      "id": "physical",
+      "track": "silas",
+      "name": "Physical evidence",
+      "blurb": "Their robe, hands and belongings after the blackout"
+    }
+  ],
+  "public": {
+    "map": {
+      "phase": "reunion",
+      "title": "Plan of Hollowmere Manor",
+      "text": "The east wing's records room, on the first floor, can be reached three ways: along the Long Gallery, up the servants' back stair from the butler's pantry, or (according to old plans nobody can find) by a passage from the library. From the east wing you can leave by the laundry and kitchen yard, through the conservatory, or down onto the terrace."
+    },
+    "nanny": {
+      "phase": "reunion",
+      "title": "Nanny Pruitt's list, summer 1867",
+      "text": "Nanny Pruitt's household list for the children's summer at Hollowmere, found in the nursery cupboard. She records what each child wore and how she treated them that week."
+    },
+    "eleanor": {
+      "phase": "reunion",
+      "title": "Eleanor Vale",
+      "text": "Eleanor Vale, twelve years old, younger sister of Silas, the under-footman. She played with the Order's children every summer. She died in the east-wing fire of 1867. The inquest called it a tragic accident."
+    },
+    "inquiry": {
+      "phase": "covenant",
+      "title": "The parents' private inquiry, 1867",
+      "text": "A single page, unsigned: 'The papers in the records room were set alight first; the fire did not begin with a lamp. One of the children was in that room with the girl. We cannot say which. For the sake of all our houses, the finding shall be accident.'"
+    },
+    "trust_letter": {
+      "phase": "covenant",
+      "title": "Excerpt: Eleanor's letter",
+      "text": "'...the sums withdrawn from the Servants' Benefit Trust to be held by the Order's houses and not returned...' It is signed by the heads of every Order household. Eleanor understood enough to know it was wrong."
+    },
+    "register": {
+      "phase": "covenant",
+      "title": "The Covenant register",
+      "text": "The register each guest signed tonight on entering the chapel. It records the hand each member signed with, their chair in the ceremonial circle (north or south arc) and the sigil embroidered on their robe."
+    },
+    "dagger_stand": {
+      "phase": "murder",
+      "title": "The ceremonial dagger",
+      "text": "Photographed on its stand beside the altar at two minutes past nine. Fourteen inches, broad ceremonial blade."
+    },
+    "scene": {
+      "phase": "murder",
+      "title": "The scene",
+      "text": "When the lights returned, Silas Vale lay dead at the foot of the altar. The ceremonial dagger was gone from its stand. Everyone was where they had been standing before the lights went out. Or said they were."
+    },
+    "storm": {
+      "phase": "p4",
+      "title": "The cause of the blackout",
+      "text": "The groundsman reports that lightning struck the generator house at nine minutes past nine. The fuses blew all at once. Nobody needed to touch the panel to cause it."
+    }
+  },
+  "script": {
+    "lobby": {
+      "title": "Hollowmere Manor",
+      "text": "Autumn, 1892. The guests are arriving."
+    },
+    "reunion": {
+      "title": "The Reunion",
+      "text": "Welcome to Hollowmere. Each guest, in turn, introduce yourself to the room.",
+      "silas": "Good evening, my lords, my ladies. Coats to me, quarrels to Sir Jonathan. Dinner is at nine, the sherry is now, and the east wing is still haunted, so I'd stay out of it."
+    },
+    "polls": {
+      "title": "Who's Most Likely To…?",
+      "text": "Answer privately on your phone. The results will be read aloud."
+    },
+    "poll_results": {
+      "title": "The Results",
+      "text": ""
+    },
+    "covenant": {
+      "title": "The Covenant",
+      "text": "Robes on. The lights dim. Silas Vale steps to the altar, and he is no longer a servant.",
+      "silas": "Twenty-five years ago my sister Eleanor burned to death in the east wing of this house. You were told it was an accident. It was not. One of you was in that room with her. I have the records your parents buried. I know what each of you has done since. Hollowmere's twelve million pounds will be shared tonight by three families. The fourth, the family of the guilty, will receive nothing. The doors are locked. Judge each other. Or I will judge you all."
+    },
+    "ballot1": {
+      "title": "The First Inheritance Ballot",
+      "text": "Rank three other guests on your phone. Your votes are secret."
+    },
+    "blackout": {
+      "title": "",
+      "text": ""
+    },
+    "murder": {
+      "title": "THE HOLLOW ORDER SEES ALL",
+      "text": "Last night, every person in this room was involved in something suspicious. Every secret has a witness. And now, one of you is a murderer. What you choose to reveal, and what you choose to conceal, is entirely up to you. Let the accusations begin."
+    },
+    "ghost": {
+      "title": "Death does not release you from the Covenant",
+      "silas": "Did you think a blade would end it? I am still here. I am in the walls and the wires and the glass. The Covenant stands. Find the one who killed my sister, and me. I will be watching."
+    },
+    "ballots2": {
+      "title": "Inheritance and Suspicion",
+      "text": "Rank three guests for the inheritance, then rank your three prime suspects. Every point of suspicion costs the accused influence."
+    },
+    "deals": {
+      "title": "The Dinner of Deception",
+      "text": "The first deals may now be struck. Pay for protection, or pay to force a question. Every promise can be broken."
+    },
+    "interrogations": {
+      "title": "The Order's Inquisition",
+      "text": "One interrogation each, in order of influence."
+    },
+    "investigations": {
+      "title": "Private Investigations",
+      "text": "Each couple may investigate one guest in secret. The guest will be told only what is being looked into."
+    },
+    "bribes4": {
+      "title": "A Word in Your Ear",
+      "text": "Offers may now be made for inheritance votes. Only inheritance votes."
+    },
+    "ballots3": {
+      "title": "Inheritance and Suspicion",
+      "text": "The third inheritance ballot, and the second suspicion ballot."
+    },
+    "revelations": {
+      "title": "Silas's Revenge",
+      "silas": "You lied to me. Some of you, a great deal. You also paid each other. Let us see who."
+    },
+    "confront": {
+      "title": "Confrontation",
+      "text": "Five minutes. Accuse, defend, deny."
+    },
+    "temptation": {
+      "title": "The Last Temptation",
+      "text": "The final chance to buy an inheritance vote."
+    },
+    "ballot4": {
+      "title": "The Final Inheritance Ballot",
+      "text": "Your last inheritance vote. Suspicion will still cost influence."
+    },
+    "hotseat": {
+      "title": "The Devil's Defense",
+      "text": "The two prime suspects take the hot seat. Each may defend themselves, or accuse another."
+    },
+    "suspicion3": {
+      "title": "The Final Suspicion Ballot",
+      "text": "Rank your three suspects for the last time."
+    },
+    "bridge": {
+      "title": "The Ghost Remembers",
+      "silas": "I cannot tell you who. The dead are not permitted. But I can show you what my sister saw, and what my hand closed on as I fell."
+    },
+    "wagers": {
+      "title": "The Devil's Wager",
+      "text": "Wager on the accused: guilty, or not guilty. Up to a quarter of your family's share."
+    },
+    "verdict": {
+      "title": "The Final Tribunal",
+      "text": "Four votes of eight convict. Vote YES or NO."
+    },
+    "reveal": {
+      "title": "The Truth",
+      "text": ""
+    }
+  }
+}

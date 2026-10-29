@@ -4,8 +4,24 @@
     {
       "name": "mystery",
       "runtimeExecutable": "py",
-      "runtimeArgs": ["-m", "server.app"],
+      "runtimeArgs": [
+        "-m",
+        "server.app"
+      ],
       "port": 8000
+    },
+    {
+      "name": "hollow-demo",
+      "runtimeExecutable": "py",
+      "runtimeArgs": [
+        "-m",
+        "server.app"
+      ],
+      "port": 8010,
+      "env": {
+        "MM_DB": "data/hollow-demo.db",
+        "MM_PORT": "8010"
+      }
     }
   ]
 }
