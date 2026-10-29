@@ -167,8 +167,9 @@ function hollowAction(h) {
         el("h3", {}, lab.title),
         (Array.isArray(lab.note) ? lab.note : [lab.note]).map((n) => el("p", { class: "small muted" }, n)),
         ["1st (+3)", "2nd (+2)", "3rd (+1)"].map((label, i) => el("label", { class: "h-field" }, el("span", {}, label),
-          select(`${key}-${i}`, b.kind === "inheritance" ? others.filter(([id]) => id !== h.dossier.spouse_id) : others,
-            "Choose…", saved ? saved[i] : ""))),
+          select(`${key}-${i}`, (b.kind === "inheritance" ? others.filter(([id]) => id !== h.dossier.spouse_id) : others)
+            .filter(([id]) => !picks.some((p, j) => j !== i && p === id)),      // each person once per ballot
+          "Choose…", saved ? saved[i] : ""))),
         el("button", { class: "wide", disabled: hBusy, onclick: () => hAct("ballot", { kind: b.kind, round: b.round, picks }, [0, 1, 2].map((i) => `${key}-${i}`)) },
           saved ? "Change my vote" : "Cast my vote"),
         saved && el("p", { class: "ok-text small" }, `Voted: ${saved.map((p) => nameOf(h, p)).join(", ")}. You can change it until the ballot closes.`));
@@ -427,43 +428,146 @@ function hollowDeals(h) {
 
 // ------------------------------------------------------------------- host
 
-function hollowHostPanel(s) {
+// The host's screen during The Hollow Order: the next action is always on top,
+// everything else lives in sections (like the guests' menu).
+const HOST_TABS = { now: "Now", phases: "Phases", guests: "Guests", tv: "TV & sound", tools: "Tools" };
+let hostTab = "now";
+const openPhases = new Set();
+
+function hostGo(st, label) {
+  return confirm(label) && hostAction("POST", "/api/host/hollow/step", { step: st.id }, "hstep");
+}
+
+function hollowTopBar(s) {
   const h = s.hollow;
   const idx = h.steps.findIndex((x) => x.id === h.step);
   const cur = h.steps[idx];
   const next = h.steps[idx + 1];
   const prev = h.steps[idx - 1];
-  const go = (st, label) => confirm(label) && hostAction("POST", "/api/host/hollow/step", { step: st.id }, "hstep");
   if (!h.ready) {
-    return el("section", { class: "card h-host" }, el("h2", {}, "The Hollow Order"),
-      el("p", {}, "Release the characters to begin. The app secretly chooses the murderer at that moment. Nobody, including you, is told unless it's them."));
+    return el("section", { class: "card h-host h-top" }, el("h2", {}, "The Hollow Order"),
+      el("p", {}, "Release the characters to begin (Guests tab). The app secretly chooses the murderer at that moment."));
   }
-  return el("section", { class: "card h-host" },
-    el("p", { class: "eyebrow" }, cur.phase),
+  return el("section", { class: "card h-host h-top" },
+    el("p", { class: "eyebrow" }, `${cur.phase} · step ${idx + 1} of ${h.steps.length}`),
     el("h2", {}, cur.name),
     hTimer(h.timer_end),
     h.paused && el("p", { class: "paused" }, "Paused"),
-    Object.keys(h.counts).length > 0 && el("ul", { class: "plain small" },
-      Object.entries(h.counts).map(([k, v]) => el("li", {}, `${k}: ${v} of ${h.total}`))),
-    h.interrogation && el("p", { class: "small" }, h.interrogation.done ? "All interrogations done."
-      : `Turn ${h.interrogation.turn + 1} of ${h.interrogation.order.length}: ${h.interrogation.asker}`,
-    !h.interrogation.done && el("button", { class: "small quiet", onclick: () => confirm("Skip this turn?") && hostAction("POST", "/api/host/hollow/skip-turn", {}) }, "Skip turn")),
-    next && el("button", { class: "wide", disabled: !!busy, onclick: () => go(next, `Move on to: ${next.name}?`) }, `Next: ${next.name}`),
+    Object.keys(h.counts).length > 0 && el("p", { class: "small" },
+      Object.entries(h.counts).map(([k, v]) => `${k}: ${v} of ${h.total}`).join(" · ")),
+    next ? el("button", { class: "wide", disabled: !!busy, onclick: () => hostGo(next, `Move on to: ${next.name}?`) }, `Next: ${next.name}`)
+      : el("p", { class: "muted" }, "That's the end of the evening."),
     el("div", { class: "row" },
-      prev && el("button", { class: "small quiet", disabled: !!busy, onclick: () => go(prev, `Go back to: ${prev.name}? (Reopens it.)`) }, "‹ Back"),
+      prev && el("button", { class: "small quiet", disabled: !!busy, onclick: () => hostGo(prev, `Go back to: ${prev.name}? (Reopens it.)`) }, "‹ Back"),
       el("button", { class: "small quiet", onclick: () => hostAction("POST", "/api/host/hollow/pause", { paused: !h.paused }) }, h.paused ? "Resume" : "Pause"),
-      el("button", { class: "small danger", onclick: () => confirm("Safety stop: pause everything and show 'lights up' on the TV?") && hostAction("POST", "/api/host/hollow/cue", { cue: "safety" }) }, "Safety stop")),
-    el("p", { class: "eyebrow" }, "Timer"),
-    el("div", { class: "row" }, [2, 5, 10, 15].map((m) => el("button", { class: "small quiet", onclick: () => hostAction("POST", "/api/host/hollow/timer", { minutes: m }) }, `${m} min`)),
-      el("button", { class: "small quiet", onclick: () => hostAction("POST", "/api/host/hollow/timer", { minutes: 0 }) }, "Clear")),
-    el("p", { class: "eyebrow" }, "Sound cues on the TV"),
-    el("div", { class: "row wrap" }, h.cues.map((c) => el("button", { class: "small quiet", onclick: () => hostAction("POST", "/api/host/hollow/cue", { cue: c }) }, c))),
-    el("details", { class: "small" }, el("summary", {}, "The whole evening"),
-      el("ol", {}, h.steps.map((x) => el("li", { class: x.id === h.step ? "h-current" : "" }, `${x.name}`)))),
-    el("details", { class: "small" }, el("summary", {}, "Rehearsal tools"),
-      el("p", { class: "muted" }, "Start the evening again from the beginning: clears votes, deals and answers, and secretly picks a NEW murderer, so a rehearsal never spoils the real party."),
-      el("button", { class: "small danger", onclick: () => confirm("Restart the whole evening? All votes, deals and answers are wiped.") && hostAction("POST", "/api/host/hollow/restart", {}) }, "Restart the evening")),
-    el("p", { class: "small muted" }, "You never see the murderer, votes or deals. Your own role is on your guest link."));
+      el("button", { class: "small danger", onclick: () => confirm("Safety stop: pause everything and show 'lights up' on the TV?") && hostAction("POST", "/api/host/hollow/cue", { cue: "safety" }) }, "Safety stop")));
+}
+
+function hostTabs() {
+  return el("nav", { class: "h-tabs", "aria-label": "Host sections" },
+    Object.entries(HOST_TABS).map(([id, label]) => el("button", {
+      class: id === hostTab ? "h-tab on" : "h-tab",
+      onclick: () => { hostTab = id; renderHost(); },
+    }, label)));
+}
+
+function statRows(rows) {
+  return (rows || []).map((r) => el("div", { class: "h-stat" },
+    el("p", {}, el("strong", {}, r.label), r.value !== undefined ? `: ${r.value}` : ""),
+    r.done && el("p", { class: "small ok-text" }, `Done (${r.done.length}): ${r.done.join(", ") || "nobody yet"}`),
+    r.missing && r.missing.length > 0 && el("p", { class: "small warn" }, `Still waiting on: ${r.missing.join(", ")}`),
+    r.log && (r.log.length ? el("ul", { class: "small" }, r.log.map((l) => el("li", {}, l))) : el("p", { class: "small muted" }, "None yet."))));
+}
+
+function hostNowTab(s) {
+  const h = s.hollow;
+  const b = h.boards || {};
+  return [
+    h.interrogation && el("section", { class: "card" }, el("h2", {}, "Interrogations"),
+      el("p", {}, h.interrogation.done ? "All interrogations done."
+        : `Turn ${h.interrogation.turn + 1} of ${h.interrogation.order.length}: ${h.interrogation.asker} asks`),
+      !h.interrogation.done && el("button", { class: "small quiet", onclick: () => confirm("Skip this turn?") && hostAction("POST", "/api/host/hollow/skip-turn", {}) }, "Skip turn")),
+    (h.stats[h.step] || []).length > 0 && el("section", { class: "card" }, el("h2", {}, "This step"), statRows(h.stats[h.step])),
+    el("section", { class: "card" }, el("h2", {}, "Timer"),
+      el("div", { class: "row wrap" }, [2, 5, 10, 15].map((m) => el("button", { class: "small quiet", onclick: () => hostAction("POST", "/api/host/hollow/timer", { minutes: m }) }, `${m} min`)),
+        el("button", { class: "small quiet", onclick: () => hostAction("POST", "/api/host/hollow/timer", { minutes: 0 }) }, "Clear"))),
+    (b.families || b.suspicion) && el("section", { class: "card" }, el("h2", {}, "Leaderboards (as on the TV)"),
+      b.families && [el("p", { class: "eyebrow" }, "Family inheritance (provisional)"),
+        el("ol", {}, b.families.map((f) => el("li", {}, `${f.name}: ${money(f.amount)}`)))],
+      b.suspicion && [el("p", { class: "eyebrow" }, "Murder suspicion"), el("ol", {}, b.suspicion.map((n) => el("li", {}, n)))]),
+    el("p", { class: "small muted" }, "You never see the murderer, how anyone voted, or private deals. Your own role is on your guest link."),
+  ];
+}
+
+function hostPhasesTab(s) {
+  const h = s.hollow;
+  const curIdx = h.steps.findIndex((x) => x.id === h.step);
+  const phases = [];
+  h.steps.forEach((st, i) => {
+    let p = phases.find((x) => x.name === st.phase);
+    if (!p) { p = { name: st.phase, steps: [] }; phases.push(p); }
+    p.steps.push({ ...st, i });
+  });
+  return phases.map((p) => {
+    const here = p.steps.some((st) => st.i === curIdx);
+    const done = p.steps.every((st) => st.i < curIdx);
+    const details = el("details", { class: `card h-phase-card ${here ? "here" : ""}`, open: openPhases.has(p.name) || (here && !openPhases.size) },
+      el("summary", {}, el("strong", {}, p.name), " ", el("span", { class: "small muted" }, here ? "· now" : done ? "· done" : "")),
+      p.steps.map((st) => el("div", { class: `h-step ${st.i === curIdx ? "now" : st.i < curIdx ? "past" : ""}` },
+        el("div", { class: "row" },
+          el("p", { class: "grow" }, st.i === curIdx ? "▶ " : st.i < curIdx ? "✓ " : "", st.name),
+          st.i < curIdx && el("button", { class: "small quiet", onclick: () => hostGo(st, `Go back to "${st.name}"? Everything after it can be redone.`) }, "Go back here")),
+        st.i <= curIdx && statRows(h.stats[st.id]))));
+    details.addEventListener("toggle", () => { if (details.open) openPhases.add(p.name); else openPhases.delete(p.name); });
+    return details;
+  });
+}
+
+function hostGuestsTab(s) {
+  const nameInput = el("input", { type: "text", maxlength: 40, placeholder: "Guest name", "aria-label": "Guest name", required: true });
+  return [
+    textPromptLine(s),
+    el("section", {},
+      el("div", { class: "row" }, el("h2", { class: "grow" }, `Guests (${s.guests.length})`),
+        el("button", { class: "quiet small", onclick: loadHost }, "Refresh")),
+      el("ul", { class: "plain" }, s.guests.map((g) => guestCard(s, g))),
+      el("form", { class: "row add", onsubmit: (e) => { e.preventDefault(); hostAction("POST", "/api/host/guests", { name: nameInput.value }); } },
+        nameInput, el("button", { type: "submit" }, "Add guest"))),
+    releasePanel(s),
+    suggestionPanel(s),
+  ];
+}
+
+function hostTvTab(s) {
+  const h = s.hollow;
+  return [
+    el("section", { class: "card" }, el("h2", {}, "The TV"), roomLinkRow(s),
+      el("p", { class: "small muted" }, "On the TV computer: open the link, click “Click to start sound”, then press F11 for full screen.")),
+    el("section", { class: "card" }, el("h2", {}, "Sound cues"),
+      el("p", { class: "small muted" }, "Play a sound on the TV at any moment."),
+      el("div", { class: "row wrap" }, h.cues.map((c) => el("button", { class: "small quiet", onclick: () => hostAction("POST", "/api/host/hollow/cue", { cue: c }) }, c)))),
+  ];
+}
+
+function hostToolsTab() {
+  return el("section", { class: "card" }, el("h2", {}, "Rehearsal tools"),
+    el("p", { class: "muted" }, "Start the evening again from the beginning: clears votes, deals and answers, and secretly picks a NEW murderer, so a rehearsal never spoils the real party. Guests keep their links and characters."),
+    el("button", { class: "small danger", onclick: () => confirm("Restart the whole evening? All votes, deals and answers are wiped.") && hostAction("POST", "/api/host/hollow/restart", {}) }, "Restart the evening"));
+}
+
+function renderHollowHost(s) {
+  document.title = `Host · ${s.title}`;
+  const y = window.scrollY;
+  const body = { now: hostNowTab, phases: hostPhasesTab, guests: hostGuestsTab, tv: hostTvTab, tools: hostToolsTab }[hostTab](s);
+  show(
+    el("header", {}, el("p", { class: "eyebrow" }, "Host controls"), el("h1", {}, s.title)),
+    hostMsg && el("p", { class: "error", role: "alert" }, hostMsg),
+    hostNotice && el("p", { class: "notice", role: "status" }, hostNotice),
+    hollowTopBar(s),
+    hostTabs(),
+    body,
+    el("p", { class: "muted small" }, "Keep this page's link private: anyone with it can run the game."));
+  window.scrollTo(0, hostMsg ? 0 : y);
 }
 
 // -------------------------------------------------------------------- TV

@@ -1415,6 +1415,7 @@ function releasePanel(s) {
 
 function renderHost() {
   const s = hostState;
+  if (s.hollow) return renderHollowHost(s);          // The Hollow Order (web/hollow.js)
   document.title = `Host · ${s.title}`;
   const nameInput = el("input", { type: "text", maxlength: 40, placeholder: "Guest name", "aria-label": "Guest name", required: true });
   const addForm = el("form", {
@@ -1438,7 +1439,9 @@ function renderHost() {
     hostMsg && el("p", { class: "error", role: "alert" }, hostMsg),
     hostNotice && el("p", { class: "notice", role: "status" }, hostNotice),
     textPromptLine(s),
-    s.hollow ? hollowHostPanel(s) : [gamePanel(s), questionsFeed(s), cluesPanel(s)],
+    gamePanel(s),
+    questionsFeed(s),
+    cluesPanel(s),
     suggestionPanel(s),
     el("section", {},
       el("div", { class: "row" },

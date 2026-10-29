@@ -768,7 +768,46 @@ def host_view(t, data, story):
     }
     if step == "interrogations":
         view["interrogation"] = _interrogation_public(t, data, story)
+    view["stats"] = step_stats(t, data, story)
+    view["boards"] = _boards(t, data, story)
     return view
+
+
+def step_stats(t, data, story):
+    """For the host's phase browser: who has done each thing (never what they chose)."""
+    who = [c for c in data["order"] if c in players(t, data)]
+    name = lambda c: nick(story, data, c)
+
+    def split(done):
+        done = set(done)
+        return {"done": [name(c) for c in who if c in done], "missing": [name(c) for c in who if c not in done]}
+
+    out = {}
+    out["polls"] = [{"label": "Answered the polls", **split(r["cid"] for r in t.all("SELECT DISTINCT cid FROM h_polls"))}]
+    for step, ballots_ in BALLOT_STEPS.items():
+        out[step] = [{"label": f"{k.capitalize()} ballot {r}",
+                      **split(x["voter"] for x in t.all("SELECT voter FROM h_ballots WHERE kind = ? AND round = ?", (k, r)))}
+                     for k, r in ballots_]
+    deals = t.all("SELECT kind, status FROM h_deals")
+    for step, kinds in DEAL_STEPS.items():
+        mine = [d for d in deals if d["kind"] in kinds]
+        out[step] = [{"label": "Offers made", "value": len(mine)},
+                     {"label": "Offers accepted", "value": sum(d["status"] in ("accepted", "honored", "broken") for d in mine)}]
+    inter = _interrogation_public(t, data, story)
+    out["interrogations"] = [{"label": "Turn order", "value": " → ".join(inter["order"]) or "Not started"},
+                             {"label": "Questions asked", "log": [f"{r['asker']} → {r['target']}: “{r['question']}”" for r in inter["log"]]}]
+    invs = t.all("SELECT family, status FROM h_investigations")
+    out["investigations"] = [{"label": "Families investigating", "value": ", ".join(data["families"][r["family"]]["name"] for r in invs) or "None yet"},
+                             {"label": "Files opened / hushed up",
+                              "value": f"{sum(r['status'] == 'delivered' for r in invs)} / {sum(r['status'] == 'suppressed' for r in invs)}"}]
+    s = state(t)
+    pair = s["extra"].get("hotseat", [])
+    out["hotseat"] = [{"label": "In the hot seat", "value": " and ".join(name(c) for c in pair) or "Not chosen yet"},
+                      {"label": "Chosen defend/accuse", **split(r["cid"] for r in t.all("SELECT cid FROM h_hotseat"))}]
+    out["wagers"] = [{"label": "Accused", "value": full(story, data, s["extra"]["nominee"]) if s["extra"].get("nominee") else "Not yet"},
+                     {"label": "Placed a wager", **split(r["cid"] for r in t.all("SELECT cid FROM h_wagers"))}]
+    out["verdict"] = [{"label": "Voted", **split(r["cid"] for r in t.all("SELECT cid FROM h_votes"))}]
+    return out
 
 
 def guest_view(t, data, story, guest):
