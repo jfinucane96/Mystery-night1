@@ -262,7 +262,7 @@ class Evening(unittest.TestCase):
             self.act(asker, "interrogate", {"target": target, "track": track, "qid": qid}, 409)
             q = self.me(target)["action"]["questioned"]
             self.assertTrue(q["truth"] and q["lie"])
-            self.act(target, "answer", {"choice": "lie" if target == culprit else "truth"})
+            self.act(target, "answer", {"choice": "lie" if target in (culprit, "taylor") else "truth"})   # Taylor is always questioned
         self.assertTrue(self.me(order[0])["action"]["done"])
         self.step("investigations")
         status = {d["kind"]: d["status"] for d in self.me("griff")["deals"]}
