@@ -1601,7 +1601,50 @@ function nextAnnouncement() {
 // utterance is kept here until it has finished.
 const liveUtterances = new Set();
 
+// ElevenLabs (when the host has set it up): fetch every part at once, then play them in order.
+// Any failure falls back to the browser's voice for that part, so the room is never silent.
+async function elevenAudio(text) {
+  const res = await fetch("/api/room/voice", { method: "POST", headers: { "X-Key": authKey, "Content-Type": "application/json" },
+    body: JSON.stringify({ text }) });
+  if (!res.ok) throw new Error("voice");
+  return audioCtx.decodeAudioData(await res.arrayBuffer());
+}
+
 function speakParts(parts, done) {
+  if (room && room.voice && audioCtx && parts.length) {
+    // Join short paragraphs into fewer requests (the voice still pauses at each paragraph break),
+    // and fetch only a couple ahead, so a long speech never floods ElevenLabs.
+    const chunks = [];
+    for (const p of parts) {
+      const last = chunks[chunks.length - 1];
+      if (last && last.length + p.length < 450) chunks[chunks.length - 1] = `${last}
+
+${p}`;
+      else chunks.push(p);
+    }
+    parts = chunks;
+    const audios = [];
+    const get = (i) => { if (i < parts.length && !audios[i]) audios[i] = elevenAudio(parts[i]).catch(() => null); return audios[i]; };
+    const playNext = async (i) => {
+      if (i >= parts.length) return done();
+      get(i + 1); get(i + 2);
+      const buffer = await get(i);
+      if (!buffer) return speakBrowser([parts[i]], () => playNext(i + 1));
+      const src = audioCtx.createBufferSource();
+      src.buffer = buffer;
+      src.connect(audioCtx.destination);
+      let finished = false;
+      const next = () => { if (!finished) { finished = true; setTimeout(() => playNext(i + 1), 350); } };
+      src.onended = next;
+      setTimeout(next, buffer.duration * 1000 + 3000);     // safety net
+      src.start();
+    };
+    return playNext(0);
+  }
+  return speakBrowser(parts, done);
+}
+
+function speakBrowser(parts, done) {
   if (!parts.length) return done();
   const [first, ...rest] = parts;
   const u = new SpeechSynthesisUtterance(first);
@@ -1615,7 +1658,7 @@ function speakParts(parts, done) {
     if (finished) return;
     finished = true;
     liveUtterances.delete(u);
-    setTimeout(() => speakParts(rest, done), 450);       // a short dramatic pause between parts
+    setTimeout(() => speakBrowser(rest, done), 450);     // a short dramatic pause between parts
   };
   u.onend = next;
   u.onerror = next;

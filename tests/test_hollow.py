@@ -168,6 +168,11 @@ class Evening(unittest.TestCase):
         self.assertTrue(self.s.host("GET", "/api/host")["hollow"]["ready"])
         self.culprit()
 
+    def test_voice_is_room_only_and_falls_back_when_not_set_up(self):
+        key = self.s.host("GET", "/api/host")["room_key"]
+        self.assertEqual(self.s.call("POST", "/api/room/voice", self.p["grant"], {"text": "Hello"})[0], 403)
+        self.assertEqual(self.s.call("POST", "/api/room/voice", key, {"text": "Hello"})[0], 503)
+
     def test_steps_move_one_at_a_time_and_late_writes_are_refused(self):
         self.assertEqual(self.s.call("POST", "/api/host/hollow/step", self.s.host_key, {"step": "covenant"})[0], 409)
         for st in ("reunion", "polls", "poll_results", "covenant", "covenant2", "ballot1"):

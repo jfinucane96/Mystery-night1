@@ -14,7 +14,7 @@ import threading
 import traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from . import ai_casting, ai_questions, casting, clues, db as dbmod, game, hollow, hollow_content, play, questions, story as storymod, texting
+from . import ai_casting, ai_questions, casting, clues, db as dbmod, game, hollow, hollow_content, play, questions, story as storymod, texting, voice
 from .game import GameError
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -41,6 +41,12 @@ SECURITY_HEADERS = {
 }
 
 ROUTES = []
+
+
+class Raw:
+    """A non-JSON API response (e.g. audio)."""
+    def __init__(self, data, ctype):
+        self.data, self.ctype = data, ctype
 
 
 def route(method, pattern, who, own_tx=False):
@@ -466,7 +472,18 @@ def room_get(ctx, t, body, _):
         "murder": ctx.story.get("murder_announcement") or {"title": "", "text": ""},
         "events": questions.room_events(t, ctx.story),
         "hollow": hollow.room_view(t, ctx.hollow, ctx.story) if ctx.hollow else None,
+        "voice": voice.is_configured(),
     }
+
+
+@route("POST", r"/api/room/voice", "room", own_tx=True)
+def room_voice(ctx, _t, body, _):
+    """Silas's voice from ElevenLabs, as MP3. Only the room screen may ask (it costs credits)."""
+    try:
+        return Raw(voice.speak(body.get("text")), "audio/mpeg")
+    except voice.VoiceError as e:
+        print(f"Voice: {e}", flush=True)
+        raise GameError(503, "Voice unavailable; using the built-in voice.")
 
 
 # ------------------------------------------------- The Hollow Order: host controls (spoiler-free)
@@ -653,6 +670,8 @@ class Handler(BaseHTTPRequestHandler):
                     result = fn(self.ctx, t, body, actor, **match.groupdict())
             if own_tx:
                 result = fn(self.ctx, None, body, actor, **match.groupdict())
+            if isinstance(result, Raw):
+                return self._send(200, result.data, result.ctype)
             self._json(200, result)
         except GameError as e:
             self._json(e.status, {"error": e.message, "code": e.code})
@@ -733,6 +752,7 @@ def main():
     print("Texting: " + ("automatic (Twilio)" if texting.is_automatic()
                          else "from the host's phone (Twilio not set up)"), flush=True)
     print("AI casting: " + ("on" if ai_casting.is_configured() else "off (no ANTHROPIC_API_KEY)"), flush=True)
+    print("Silas's voice: " + ("ElevenLabs" if voice.is_configured() else "browser voice (no ElevenLabs settings)"), flush=True)
     print(f"HOST LINK (keep private): {public_base_url(port)}/host/{host_key}", flush=True)
     print(f"Listening on {bind}:{port}. Press Ctrl+C to stop.", flush=True)
     try:
