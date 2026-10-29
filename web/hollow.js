@@ -639,7 +639,8 @@ function droneOn() {
   if (drone || !audioCtx) return;
   const gain = audioCtx.createGain();
   gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.09, audioCtx.currentTime + 4);
+  gain.gain.exponentialRampToValueAtTime(0.06, audioCtx.currentTime + 4);
+  setVoiceVolume(1.8);                 // keep Silas clearly above the music
   const filter = audioCtx.createBiquadFilter();
   filter.type = "lowpass";
   filter.frequency.value = 260;
@@ -665,6 +666,7 @@ function droneOff() {
   if (!drone || !audioCtx) return;
   const { gain, oscs } = drone;
   drone = null;
+  setVoiceVolume(1);
   const t = audioCtx.currentTime;
   gain.gain.cancelScheduledValues(t);
   gain.gain.setValueAtTime(Math.max(gain.gain.value, 0.0001), t);

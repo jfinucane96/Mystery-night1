@@ -1620,6 +1620,26 @@ const liveUtterances = new Set();
 
 // ElevenLabs (when the host has set it up): fetch every part at once, then play them in order.
 // Any failure falls back to the browser's voice for that part, so the room is never silent.
+// Silas's voice goes through its own volume control (and a limiter, so boosting never distorts),
+// so it can be turned up while background music plays.
+let voiceGain = null;
+
+function voiceOut() {
+  if (!voiceGain) {
+    voiceGain = audioCtx.createGain();
+    const limiter = audioCtx.createDynamicsCompressor();
+    limiter.threshold.value = -6;
+    limiter.ratio.value = 12;
+    voiceGain.connect(limiter).connect(audioCtx.destination);
+  }
+  return voiceGain;
+}
+
+function setVoiceVolume(level) {
+  if (!audioCtx) return;
+  voiceOut().gain.setTargetAtTime(level, audioCtx.currentTime, 0.5);
+}
+
 const audioCache = new Map();          // text -> decoded audio, so prefetched lines play instantly
 
 function elevenAudio(text) {
@@ -1662,7 +1682,7 @@ ${p}`;
       const src = audioCtx.createBufferSource();
       currentSource = src;
       src.buffer = buffer;
-      src.connect(audioCtx.destination);
+      src.connect(voiceOut());
       let finished = false;
       const next = () => { if (!finished) { finished = true; setTimeout(() => playNext(i + 1), 350); } };
       src.onended = next;
