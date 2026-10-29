@@ -811,6 +811,8 @@ def guest_view(t, data, story, guest):
         view["blackout"] = case["blackout"][cid]
     if hc.reached(step, "covenant"):
         dossier["silas_holds"] = c["secret"]["proof"]
+    if hc.reached(step, "envelopes"):              # the moment Silas tells them to open their envelopes
+        view["envelope"] = {"title": c["secret"]["title"], "text": c["secret"]["text"], "proof": c["secret"]["proof"]}
     view["action"] = _action(t, data, story, cid, s, case)
     view["deals"] = _my_deals(t, data, story, cid)
     view["clues"] = _my_clues(t, data, story, cid, case)

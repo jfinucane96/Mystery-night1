@@ -466,3 +466,10 @@ body.room-mode.blackout { background: #000; }
   animation: h-fadein 2.5s ease both; }
 .h-seq-name span { display: block; }
 .h-seq-name .h-seq-role { font-size: .55em; letter-spacing: .3em; margin-top: .4em; }
+
+.h-envelope { border: 2px solid var(--accent); background: #2a2012; }
+.h-seq-rules { text-align: left; background: #0c0812e6; border: 2px solid var(--accent); border-radius: 16px; padding: 2vw 3vw;
+  animation: h-fadein 1.2s ease both; }
+.h-seq-rules h2 { color: var(--accent); font-size: clamp(1.6rem, 3vw, 3rem); margin: 0 0 1vh; }
+.h-seq-rules ol { font-size: clamp(1.1rem, 2.2vw, 2.2rem); line-height: 1.6; color: #efe6d8; margin: 0; }
+.h-seq-warn { color: var(--danger); }

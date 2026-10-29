@@ -23,6 +23,8 @@ STEPS = [
     ("poll_results", 1, "Poll results"),
     ("covenant", 2, "The Covenant, part 1: robes on"),
     ("covenant2", 2, "Begin the Covenant (blackout, then Silas's revelation)"),
+    ("envelopes", 2, "Silas's envelopes: everyone reads their secret"),
+    ("covenant3", 2, "Silas returns: the rules of the inheritance"),
     ("ballot1", 2, "Inheritance ballot 1"),
     ("blackout", 3, "Blackout"),
     ("murder", 3, "Lights up: Silas is dead"),
@@ -52,7 +54,8 @@ PHASE_NAMES = {0: "Arrival", 1: "Phase 1 · The Reunion", 2: "Phase 2 · The Cov
 
 # Which step releases what. The childhood memory is part of the dossier from the start.
 MEMORY_TIER_AT = {1: "lobby"}
-PUBLIC_AT = {"reunion": "reunion", "covenant": "covenant", "covenant2": "covenant2", "murder": "murder", "p4": "deals",
+PUBLIC_AT = {"reunion": "reunion", "covenant": "covenant", "covenant2": "covenant2", "covenant3": "covenant3",
+             "murder": "murder", "p4": "deals",
              "p5": "revelations", "bridge": "bridge"}
 CLUE_TRAITS = ("hand", "side", "sigil")
 

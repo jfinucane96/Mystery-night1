@@ -106,6 +106,8 @@ function hollowHome(h) {
       count ? el("span", { class: "tile-badge" }, String(count)) : null);
   });
   return [
+    h.envelope && h.step === "envelopes" && el("a", { class: "alert urgent", href: "#dossier" },
+      el("strong", {}, "Silas has left you an envelope."), " Tap to open it. For your eyes only."),
     el("section", { class: "card h-now" },
       el("p", { class: "eyebrow" }, "Now"),
       el("h2", {}, h.script.title || h.step_name),
@@ -341,6 +343,12 @@ function hollowDossier(h) {
   const c = me.character;
   const card = c.card || {};
   return [
+    h.envelope && el("section", { class: "card h-envelope" },
+      el("p", { class: "eyebrow" }, "Silas's envelope · for your eyes only"),
+      el("h2", {}, h.envelope.title),
+      el("p", {}, h.envelope.text),
+      el("p", {}, el("strong", {}, "Silas has proof: "), h.envelope.proof),
+      el("p", { class: "small muted" }, "For now, this is yours alone. Whether it stays that way depends on how the evening unfolds.")),
     d.truth && el("section", { class: "card h-truth" },
       el("h2", {}, "You are the murderer"),
       el("p", { class: "note" }, "Only you can see this. Never show this screen to anyone."),
@@ -562,6 +570,15 @@ function seqShow(view, item) {
   const kids = [];
   if (kind === "shadow" || kind === "warm" || kind === "glitch") kids.push(el("p", { class: "h-seq-name" }, el("span", {}, "Voice of Silas Vale"), el("span", { class: "h-seq-role" }, "(The Butler)")));
   if (kind === "money") kids.push(el("p", { class: "h-seq-money" }, "£12,000,000"));
+  if (kind === "notice") kids.push(el("p", { class: "h-seq-text" }, item.text), item.sub && el("p", { class: "h-seq-sub" }, item.sub));
+  if (kind === "rules") {
+    kids.push(el("div", { class: "h-seq-rules" },
+      el("h2", {}, "The Inheritance"),
+      el("ol", {}, el("li", {}, "Rank three fellow guests: 1st = 3 points, 2nd = 2, 3rd = 1"),
+        el("li", {}, "Not yourself. Not your spouse."),
+        el("li", {}, "Points decide each family's share of £12,000,000"),
+        el("li", { class: "h-seq-warn" }, "Last place receives nothing"))));
+  }
   if (kind === "fire") kids.push(el("img", { class: "h-seq-fire", src: "/static/mansion.webp", alt: "" }));
   if (kind === "portraits") {
     kids.push(el("div", { class: "h-seq-portraits" }, (view.portraits || []).map((p) => el("figure", {},

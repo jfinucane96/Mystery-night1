@@ -612,7 +612,12 @@
     "revelation": {
       "phase": "covenant2",
       "title": "What Silas revealed when the lights went out",
-      "text": "When the lights went out, Silas came back a different man. Eleanor, his little sister, died in the east-wing fire of 1867. Your parents called it an accident, and buried the truth: every one of you played a part in her death. Your parents left Silas the power to decide how their £12 million is shared, judged by your character, your loyalty and your actions. He knows your darkest secrets and means to bring them into the light. You will judge one another. Four families, but only three will inherit: one family will leave with nothing."
+      "text": "When the lights went out, Silas came back a different man. Eleanor, his little sister, died in the east-wing fire of 1867. Your parents called it an accident and buried the truth: every one of you played a part in her death. Now your parents have entrusted Silas with deciding how their £12 million is shared, judged by your character, your ethics, your loyalty and above all your actions. And he knows your secrets."
+    },
+    "rules": {
+      "phase": "covenant3",
+      "title": "How Silas will decide your inheritance",
+      "text": "Silas's competition: in each inheritance ballot you rank three fellow guests by who most deserves the fortune (1st gets 3 points, 2nd gets 2, 3rd gets 1). You may not vote for yourself or your spouse. Each family's points decide its standing. The family in last place receives nothing; the other three divide the £12 million. For now your secret is yours alone. Whether it stays that way depends on how the evening unfolds."
     },
     "register": {
       "phase": "p4",
@@ -714,8 +719,8 @@
       ]
     },
     "covenant2": {
-      "title": "The True Covenant Has Begun",
-      "screen": "THE TRUE COVENANT HAS BEGUN.",
+      "title": "The True Covenant",
+      "screen": "Look inside your robes…",
       "direction": "Controlled, wounded, occasionally wickedly funny. He blames all eight for Eleanor's accidental death. He is still alive.",
       "sequence": [
         {
@@ -740,10 +745,10 @@
           "say": "Ahhh.\n\nThere we are.\n\nEight heirs of the Hollow Order.\n\nStanding proudly in the very robes your parents once wore.\n\nHow splendid.\n\nHow utterly revolting."
         },
         {
-          "wait": 1800
+          "wait": 3000
         },
         {
-          "say": "Twenty-five years.\n\nTwenty-five long years I've waited to see you all standing here together again.\n\nDo any of you remember Eleanor?"
+          "say": "Twenty-five years.\n\nTwenty-five long years I've waited to see you all standing here together again.\n\nTell me...\n\nDo any of you remember Eleanor?"
         },
         {
           "wait": 1800
@@ -837,61 +842,155 @@
           "show": "shadow"
         },
         {
-          "say": "Your parents entrusted me with deciding how it should be distributed.\n\nNot equally. Oh, heavens no.\n\nThey instructed me to judge their children by their values, their character, their loyalty...\n\nAnd their actions."
+          "say": "Your parents entrusted me with deciding how it should be distributed.\n\nThey believed their children should be judged by their character, their ethics, their loyalty...\n\nAnd above all, their actions.\n\nImagine that.\n\nAfter a lifetime of taking orders from your families...\n\nI finally get to decide what you're worth."
         },
         {
-          "wait": 1000
+          "wait": 1200
         },
         {
-          "say": "Imagine that.\n\nAfter a lifetime of taking orders from your families...\n\nI finally get to decide what you're worth."
-        },
-        {
-          "wait": 1500
-        },
-        {
-          "say": "And I've devised a rather special evening to help me reach my decision.\n\nYou see, I know things about each of you.\n\nTerrible things.\n\nSecrets you've hidden from your friends.\n\nFrom your spouses.\n\nPerhaps even from yourselves."
-        },
-        {
-          "wait": 1000
-        },
-        {
-          "say": "And tonight, I intend to bring those secrets into the light.\n\nYou will judge one another.\n\nYou will decide who is trustworthy, who is loyal, and who deserves a share of your parents' fortune.\n\nAnd I shall be watching.\n\nEvery accusation.\n\nEvery betrayal.\n\nEvery desperate attempt to protect your precious reputations."
-        },
-        {
-          "wait": 1000
-        },
-        {
-          "say": "Four families.\n\nTwelve million pounds.\n\nBut only three families shall inherit."
+          "say": "But how does one truly judge a person's character?\n\nTheir honesty?\n\nTheir loyalty?\n\nTheir willingness to do the right thing when no one is watching?"
         },
         {
           "wait": 1500
         },
         {
-          "say": "One family will leave this manor with absolutely nothing."
+          "say": "Well...\n\nI thought we might begin with the truth."
         },
         {
-          "wait": 1500
+          "wait": 1000
         },
         {
-          "say": "Your parents took something from me that no amount of money could ever replace.\n\nTonight, I intend to return the favor."
-        },
-        {
-          "wait": 2000
-        },
-        {
-          "say": "Oh, don't look so frightened.\n\nI'm not a monster."
+          "say": "You see, my dear friends...\n\nI know your secrets.\n\nEvery single one of you has done something you desperately wish the world would forget.\n\nSome of you have kept secrets from your friends.\n\nSome from your spouses.\n\nAnd some of you..."
         },
         {
           "wait": 900
         },
         {
-          "say": "I'm merely the man who's been serving your dinner for twenty-five years.\n\nAnd tonight...\n\nI'm serving something rather different."
+          "say": "Well, you've been lying to absolutely everyone."
         },
         {
-          "show": "glitch"
+          "wait": 1500
+        },
+        {
+          "say": "And I thought it only fair that you should know precisely what I know."
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "Those lovely ceremonial robes you're wearing?\n\nDo have a look inside.\n\nYou'll find I've left each of you a little something."
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "show": "notice",
+          "text": "Look inside your robes…",
+          "sub": "Silas has left each of you a little something."
+        }
+      ]
+    },
+    "envelopes": {
+      "title": "Silas's Envelopes",
+      "screen": "Open your envelope.",
+      "sequence": [
+        {
+          "show": "shadow"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "say": "Go on.\n\nOpen them."
+        },
+        {
+          "wait": 800
+        },
+        {
+          "show": "notice",
+          "text": "Open your envelope.",
+          "sub": "Your secret is also on your phone. It is for your eyes only."
+        }
+      ]
+    },
+    "covenant3": {
+      "title": "The Covenant Has Begun",
+      "screen": "THE COVENANT HAS BEGUN.",
+      "sequence": [
+        {
+          "show": "shadow"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "say": "Ahhh. There are the faces I was hoping to see.\n\nRecognize yourselves?\n\nDon't worry. For now, those little revelations are yours alone."
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "But whether they remain that way...\n\nWell, that depends on how the evening unfolds."
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "sfx": "drone_on"
+        },
+        {
+          "say": "Now, to the matter of your inheritance.\n\nI've devised a rather special competition to determine which of you deserves your parents' fortune.\n\nThroughout the evening, you will be asked to judge one another.\n\nNot by your wealth, your titles, or your charming little smiles.\n\nBut by your character, your ethics, your loyalty, and your actions."
         },
         {
           "wait": 900
+        },
+        {
+          "show": "rules"
+        },
+        {
+          "say": "Each of you will rank three fellow guests in order of who you believe is most deserving of the inheritance.\n\nYour first choice receives the greatest favor, followed by your second and third.\n\nYou may not vote for yourself.\n\nAnd you may not vote for your spouse.\n\nAfter all, even I have limits when it comes to nepotism."
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "say": "Your votes will determine each family's standing and how much of the fortune they stand to inherit.\n\nBut there is one rather unfortunate detail..."
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "say": "The family that finishes in last place shall receive absolutely nothing.\n\nNot a single penny.\n\nThe remaining three families will divide the entire twelve million pounds."
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "show": "shadow"
+        },
+        {
+          "say": "So choose your loyalties wisely.\n\nA vote for a friend may cost your family a fortune.\n\nAnd a misplaced act of kindness could leave you walking out of Hollowmere Manor...\n\nCompletely penniless."
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "say": "Of course, as the evening progresses, you may discover that some of your oldest friends aren't quite the people you believed them to be.\n\nAnd I intend to make certain of that."
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "say": "Your parents took something from me that no amount of money could ever replace.\n\nTonight, I intend to return the favor.\n\nSo let us begin.\n\nEight old friends.\n\nFour families.\n\nTwelve million pounds.\n\nAnd enough secrets to ruin every last one of you."
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "say": "To the Hollow Order.\n\nMay the most deserving family win.\n\nAnd may the rest of you get exactly what you deserve."
+        },
+        {
+          "wait": 1200
         },
         {
           "show": "black"
@@ -904,14 +1003,13 @@
         },
         {
           "show": "crest",
-          "text": "THE TRUE COVENANT HAS BEGUN."
+          "text": "THE COVENANT HAS BEGUN."
         }
       ]
     },
     "ballot1": {
       "title": "The First Inheritance Ballot",
-      "screen": "Rank three fellow guests on your phone. Not yourself. Not your spouse. Last place inherits nothing.",
-      "silas": "Now then, my dear friends.\n\nLet us discuss something far more pleasant.\n\nTwelve million pounds.\n\nFour families. One extraordinary fortune.\n\nBut which family deserves the lion's share?\n\nThat, my dear heirs, is entirely up to you.\n\nThroughout tonight's proceedings, you will be asked to judge one another.\n\nNot by your titles, your fortunes, or the reputations of your parents...\n\nBut by your character.\n\nWho among you is most trustworthy?\n\nWho has shown the greatest loyalty?\n\nAnd who, quite frankly, deserves to walk away with the most money?\n\nEach of you must rank three fellow guests in order of who you believe is most deserving.\n\nYour first choice receives the greatest favor, followed by your second and third.\n\nYou may not vote for yourself.\n\nAnd you may not vote for your spouse.\n\nAfter all, even the Hollow Order has standards when it comes to favoritism.\n\nYour votes will determine each family's standing and how much of the fortune they stand to inherit.\n\nBut there is one rather unfortunate detail I neglected to mention...\n\nThe family that finishes in last place shall inherit absolutely nothing.\n\nNot a penny.\n\nThe remaining three families will divide the entire twelve million pounds.\n\nSo choose your loyalties wisely.\n\nA vote for a friend may cost your family a fortune.\n\nAnd a misplaced act of kindness could leave you walking out of Hollowmere Manor...\n\nCompletely penniless.\n\nYour loyalties may change as the evening unfolds.\n\nI suspect they will.\n\nSo look around this room.\n\nConsider the people you've known since childhood.\n\nWho would you trust with your life?\n\nAnd more importantly...\n\nWho would you trust with twelve million pounds?\n\nLet the voting begin."
+      "text": "Rank three fellow guests on your phone. Not yourself. Not your spouse. Last place inherits nothing."
     },
     "blackout": {
       "title": "",
