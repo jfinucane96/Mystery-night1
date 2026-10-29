@@ -483,6 +483,7 @@ function hollowRoomTick(view) {
 function hollowAnnounce(view, e) {
   if (e.kind === "step") {
     if (e.step !== view.step) return;
+    stopSpeaking();                    // a new step cuts off whatever the last one was saying
     if (e.step === "blackout") { strikeLightning(true); if (audioCtx) thunder(0, 5, 1); return; }
     const sound = e.step === "murder" ? "murder" : (["ghost", "revelations", "bridge"].includes(e.step) ? "ghost" : "phase");
     // one part per paragraph, so the voice pauses naturally between them

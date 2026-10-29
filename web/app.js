@@ -1578,7 +1578,22 @@ function announce(sound, text, box = { text }) {
 
 let hideBoxTimer = null;
 
+// Every speech belongs to a "generation". stopSpeaking() starts a new one, so anything
+// still playing or waiting from before (an old step's speech) goes quiet and never resumes.
+let speechGen = 0;
+let currentSource = null;
+
+function stopSpeaking() {
+  speechGen++;
+  speakQueue.length = 0;
+  if (currentSource) { try { currentSource.stop(); } catch { /* already stopped */ } currentSource = null; }
+  try { speechSynthesis.cancel(); } catch { /* no speech support */ }
+  speaking = false;
+  clearTimeout(hideBoxTimer);
+}
+
 function nextAnnouncement() {
+  const gen = speechGen;
   const item = speakQueue.shift();
   if (!item) {
     speaking = false;
@@ -1590,11 +1605,13 @@ function nextAnnouncement() {
   clearTimeout(hideBoxTimer);
   showBox(item.box, item.sound);
   if (item.sound === "murder") strikeLightning(true);
-  if (!roomSoundOn || !claimSpeaker()) return setTimeout(nextAnnouncement, 7000);
+  const ifCurrent = (fn) => () => { if (gen === speechGen) fn(); };
+  if (!roomSoundOn || !claimSpeaker()) return setTimeout(ifCurrent(nextAnnouncement), 7000);
   if (audioCtx.state === "suspended") audioCtx.resume();
   SOUNDS[item.sound]();
   const parts = Array.isArray(item.text) ? item.text : [item.text];
-  setTimeout(() => speakParts(parts, () => setTimeout(nextAnnouncement, 600)), SOUND_LENGTH[item.sound]);
+  setTimeout(ifCurrent(() => speakParts(parts, ifCurrent(() => setTimeout(ifCurrent(nextAnnouncement), 600)))),
+    SOUND_LENGTH[item.sound]);
 }
 
 // Browsers can cut speech off if the page lets go of it mid-sentence, so every
@@ -1611,6 +1628,7 @@ async function elevenAudio(text) {
 }
 
 function speakParts(parts, done) {
+  const gen = speechGen;
   if (room && room.voice && audioCtx && parts.length) {
     // Join short paragraphs into fewer requests (the voice still pauses at each paragraph break),
     // and fetch only a couple ahead, so a long speech never floods ElevenLabs.
@@ -1626,11 +1644,14 @@ ${p}`;
     const audios = [];
     const get = (i) => { if (i < parts.length && !audios[i]) audios[i] = elevenAudio(parts[i]).catch(() => null); return audios[i]; };
     const playNext = async (i) => {
+      if (gen !== speechGen) return;                      // interrupted by a newer step
       if (i >= parts.length) return done();
       get(i + 1); get(i + 2);
       const buffer = await get(i);
+      if (gen !== speechGen) return;
       if (!buffer) return speakBrowser([parts[i]], () => playNext(i + 1));
       const src = audioCtx.createBufferSource();
+      currentSource = src;
       src.buffer = buffer;
       src.connect(audioCtx.destination);
       let finished = false;
@@ -1644,7 +1665,8 @@ ${p}`;
   return speakBrowser(parts, done);
 }
 
-function speakBrowser(parts, done) {
+function speakBrowser(parts, done, gen = speechGen) {
+  if (gen !== speechGen) return;
   if (!parts.length) return done();
   const [first, ...rest] = parts;
   const u = new SpeechSynthesisUtterance(first);
@@ -1658,7 +1680,7 @@ function speakBrowser(parts, done) {
     if (finished) return;
     finished = true;
     liveUtterances.delete(u);
-    setTimeout(() => speakBrowser(rest, done), 450);     // a short dramatic pause between parts
+    setTimeout(() => speakBrowser(rest, done, gen), 450);   // a short dramatic pause between parts
   };
   u.onend = next;
   u.onerror = next;
