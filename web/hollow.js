@@ -132,7 +132,8 @@ function hollowAction(h) {
       h.step === "reunion" && el("p", {}, el("a", { href: "#dossier" }, "Your introduction is in your dossier: read it aloud when it's your turn.")),
     ];
     case "polls": return [
-      el("p", { class: "muted" }, "Answer privately. Results go on the screen. No points, just glory."),
+      el("p", {}, el("strong", {}, "Vote for the real person, not their character!")),
+      el("p", { class: "small muted" }, "Answer privately. Results go on the screen. No points, just glory."),
       a.polls.map((p) => el("label", { class: "h-field" }, el("span", {}, p.text),
         el("select", { onchange: (e) => e.target.value && hAct("poll", { poll_id: p.id, choice: e.target.value }) },
           el("option", { value: "" }, "Choose…"),

@@ -808,35 +808,27 @@
   "polls": [
     {
       "id": "p1",
-      "text": "Who is most likely to fake a noble title?"
+      "text": "Who is most likely to forget their lines and just start making stuff up?"
     },
     {
       "id": "p2",
-      "text": "Who is most likely to sell their spouse's portrait to pay a gambling debt?"
+      "text": "Who is most likely to wear their costume at home for fun?"
     },
     {
       "id": "p3",
-      "text": "Who is most likely to befriend the ghost?"
+      "text": "Who is most likely to take their character way too seriously?"
     },
     {
       "id": "p4",
-      "text": "Who is most likely to faint at the first sign of blood?"
+      "text": "Who is most likely to get drunk and accidentally reveal their secret?"
     },
     {
       "id": "p5",
-      "text": "Who is most likely to have hidden a body in the garden already?"
+      "text": "Who is most likely to betray their spouse to win the game?"
     },
     {
       "id": "p6",
-      "text": "Who is most likely to survive the night by sheer arrogance?"
-    },
-    {
-      "id": "p7",
-      "text": "Who is most likely to cheat at croquet?"
-    },
-    {
-      "id": "p8",
-      "text": "Who is most likely to say 'I knew it all along' at the end?"
+      "text": "Who is most likely to cheat and still come in last?"
     }
   ],
   "questions": {
@@ -982,7 +974,7 @@
     },
     "polls": {
       "title": "Who's Most Likely To…?",
-      "text": "Answer privately on your phone. The results will be read aloud."
+      "text": "Vote for the real person, not their character! Answer privately on your phone. The results go up on the screen."
     },
     "poll_results": {
       "title": "The Results",
