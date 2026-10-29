@@ -677,10 +677,10 @@
           "wait": 1200
         },
         {
-          "say": "Now, I understand Sir Jonathan has invited you all here to celebrate his inheritance of Hollowmere Manor.\n\nA magnificent estate, indeed.\n\nAnd Jonathan, may I say, I'm sure you'll make a splendid master of the house.\n\nThough I do hope you'll finally have those dreadful carpets replaced."
+          "say": "Now, I understand Sir Jonathan has invited you all here to celebrate his inheritance of Hollowmere Manor.\n\nA magnificent estate, indeed.\n\nAnd Jonathan, may I say, I'm sure you'll make a splendid master of the house.\n\nThough I do hope you'll finally have those dreadful bloodstains removed."
         },
         {
-          "wait": 1200
+          "wait": 1800
         },
         {
           "say": "But I'm afraid there's been a rather important detail left out of tonight's celebrations.\n\nYou see, Hollowmere Manor is merely a small part of what your parents left behind.\n\nYour four families were the founding members of a rather exclusive society known as The Hollow Order.\n\nAnd before their passing, they entrusted me with the reading of their true and final will.\n\nA will concerning not just this manor...\n\nBut a rather extraordinary fortune."
