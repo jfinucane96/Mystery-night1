@@ -966,7 +966,7 @@
           "wait": 1500
         },
         {
-          "say": "The family that finishes in last place shall receive absolutely nothing.\n\nNot a single penny.\n\nThe remaining three families will divide the entire twelve million pounds."
+          "say": "The family that finishes in last place shall receive absolutely nothing.\n\nNot a single penny.\n\nThe remaining three families will divide the twelve million pounds based on their standings."
         },
         {
           "wait": 1000
@@ -993,7 +993,7 @@
           "wait": 1500
         },
         {
-          "say": "To the Hollow Order.\n\nMay the most deserving family win.\n\nAnd may the rest of you get exactly what you deserve."
+          "say": "To the Hollow Order.\n\nMay the most deserving families win.\n\nAnd sucks to suck for the family who walks away with nothing."
         },
         {
           "wait": 1200
