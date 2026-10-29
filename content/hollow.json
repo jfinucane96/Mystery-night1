@@ -851,16 +851,22 @@
           "say": "But how does one truly judge a person's character?\n\nTheir honesty?\n\nTheir loyalty?\n\nTheir willingness to do the right thing when no one is watching?"
         },
         {
-          "wait": 1500
+          "wait": 2000
         },
         {
-          "say": "Well...\n\nI thought we might begin with the truth."
+          "say": "Well...\n\nI've been watching."
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "say": "For twenty-five years, I've stood quietly in the background.\n\nSeen things I wasn't meant to see.\n\nHeard conversations I wasn't meant to hear.\n\nAnd learned that people are often quite different when they believe no one is paying attention."
         },
         {
           "wait": 1000
         },
         {
-          "say": "You see, my dear friends...\n\nI know your secrets.\n\nEvery single one of you has done something you desperately wish the world would forget.\n\nSome of you have kept secrets from your friends.\n\nSome from your spouses.\n\nAnd some of you..."
+          "say": "And that brings us to a rather important matter.\n\nYou see, my dear friends...\n\nI know your secrets.\n\nEvery single one of you has done something you desperately wish the world would forget.\n\nSome of you have kept secrets from your friends.\n\nSome from your spouses.\n\nAnd some of you..."
         },
         {
           "wait": 900
