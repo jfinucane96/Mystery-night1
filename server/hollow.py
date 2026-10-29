@@ -677,6 +677,7 @@ def room_view(t, data, story):
         "step": step, "phase": hc.PHASE_NAMES[hc.PHASE_OF[step]], "step_name": hc.STEP_NAME[step],
         "title": script.get("title", ""), "text": script.get("text", ""), "silas": script.get("silas", ""),
         "screen": script.get("screen", ""),          # what the TV shows while it reads `silas` aloud
+        "sequence": script.get("sequence"),          # a timed show: lines, sounds and visuals in order
         "timer_end": s["timer_end"], "paused": bool(s["paused"]),
         "boards": _boards(t, data, story) if hc.reached(step, "ballot1") and step not in ("blackout",) else {},
         "events": [{"seq": e["seq"], "kind": e["kind"], **json.loads(e["data"])}
@@ -685,6 +686,9 @@ def room_view(t, data, story):
     if case:
         new_here = [p for p in case["public"].values() if p["at"] == step]
         view["evidence"] = [{"title": p["title"], "text": p["text"]} for p in new_here]
+    if step == "covenant2":
+        view["portraits"] = [{"name": nick(story, data, c), "photo": (story["by_id"].get(c, {}).get("card") or {}).get("photo", "")}
+                             for c in data["order"]]
     if step == "reunion":
         view["guests"] = [{"name": full(story, data, c), "player": nick(story, data, c)} for c in data["order"]]
     if step == "poll_results":

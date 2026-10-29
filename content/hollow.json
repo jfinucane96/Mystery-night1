@@ -921,6 +921,11 @@
       "title": "What Silas revealed at the robing ceremony",
       "text": "At the start of the robing ceremony, Silas Vale revealed that it was he, not Sir Jonathan, who arranged this reunion. Your parents belonged to a secret society, The Hollow Order: sacred rituals, oaths of secrecy, and the four families' fortunes bound together under a single covenant that survives them. Silas administers their final estate, twelve million pounds, and it will not simply be divided. Before the true will can be read, every heir must put on their ceremonial robe and complete the Ceremony of the Covenant."
     },
+    "revelation": {
+      "phase": "covenant2",
+      "title": "What Silas revealed when the lights went out",
+      "text": "Then the lights went out and Silas returned, no longer smiling. His little sister Eleanor did not die in an accident: twenty-five years ago she was murdered in the east-wing fire, and your parents buried the truth. The person responsible is one of the eight of you. Silas knows your secrets, but he does not know who killed her. Tonight you will investigate, question one another and finally stand in judgment. The family of the person you condemn loses its entire inheritance; the other three divide the twelve million pounds by the Order's rules. Nobody leaves until the ceremony is complete."
+    },
     "map": {
       "phase": "p4",
       "title": "Plan of Hollowmere Manor",
@@ -931,18 +936,13 @@
       "title": "Nanny Pruitt's list, summer 1867",
       "text": "Nanny Pruitt's household list for the children's summer at Hollowmere, found in the nursery cupboard. She records what each child wore and how she treated them that week."
     },
-    "eleanor": {
-      "phase": "covenant2",
-      "title": "Eleanor Vale",
-      "text": "Eleanor Vale, twelve years old, younger sister of Silas, the under-footman. She played with the Order's children every summer. She died in the east-wing fire of 1867. The inquest called it a tragic accident."
-    },
     "inquiry": {
-      "phase": "covenant2",
+      "phase": "p4",
       "title": "The parents' private inquiry, 1867",
       "text": "A single page, unsigned: 'The papers in the records room were set alight first; the fire did not begin with a lamp. One of the children was in that room with the girl. We cannot say which. For the sake of all our houses, the finding shall be accident.'"
     },
     "trust_letter": {
-      "phase": "covenant2",
+      "phase": "p4",
       "title": "Excerpt: Eleanor's letter",
       "text": "'...the sums withdrawn from the Servants' Benefit Trust to be held by the Order's houses and not returned...' It is signed by the heads of every Order household. Eleanor understood enough to know it was wrong."
     },
@@ -992,9 +992,183 @@
       "silas": "My lords. My ladies.\n\nWelcome home to Hollowmere Manor.\n\nIt warms my heart to see you all together again. Eight children who once filled these halls with laughter, now standing before me as the heirs to four great families.\n\nI imagine you've all been wondering why you've been summoned here tonight.\n\nWell, I suppose it's time you learned the truth.\n\nYou see, it was not Sir Jonathan who arranged this reunion.\n\nIt was I.\n\nFor twenty-five years, I have served your families. And for twenty-five years, I have been entrusted with a rather extraordinary responsibility.\n\nYour parents were not simply friends, business partners, or members of some fashionable gentlemen's society.\n\nThey belonged to something far more... exclusive.\n\nAn ancient and secretive society known as The Hollow Order.\n\nAnd I assure you, their gatherings involved considerably more than brandy and cigars.\n\nYour parents participated in sacred rituals, swore oaths of secrecy, and bound their family fortunes together under a single covenant.\n\nA covenant that survives them.\n\nTonight, that covenant must be fulfilled.\n\nYour parents entrusted me with the administration of their final estate.\n\nTwelve million pounds.\n\nA considerable fortune, even among people of your... expensive tastes.\n\nBut the inheritance cannot simply be divided.\n\nOh, no.\n\nThe Hollow Order has always demanded that its heirs prove themselves worthy.\n\nAnd so, before the true will can be read, each of you must complete the ancient Ceremony of the Covenant.\n\nYou will find your ceremonial robes waiting for you.\n\nPut them on.\n\nEvery last one of you.\n\nAnd once all eight heirs stand before me properly dressed...\n\nThe Hollow Order shall decide your fate.\n\nDo take your time. Some of you have always struggled with dressing yourselves."
     },
     "covenant2": {
-      "title": "The Covenant",
-      "screen": "Silas Vale is no longer a servant.",
-      "silas": "Twenty-five years ago my sister Eleanor burned to death in the east wing of this house. You were told it was an accident. It was not. One of you was in that room with her. I have the records your parents buried. I know what each of you has done since. Hollowmere's twelve million pounds will be shared tonight by three families. The fourth, the family of the guilty, will receive nothing. The doors are locked. Judge each other. Or I will judge you all."
+      "title": "The Covenant Has Begun",
+      "screen": "THE COVENANT HAS BEGUN.",
+      "direction": "Silas is wounded, controlled and occasionally wickedly funny. He knows Eleanor was murdered, but not by whom. He is still alive.",
+      "sequence": [
+        {
+          "show": "dark"
+        },
+        {
+          "sfx": "rumble"
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "show": "shadow"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "say": "Ahhh.\n\nThere you are.\n\nEight noble heirs, dressed in the very robes your parents once wore.\n\nHow magnificent.\n\nHow utterly ridiculous."
+        },
+        {
+          "wait": 900
+        },
+        {
+          "say": "Tell me...\n\nDo any of you remember Eleanor?"
+        },
+        {
+          "wait": 1800
+        },
+        {
+          "say": "My little sister.\n\nSuch a bright, beautiful girl.\n\nShe adored this house. She adored your families.\n\nAnd, God help her...\n\nShe adored every one of you."
+        },
+        {
+          "wait": 900
+        },
+        {
+          "say": "Twenty-five years ago, Eleanor died in a fire in the east wing of this manor.\n\nA terrible accident, they told me.\n\nA tragic misfortune.\n\nFor twenty-five years, I believed them.\n\nUntil I discovered something your parents had gone to extraordinary lengths to conceal."
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "say": "That fire was no accident.\n\nEleanor was murdered."
+        },
+        {
+          "show": "fire"
+        },
+        {
+          "sfx": "fire"
+        },
+        {
+          "wait": 3500
+        },
+        {
+          "show": "shadow"
+        },
+        {
+          "say": "And the person responsible...\n\nis standing in this room."
+        },
+        {
+          "wait": 2500
+        },
+        {
+          "show": "portraits"
+        },
+        {
+          "say": "One of you eight killed my sister."
+        },
+        {
+          "wait": 3000
+        },
+        {
+          "show": "shadow"
+        },
+        {
+          "say": "Now, I know what you're thinking.\n\nSurely dear old Silas knows which of you did it.\n\nAfter all, I know nearly everything else about you."
+        },
+        {
+          "wait": 700
+        },
+        {
+          "say": "Oh, the secrets I've collected.\n\nThe lies. The betrayals. The little indiscretions you've so carefully hidden behind your titles and your family names.\n\nYou really are your parents' children."
+        },
+        {
+          "wait": 900
+        },
+        {
+          "say": "But no.\n\nI do not know which of you murdered Eleanor.\n\nNot yet."
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "say": "And that, my dear friends...\n\nis where you come in."
+        },
+        {
+          "show": "crest"
+        },
+        {
+          "say": "You see, your parents left me with the authority to distribute their fortunes.\n\nTwelve million pounds.\n\nFour families.\n\nEight heirs.\n\nAnd one murderer."
+        },
+        {
+          "wait": 900
+        },
+        {
+          "show": "shadow"
+        },
+        {
+          "say": "Tonight, you will investigate the events of that dreadful fire.\n\nYou will question one another.\n\nYou will uncover secrets.\n\nYou will make accusations.\n\nAnd, knowing this delightful collection of scoundrels, I imagine there will be a fair amount of lying, bribery, and backstabbing along the way."
+        },
+        {
+          "wait": 600
+        },
+        {
+          "say": "How wonderfully predictable."
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "say": "But understand this.\n\nAt the end of tonight's proceedings, you will stand in judgment of one another.\n\nAnd the family of the person you condemn shall lose its entire inheritance."
+        },
+        {
+          "wait": 900
+        },
+        {
+          "say": "Every. Last. Penny."
+        },
+        {
+          "wait": 900
+        },
+        {
+          "say": "The remaining families shall divide the fortune according to the ancient rules of the Hollow Order.\n\nYour loyalties will be tested.\n\nYour reputations will be destroyed.\n\nAnd your greed...\n\nWell, I suspect your greed will do most of my work for me."
+        },
+        {
+          "wait": 900
+        },
+        {
+          "say": "Your parents buried the truth about my sister.\n\nTonight, I intend to dig it up."
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "say": "And before any of you entertain the thought of leaving..."
+        },
+        {
+          "sfx": "door"
+        },
+        {
+          "wait": 1800
+        },
+        {
+          "say": "Do remember...\n\nThe Hollow Order does not release its members until the ceremony is complete."
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "say": "Now then.\n\nLet us see what twelve million pounds will do to eight old friends."
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "show": "black"
+        },
+        {
+          "wait": 2000
+        },
+        {
+          "show": "crest",
+          "text": "THE COVENANT HAS BEGUN."
+        }
+      ]
     },
     "ballot1": {
       "title": "The First Inheritance Ballot",

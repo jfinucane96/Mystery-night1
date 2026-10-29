@@ -485,6 +485,7 @@ function hollowAnnounce(view, e) {
     if (e.step !== view.step) return;
     stopSpeaking();                    // a new step cuts off whatever the last one was saying
     if (e.step === "blackout") { strikeLightning(true); if (audioCtx) thunder(0, 5, 1); return; }
+    if (view.sequence) return runSequence(view);
     const sound = e.step === "murder" ? "murder" : (["ghost", "revelations", "bridge"].includes(e.step) ? "ghost" : "phase");
     // one part per paragraph, so the voice pauses naturally between them
     const spoken = [view.title, ...(view.silas || view.text || "").split(/\n\s*\n/)].map((x) => x.trim()).filter(Boolean);
@@ -514,12 +515,138 @@ function hollowAnnounce(view, e) {
   }
 }
 
+// ---- timed shows (e.g. the Covenant, part 2): lines, sound effects and visuals, in order
+
+let seqRunning = false;
+
+function seqLayer() {
+  if (!roomShell) return null;
+  if (!roomShell.seq) {
+    roomShell.seq = el("div", { class: "h-seq", "aria-live": "polite" });
+    app.append(roomShell.seq);
+  }
+  return roomShell.seq;
+}
+
+function clearSeq() {
+  if (roomShell && roomShell.seq) { roomShell.seq.remove(); roomShell.seq = null; }
+}
+
+const SVG_NS = "http://www.w3.org/2000/svg";
+function svg(tag, attrs, ...kids) {
+  const n = document.createElementNS(SVG_NS, tag);
+  for (const [k, v] of Object.entries(attrs || {})) n.setAttribute(k, v);
+  kids.forEach((k) => n.append(typeof k === "string" ? document.createTextNode(k) : k));
+  return n;
+}
+
+function crest() {
+  const gold = "#d9a441";
+  return svg("svg", { viewBox: "0 0 200 200", class: "h-crest", "aria-label": "The Hollow Order crest" },
+    svg("circle", { cx: 100, cy: 100, r: 92, fill: "none", stroke: gold, "stroke-width": 3 }),
+    svg("circle", { cx: 100, cy: 100, r: 80, fill: "#0b0710", stroke: gold, "stroke-width": 1 }),
+    svg("path", { d: "M100 40 a22 22 0 0 1 12 40 l10 62 h-44 l10 -62 a22 22 0 0 1 12 -40 z", fill: "none", stroke: gold, "stroke-width": 3 }),
+    svg("path", { d: "M58 120 L142 120 M66 132 L134 132", stroke: gold, "stroke-width": 1.5 }),
+    svg("text", { x: 100, y: 165, "text-anchor": "middle", fill: gold, "font-size": 11, "letter-spacing": 3, "font-family": "Georgia, serif" }, "THE HOLLOW ORDER"),
+    svg("text", { x: 100, y: 30, "text-anchor": "middle", fill: gold, "font-size": 9, "letter-spacing": 2, "font-family": "Georgia, serif" }, "MDCCCLXVII"));
+}
+
+function seqShow(view, item) {
+  const layer = seqLayer();
+  if (!layer) return;
+  const kind = item.show;
+  layer.className = `h-seq ${kind}`;
+  const kids = [];
+  if (kind === "shadow") kids.push(el("p", { class: "h-seq-name" }, "Silas Vale"));
+  if (kind === "fire") kids.push(el("img", { class: "h-seq-fire", src: "/static/mansion.webp", alt: "" }));
+  if (kind === "portraits") {
+    kids.push(el("div", { class: "h-seq-portraits" }, (view.portraits || []).map((p) => el("figure", {},
+      p.photo ? el("img", { src: p.photo, alt: p.name }) : el("div", { class: "portrait placeholder" }),
+      el("figcaption", {}, p.name)))));
+    kids.push(el("p", { class: "h-seq-line" }, "One of you eight killed my sister."));
+  }
+  if (kind === "crest") kids.push(crest(), item.text && el("p", { class: "h-seq-text" }, item.text));
+  layer.replaceChildren(...kids.filter(Boolean));
+}
+
+function seqFinal(view) {
+  // What the screen shows after the show ends (or if the TV page is reloaded mid-step)
+  const last = [...view.sequence].reverse().find((x) => x.show);
+  if (last) seqShow(view, last);
+}
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function runSequence(view) {
+  const gen = speechGen;
+  seqRunning = true;
+  speaking = true;
+  showBox(null);
+  const items = view.sequence;
+  const lines = items.filter((x) => x.say).map((x) => x.say);
+  const voiced = roomSoundOn && room && room.voice && audioCtx;
+  let fetched = 0;
+  let lineNo = 0;
+  const prefetch = () => { if (voiced) while (fetched < lines.length && fetched < lineNo + 3) elevenAudio(lines[fetched++]).catch(() => null); };
+  prefetch();
+  try {
+    for (const item of items) {
+      if (gen !== speechGen) return;
+      if (item.show) seqShow(view, item);
+      if (item.sfx && roomSoundOn && audioCtx) SFX[item.sfx]();
+      if (item.wait) await sleep(item.wait);
+      if (item.say) {
+        lineNo++;
+        prefetch();
+        if (roomSoundOn && audioCtx && claimSpeaker()) {
+          await new Promise((res) => speakParts([item.say], res));
+        } else {
+          await sleep(1500 + item.say.length * 55);   // no sound: keep the pictures in time
+        }
+      }
+    }
+  } finally {
+    if (gen === speechGen) { seqRunning = false; speaking = false; }
+  }
+}
+
+function noise(seconds, filterHz, volume, shape) {
+  const n = Math.floor(audioCtx.sampleRate * seconds);
+  const buffer = audioCtx.createBuffer(1, n, audioCtx.sampleRate);
+  const d = buffer.getChannelData(0);
+  for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * shape(i / n);
+  const src = audioCtx.createBufferSource();
+  src.buffer = buffer;
+  const f = audioCtx.createBiquadFilter();
+  f.type = "lowpass";
+  f.frequency.value = filterHz;
+  const g = audioCtx.createGain();
+  g.gain.value = volume;
+  src.connect(f).connect(g).connect(audioCtx.destination);
+  src.start();
+}
+
+const SFX = {
+  rumble: () => thunder(0, 6, 0.7),
+  fire: () => {                          // crackling: a low roar with random pops
+    noise(4, 900, 0.25, (t) => Math.min(1, t * 4) * (1 - t));
+    for (let i = 0; i < 26; i++) setTimeout(() => noise(0.04, 3000, 0.5, (t) => 1 - t), Math.random() * 3800);
+  },
+  door: () => {                          // a heavy iron door slamming, with an echo
+    noise(0.35, 400, 1.4, (t) => Math.pow(1 - t, 3));
+    tone(55, 0, 0.6, "sine", 0.6);
+    setTimeout(() => noise(1.2, 250, 0.35, (t) => Math.pow(1 - t, 2)), 180);
+  },
+};
+
 function board(title, rows) {
   return el("div", { class: "h-board" }, el("h3", {}, title), el("ol", {}, rows));
 }
 
 function renderHollowTv(v) {
   if (!roomShell) return;
+  if (v.sequence) { if (!seqRunning && !roomShell.seq) seqFinal(v); }
+  else if (roomShell.seq) { seqRunning = false; clearSeq(); }
   if (!roomShell.hollow) {
     roomShell.hollow = el("div", { class: "h-tv" });
     app.append(roomShell.hollow);

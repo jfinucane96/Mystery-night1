@@ -1620,11 +1620,20 @@ const liveUtterances = new Set();
 
 // ElevenLabs (when the host has set it up): fetch every part at once, then play them in order.
 // Any failure falls back to the browser's voice for that part, so the room is never silent.
-async function elevenAudio(text) {
-  const res = await fetch("/api/room/voice", { method: "POST", headers: { "X-Key": authKey, "Content-Type": "application/json" },
-    body: JSON.stringify({ text }) });
-  if (!res.ok) throw new Error("voice");
-  return audioCtx.decodeAudioData(await res.arrayBuffer());
+const audioCache = new Map();          // text -> decoded audio, so prefetched lines play instantly
+
+function elevenAudio(text) {
+  if (!audioCache.has(text)) {
+    const job = (async () => {
+      const res = await fetch("/api/room/voice", { method: "POST", headers: { "X-Key": authKey, "Content-Type": "application/json" },
+        body: JSON.stringify({ text }) });
+      if (!res.ok) throw new Error("voice");
+      return audioCtx.decodeAudioData(await res.arrayBuffer());
+    })();
+    job.catch(() => audioCache.delete(text));         // a failure can be retried later
+    audioCache.set(text, job);
+  }
+  return audioCache.get(text);
 }
 
 function speakParts(parts, done) {

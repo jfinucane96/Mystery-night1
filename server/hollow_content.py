@@ -22,7 +22,7 @@ STEPS = [
     ("polls", 1, "Who's Most Likely To…?"),
     ("poll_results", 1, "Poll results"),
     ("covenant", 2, "The Covenant, part 1: robes on"),
-    ("covenant2", 2, "The Covenant, part 2: Silas's revelation"),
+    ("covenant2", 2, "Begin the Covenant (blackout, then Silas's revelation)"),
     ("ballot1", 2, "Inheritance ballot 1"),
     ("blackout", 3, "Blackout"),
     ("murder", 3, "Lights up: Silas is dead"),
