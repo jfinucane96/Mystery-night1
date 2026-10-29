@@ -529,7 +529,7 @@ function renderHollowTv(v) {
     main.push(el("table", { class: "h-table" },
       el("thead", {}, el("tr", {}, el("th", {}, "Who is most likely to…"), el("th", {}, "Winner"), el("th", {}, "Votes"))),
       el("tbody", {}, v.polls.map((p) => el("tr", {},
-        el("td", {}, p.text.replace(/^Who is most likely to /, "").replace(/\?$/, "")),
+        el("td", {}, p.text.replace(/^Who is most likely to /, "").replace(/\?$/, "").replace(/^./, (ch) => ch.toUpperCase())),
         el("td", { class: "h-win" }, p.winners.join(" & ")),
         el("td", { class: "h-num" }, String(p.votes)))))));
   }
