@@ -560,7 +560,7 @@ function seqShow(view, item) {
   const kind = item.show;
   layer.className = `h-seq ${kind}`;
   const kids = [];
-  if (kind === "shadow" || kind === "warm" || kind === "glitch") kids.push(el("p", { class: "h-seq-name" }, "Silas Vale"));
+  if (kind === "shadow" || kind === "warm" || kind === "glitch") kids.push(el("p", { class: "h-seq-name" }, el("span", {}, "Voice of Silas Vale"), el("span", { class: "h-seq-role" }, "(The Butler)")));
   if (kind === "money") kids.push(el("p", { class: "h-seq-money" }, "£12,000,000"));
   if (kind === "fire") kids.push(el("img", { class: "h-seq-fire", src: "/static/mansion.webp", alt: "" }));
   if (kind === "portraits") {
