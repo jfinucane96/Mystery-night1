@@ -421,3 +421,10 @@ body.room-mode.blackout { background: #000; }
 @media (max-width: 800px) { .h-tv { flex-direction: column; overflow: auto; } .h-side { width: 100%; } }
 .h-reveal { display: grid; grid-template-columns: 3fr 2fr; gap: 2vw; align-items: start; }
 .h-recon p { font-size: clamp(.9rem, 1.25vw, 1.25rem) !important; }
+.h-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: clamp(1rem, 1.6vw, 1.6rem); }
+.h-table th { text-align: left; color: var(--accent); font-weight: normal; text-transform: uppercase; letter-spacing: .08em;
+  font-size: .7em; padding: 6px 12px; border-bottom: 2px solid var(--accent); }
+.h-table td { padding: 10px 12px; border-bottom: 1px solid #d9a44144; vertical-align: middle; }
+.h-table tr:nth-child(even) td { background: #ffffff08; }
+.h-table .h-win { color: var(--accent); font-weight: bold; white-space: nowrap; }
+.h-table .h-num { text-align: center; color: var(--muted); }

@@ -525,7 +525,14 @@ function renderHollowTv(v) {
   const b = v.boards || {};
   const main = [];
   if (v.step === "reunion" && v.guests) main.push(el("ul", { class: "h-guests" }, v.guests.map((g) => el("li", {}, g.name, el("span", {}, ` · ${g.player}`)))));
-  if (v.polls) main.push(el("ul", { class: "h-polls" }, v.polls.map((p) => el("li", {}, el("span", {}, p.text), el("strong", {}, ` ${p.winners.join(" & ")}`)))));
+  if (v.polls) {
+    main.push(el("table", { class: "h-table" },
+      el("thead", {}, el("tr", {}, el("th", {}, "Who is most likely to…"), el("th", {}, "Winner"), el("th", {}, "Votes"))),
+      el("tbody", {}, v.polls.map((p) => el("tr", {},
+        el("td", {}, p.text.replace(/^Who is most likely to /, "").replace(/\?$/, "")),
+        el("td", { class: "h-win" }, p.winners.join(" & ")),
+        el("td", { class: "h-num" }, String(p.votes)))))));
+  }
   if (v.interrogation) {
     const i = v.interrogation;
     main.push(el("p", { class: "h-order" }, i.order.map((n, k) => el("span", { class: k === i.turn ? "now" : k < i.turn ? "past" : "" }, n))));
