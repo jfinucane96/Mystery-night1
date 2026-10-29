@@ -125,7 +125,10 @@ function ballotLabel(b) {
       "The family in last place inherits nothing; the other three split the £12 million by points. Suspicion votes later in the night take points away.",
       `This is round ${b.round} of 4. Every round adds to a running total, so the standings can change all night; the final total decides the inheritance.`,
       "Your vote is secret, and you can change it until the host closes the ballot."] }
-    : { title: `Suspicion ballot ${b.round}`, note: "Rank your three prime suspects in Silas's murder. Every point of suspicion costs the accused one point of influence." };
+    : { title: `Suspicion ballot ${b.round}`, note: [
+      "Rank your three prime suspects in Silas's murder. You may name anyone but yourself, even your spouse.",
+      "Suspicion costs them: your 1st choice loses 3 points from their family's inheritance total, your 2nd loses 2, your 3rd loses 1.",
+      "Being suspected is expensive, whether or not they did it. Your vote is secret."] };
 }
 
 function hollowAction(h) {
@@ -576,6 +579,10 @@ function seqShow(view, item) {
   setVoiceEcho(kind === "ghost" || (kind === "notice" && layer.dataset.ghost === "1"));
   if (kind === "ghost") layer.dataset.ghost = "1";
   if (kind === "money") kids.push(el("p", { class: "h-seq-money" }, "£12,000,000"));
+  if (kind === "card") {
+    kids.push(el("div", { class: "h-seq-rules" }, el("h2", {}, item.title),
+      el("ol", {}, item.items.map((t, i) => el("li", { class: i === item.warn ? "h-seq-warn" : "" }, t)))));
+  }
   if (kind === "notice") kids.push(el("p", { class: "h-seq-text" }, item.text), item.sub && el("p", { class: "h-seq-sub" }, item.sub));
   if (kind === "rules") {
     kids.push(el("div", { class: "h-seq-rules" },

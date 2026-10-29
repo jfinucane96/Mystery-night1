@@ -1135,7 +1135,76 @@
     },
     "ballots2": {
       "title": "Inheritance and Suspicion",
-      "text": "Rank three guests for the inheritance, then rank your three prime suspects. Every point of suspicion costs the accused influence."
+      "screen": "Cast both ballots on your phone. Every point of suspicion is taken off the accused family's inheritance total.",
+      "sequence": [
+        {
+          "show": "ghost"
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "Now then.\n\nTwo ballots this time."
+        },
+        {
+          "wait": 800
+        },
+        {
+          "say": "The first, you already know. The inheritance.\n\nRank three fellow guests. Not yourself. Not your spouse.\n\nIt's added to your running total, just as before."
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "show": "card",
+          "title": "The Suspicion Ballot",
+          "items": [
+            "Rank your three prime suspects in Silas's murder",
+            "1st choice: they lose 3 inheritance points",
+            "2nd choice: they lose 2 · 3rd choice: they lose 1",
+            "Suspicion comes off your family's running total"
+          ],
+          "warn": 3
+        },
+        {
+          "say": "The second is new.\n\nRank your three prime suspects in my murder."
+        },
+        {
+          "wait": 800
+        },
+        {
+          "say": "And here is the delicious part.\n\nEvery point of suspicion you receive is taken away from your inheritance.\n\nYour first choice loses three points. Your second, two. Your third, one."
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "show": "ghost"
+        },
+        {
+          "say": "So if this room decides you look like a murderer...\n\nyour family pays for it.\n\nWhether you did it or not."
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "say": "There will be more suspicion votes as the evening goes on, and every one of them counts.\n\nBeing suspected, my dears, is terribly expensive."
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "Choose carefully."
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "show": "notice",
+          "text": "Cast both ballots on your phone.",
+          "sub": "Inheritance: who deserves the fortune. Suspicion: who killed Silas. Suspicion costs the accused points."
+        }
+      ]
     },
     "deals": {
       "title": "The Dinner of Deception",
