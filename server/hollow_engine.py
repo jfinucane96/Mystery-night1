@@ -71,12 +71,16 @@ def apply_transfers(shares, transfers, eligible):
     return result, settled
 
 
-def projection(total, families, infl, transfers, order_families):
-    """Provisional TV projection before the tribunal: all four families share, honoured
-    deals applied, never shown below zero."""
-    shares = split(total, family_influence(infl, families), order_families)
-    shares, _ = apply_transfers(shares, transfers, set(families))
-    return {f: max(0, v) for f, v in shares.items()}
+def projection(total, families, infl, transfers, order_families, exclude=None):
+    """Provisional projection before the tribunal, honoured deals applied, never below zero.
+    `exclude`: a family shown inheriting nothing (last place on the TV board)."""
+    eligible = [f for f in order_families if f != exclude]
+    shares = split(total, {f: v for f, v in family_influence(infl, families).items() if f in eligible}, eligible)
+    shares, _ = apply_transfers(shares, transfers, set(eligible))
+    out = {f: max(0, v) for f, v in shares.items()}
+    if exclude:
+        out[exclude] = 0
+    return out
 
 
 def round_display(amount, step=100000):

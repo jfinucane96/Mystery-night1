@@ -250,6 +250,8 @@ def cast_ballot(t, data, cid, kind, round_, picks):
         raise GameError(400, "Choose three different guests.")
     if cid in picks:
         raise GameError(400, "You can't vote for yourself.")
+    if kind == INHERITANCE and spouse(data, cid) in picks:
+        raise GameError(400, "You can't vote for your spouse in the inheritance ballot.")
     t.run("DELETE FROM h_ballots WHERE kind = ? AND round = ? AND voter = ?", (kind, round_, cid))
     t.run("INSERT INTO h_ballots (kind, round, voter, picks, created_at) VALUES (?, ?, ?, ?, ?)",
           (kind, round_, cid, json.dumps(picks), _iso()))
@@ -292,9 +294,17 @@ def transfers(t, data, statuses=("honored",)):
             for d in rows if d["status"] in statuses]
 
 
-def projection(t, data):
+def projection(t, data, last_place_out=False):
+    """Each family's projected share. With `last_place_out` (the TV board), the family in last
+    place is shown inheriting nothing, as Silas announces; deal and wager limits use the
+    four-family figure so a struggling family can still bargain its way back."""
     fams = data["families"]
-    return eng.projection(data["game"]["total_estate"], fams, influence(t, data), transfers(t, data), list(fams))
+    infl = influence(t, data)
+    out = None
+    if last_place_out:
+        fam_order = list(fams)
+        _, out = eng.eliminate(0, None, data["family_of"], eng.family_influence(infl, fams), fam_order)
+    return eng.projection(data["game"]["total_estate"], fams, infl, transfers(t, data), list(fams), exclude=out)
 
 
 def available(t, data, cid):
@@ -642,7 +652,7 @@ def _boards(t, data, story):
     """The only two competitive boards the TV may show."""
     out = {}
     if ballots(t, INHERITANCE):
-        proj = projection(t, data)
+        proj = projection(t, data, last_place_out=True)
         out["families"] = [{"name": data["families"][f]["name"], "amount": eng.round_display(proj[f])}
                            for f in sorted(proj, key=lambda f: -proj[f])]
     if ballots(t, SUSPICION):

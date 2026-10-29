@@ -117,7 +117,11 @@ function hollowHome(h) {
 
 function ballotLabel(b) {
   return b.kind === "inheritance"
-    ? { title: `Inheritance ballot ${b.round}`, note: "Rank three other guests who deserve the inheritance (+3, +2, +1 hidden influence). Your spouse is allowed; you are not." }
+    ? { title: `Inheritance ballot ${b.round}`, note: [
+      "Rank three fellow guests by who most deserves the fortune. Not yourself, and not your spouse.",
+      "Your 1st choice gets 3 points, 2nd gets 2, 3rd gets 1. Each family's points (both spouses together) decide its share.",
+      "The family in last place inherits nothing; the other three split the £12 million by points. Suspicion votes later in the night take points away.",
+      "Your vote is secret, and you can change it until the host closes the ballot."] }
     : { title: `Suspicion ballot ${b.round}`, note: "Rank your three prime suspects in Silas's murder. Every point of suspicion costs the accused one point of influence." };
 }
 
@@ -154,9 +158,11 @@ function hollowAction(h) {
       const lab = ballotLabel(b);
       const picks = [0, 1, 2].map((i) => draft(`${key}-${i}`, saved ? saved[i] : ""));
       return el("div", { class: "h-ballot" },
-        el("h3", {}, lab.title), el("p", { class: "small muted" }, lab.note),
+        el("h3", {}, lab.title),
+        (Array.isArray(lab.note) ? lab.note : [lab.note]).map((n) => el("p", { class: "small muted" }, n)),
         ["1st (+3)", "2nd (+2)", "3rd (+1)"].map((label, i) => el("label", { class: "h-field" }, el("span", {}, label),
-          select(`${key}-${i}`, others, "Choose…", saved ? saved[i] : ""))),
+          select(`${key}-${i}`, b.kind === "inheritance" ? others.filter(([id]) => id !== h.dossier.spouse_id) : others,
+            "Choose…", saved ? saved[i] : ""))),
         el("button", { class: "wide", disabled: hBusy, onclick: () => hAct("ballot", { kind: b.kind, round: b.round, picks }, [0, 1, 2].map((i) => `${key}-${i}`)) },
           saved ? "Change my vote" : "Cast my vote"),
         saved && el("p", { class: "ok-text small" }, `Voted: ${saved.map((p) => nameOf(h, p)).join(", ")}. You can change it until the ballot closes.`));

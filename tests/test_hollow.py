@@ -139,6 +139,13 @@ class Evening(unittest.TestCase):
         self.assertEqual(len(found), 1)
         return found[0]
 
+    def heirs(self, cid):
+        """Three inheritance picks round the table, skipping yourself and your spouse."""
+        o = self.data["order"]
+        spouse = next(m for m in self.data["families"][self.data["family_of"][cid]]["members"] if m != cid)
+        i = o.index(cid)
+        return [x for x in (o[(i + k) % len(o)] for k in range(1, 8)) if x != spouse][:3]
+
     def others(self, cid, n=3):
         """The next n players round the table: spreads votes evenly."""
         o = self.data["order"]
@@ -177,10 +184,11 @@ class Evening(unittest.TestCase):
         self.assertEqual(self.s.call("POST", "/api/host/hollow/step", self.s.host_key, {"step": "covenant"})[0], 409)
         for st in ("reunion", "polls", "poll_results", "covenant", "covenant2", "ballot1"):
             self.step(st)
-        self.act("grant", "ballot", {"kind": "inheritance", "round": 1, "picks": ["caroline", "nanor", "taylor"]})
+        self.act("grant", "ballot", {"kind": "inheritance", "round": 1, "picks": ["jonathan", "nanor", "taylor"]})
         self.act("grant", "ballot", {"kind": "inheritance", "round": 1, "picks": ["grant", "nanor", "taylor"]}, 400)
+        self.act("grant", "ballot", {"kind": "inheritance", "round": 1, "picks": ["caroline", "nanor", "taylor"]}, 400)
         self.step("blackout")
-        self.act("grant", "ballot", {"kind": "inheritance", "round": 1, "picks": ["caroline", "nanor", "taylor"]}, 409)
+        self.act("grant", "ballot", {"kind": "inheritance", "round": 1, "picks": ["jonathan", "nanor", "taylor"]}, 409)
 
     def test_a_complete_evening(self):
         order = self.data["order"]
@@ -201,7 +209,7 @@ class Evening(unittest.TestCase):
         self.step("covenant2")
         self.step("ballot1")
         for c in order:
-            self.act(c, "ballot", {"kind": "inheritance", "round": 1, "picks": self.others(c)})
+            self.act(c, "ballot", {"kind": "inheritance", "round": 1, "picks": self.heirs(c)})
         self.assertNotIn("families", self.room()["boards"])           # open ballots don't move the board
         self.step("blackout")
         self.step("murder")
@@ -212,7 +220,7 @@ class Evening(unittest.TestCase):
         self.step("ghost")
         self.step("ballots2")
         for c in order:
-            self.act(c, "ballot", {"kind": "inheritance", "round": 2, "picks": self.others(c)})
+            self.act(c, "ballot", {"kind": "inheritance", "round": 2, "picks": self.heirs(c)})
             self.act(c, "ballot", {"kind": "suspicion", "round": 1, "picks": self.others(c)[::-1]})
         self.step("deals")
         boards = self.room()["boards"]
@@ -239,7 +247,7 @@ class Evening(unittest.TestCase):
                 k = order.index(asker)
                 target = next(order[(k + d) % 8] for d in range(1, 8) if order[(k + d) % 8] != "grant")
                 track, qid = "fire", f"f{k % 5 + 1}"
-                if not tried_reserved:                               # Jonathan's reserved question is off limits
+                if not tried_reserved and asker != "grant":          # Jonathan's reserved question is off limits
                     self.act(asker, "interrogate", {"target": "grant", "track": "silas", "qid": "s1"}, 409)
                     tried_reserved = True
             self.act(asker, "interrogate", {"target": target, "track": track, "qid": qid})
@@ -268,7 +276,7 @@ class Evening(unittest.TestCase):
         self.act("griff", "decide", {"id": self.me("griff")["deals"][-1]["id"], "accept": True})
         self.step("ballots3")
         for c in order:
-            picks = ["nanor", "grace", "grant"] if c == "griff" else self.others(c)
+            picks = ["nanor", "grant", "taylor"] if c == "griff" else self.heirs(c)
             self.act(c, "ballot", {"kind": "inheritance", "round": 3, "picks": picks})
             self.act(c, "ballot", {"kind": "suspicion", "round": 2, "picks": self.others(c)[::-1]})
         self.step("revelations")
@@ -282,7 +290,7 @@ class Evening(unittest.TestCase):
         for st in ("confront", "temptation", "ballot4"):
             self.step(st)
         for c in order:
-            self.act(c, "ballot", {"kind": "inheritance", "round": 4, "picks": self.others(c)})
+            self.act(c, "ballot", {"kind": "inheritance", "round": 4, "picks": self.heirs(c)})
         self.step("hotseat")
         pair = self.me(order[0])["action"]["pair_ids"]
         self.assertEqual(len(pair), 2)
