@@ -150,6 +150,11 @@ def set_step(t, data, story, step):
     if new > cur:
         _on_leave(t, data, story, s["step"])
     t.run("UPDATE hollow_state SET step = ?, timer_end = '', updated_at = ? WHERE id = 1", (step, _iso()))
+    extra = state(t)["extra"]                      # when each step started, for the host's schedule
+    extra.setdefault("started", {})[step] = _iso()
+    for later in hc.STEP_IDS[new + 1:]:            # going back reopens everything after this step
+        extra["started"].pop(later, None)
+    _save_extra(t, extra)
     if new > cur:
         _on_enter(t, data, story, step)
     _event(t, "step", step=step)
@@ -761,7 +766,9 @@ def host_view(t, data, story):
         counts["Hot-seat choices"] = len(t.all("SELECT cid FROM h_hotseat"))
     view = {
         "ready": bool(s["culprit"]), "step": step, "paused": bool(s["paused"]), "timer_end": s["timer_end"],
-        "steps": [{"id": sid, "phase": hc.PHASE_NAMES[ph], "name": name} for sid, ph, name in hc.STEPS],
+        "steps": [{"id": sid, "phase": hc.PHASE_NAMES[ph], "name": name, "plan": hc.PLAN_MINUTES.get(sid, 0),
+                   "started": s["extra"].get("started", {}).get(sid)} for sid, ph, name in hc.STEPS],
+        "now": _iso(),
         "players": len(who), "counts": counts, "total": len(who),
         "script": data["script"].get(step, {}),
         "cues": sorted(CUES - {"safety"}),

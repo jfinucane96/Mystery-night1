@@ -490,3 +490,10 @@ button.h-tab.on { background: var(--accent); color: #1b1408; border-color: var(-
 .h-step.now p.grow { color: var(--accent); font-weight: bold; }
 .h-stat { margin: 4px 0 4px 14px; }
 .h-stat p { margin: 2px 0; }
+
+.h-check { color: #4cc26a; font-weight: bold; }
+.h-now-dot { color: var(--accent); }
+.h-todo { color: var(--muted); }
+.h-ok { color: #8fd19e; }
+.h-over, .h-elapsed.over { color: var(--danger); font-weight: bold; }
+.h-steptime { font-weight: normal; }

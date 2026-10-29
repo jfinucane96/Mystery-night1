@@ -46,6 +46,15 @@ STEPS = [
     ("verdict", 6, "The Final Tribunal"),
     ("reveal", 6, "The reveal and payouts"),
 ]
+# Target minutes for each step (about three hours from the Reunion to the reveal)
+PLAN_MINUTES = {
+    "lobby": 0, "reunion": 15, "polls": 8, "poll_results": 5,
+    "covenant": 5, "covenant2": 6, "envelopes": 4, "covenant3": 4, "ballot1": 3,
+    "blackout": 2, "murder": 12, "ghost": 4, "ballots2": 6,
+    "deals": 8, "interrogations": 20, "investigations": 10, "bribes4": 4, "ballots3": 4,
+    "revelations": 6, "confront": 5, "temptation": 5, "ballot4": 3, "hotseat": 10, "suspicion3": 3, "bridge": 4,
+    "wagers": 5, "verdict": 6, "reveal": 10,
+}
 STEP_IDS = [s[0] for s in STEPS]
 PHASE_OF = {s[0]: s[1] for s in STEPS}
 STEP_NAME = {s[0]: s[2] for s in STEPS}

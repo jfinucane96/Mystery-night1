@@ -21,7 +21,33 @@ function timeLeft(end) {
 
 setInterval(() => {
   document.querySelectorAll(".h-timer").forEach((n) => { n.textContent = timeLeft(n.dataset.end); });
+  document.querySelectorAll(".h-elapsed").forEach((n) => {
+    const mins = Math.floor((Date.now() - new Date(n.dataset.start)) / 60000);
+    n.textContent = `${mins} min in`;
+    n.classList.toggle("over", mins > Number(n.dataset.plan));
+  });
 }, 1000);
+
+// ---- the host's running schedule: planned clock times from the moment the Reunion starts
+// (7:00 PM until then), and how long each step actually took
+function clock(d) {
+  return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+}
+
+function schedule(h) {
+  const startIdx = h.steps.findIndex((x) => x.id === "reunion");
+  const reunion = h.steps[startIdx].started;
+  let anchor = reunion ? new Date(reunion) : new Date();
+  if (!reunion) anchor.setHours(19, 0, 0, 0);
+  let offset = 0;
+  return h.steps.map((st, i) => {
+    const planned = i >= startIdx ? new Date(anchor.getTime() + offset * 60000) : null;
+    if (i >= startIdx) offset += st.plan;
+    const next = h.steps[i + 1];
+    const took = st.started && next && next.started ? Math.round((new Date(next.started) - new Date(st.started)) / 60000) : null;
+    return { ...st, i, planned, took };
+  });
+}
 
 function draft(key, fallback = "") {
   return key in hDraft ? hDraft[key] : fallback;
@@ -451,6 +477,15 @@ function hollowTopBar(s) {
   return el("section", { class: "card h-host h-top" },
     el("p", { class: "eyebrow" }, `${cur.phase} · step ${idx + 1} of ${h.steps.length}`),
     el("h2", {}, cur.name),
+    cur.plan > 0 && el("p", { class: "small" }, `Target ${cur.plan} min`,
+      cur.started && [" · ", el("span", { class: "h-elapsed", "data-start": cur.started, "data-plan": cur.plan }, "")],
+      (() => {
+        const sc = schedule(h)[idx];
+        if (!sc.planned) return "";
+        const late = cur.started ? Math.round((new Date(cur.started) - sc.planned) / 60000) : 0;
+        return [` · planned start ${clock(sc.planned)} · `,
+          el("span", { class: late > 2 ? "h-over" : "h-ok" }, late > 2 ? `${late} min behind` : late < -2 ? `${-late} min ahead` : "on time")];
+      })()),
     hTimer(h.timer_end),
     h.paused && el("p", { class: "paused" }, "Paused"),
     Object.keys(h.counts).length > 0 && el("p", { class: "small" },
@@ -499,23 +534,43 @@ function hostNowTab(s) {
   ];
 }
 
+function phaseTimes(p) {
+  const planned = p.steps.filter((st) => st.planned);
+  if (!planned.length) return null;
+  const mins = p.steps.reduce((a, st) => a + st.plan, 0);
+  const end = new Date(planned[0].planned.getTime() + mins * 60000);
+  const took = p.steps.every((st) => st.took !== null) ? p.steps.reduce((a, st) => a + st.took, 0) : null;
+  return el("span", { class: "small muted" }, `${clock(planned[0].planned)}–${clock(end)} (${mins} min)`,
+    took !== null && el("span", { class: took > mins ? "h-over" : "h-ok" }, ` · took ${took} min`));
+}
+
+function stepTimes(st, isNow) {
+  if (!st.plan) return null;
+  return el("span", { class: "small muted h-steptime" },
+    ` · ${st.planned ? clock(st.planned) + ", " : ""}${st.plan} min`,
+    st.took !== null && el("span", { class: st.took > st.plan ? "h-over" : "h-ok" }, ` · took ${st.took}`),
+    isNow && st.started && [" · ", el("span", { class: "h-elapsed", "data-start": st.started, "data-plan": st.plan }, "")]);
+}
+
 function hostPhasesTab(s) {
   const h = s.hollow;
   const curIdx = h.steps.findIndex((x) => x.id === h.step);
   const phases = [];
-  h.steps.forEach((st, i) => {
+  schedule(h).forEach((st) => {
     let p = phases.find((x) => x.name === st.phase);
     if (!p) { p = { name: st.phase, steps: [] }; phases.push(p); }
-    p.steps.push({ ...st, i });
+    p.steps.push(st);
   });
   return phases.map((p) => {
     const here = p.steps.some((st) => st.i === curIdx);
     const done = p.steps.every((st) => st.i < curIdx);
     const details = el("details", { class: `card h-phase-card ${here ? "here" : ""}`, open: openPhases.has(p.name) || (here && !openPhases.size) },
-      el("summary", {}, el("strong", {}, p.name), " ", el("span", { class: "small muted" }, here ? "· now" : done ? "· done" : "")),
+      el("summary", {}, done ? el("span", { class: "h-check" }, "✔") : here ? el("span", { class: "h-now-dot" }, "▶") : el("span", { class: "h-todo" }, "○"),
+        " ", el("strong", {}, p.name), " ", phaseTimes(p)),
       p.steps.map((st) => el("div", { class: `h-step ${st.i === curIdx ? "now" : st.i < curIdx ? "past" : ""}` },
         el("div", { class: "row" },
-          el("p", { class: "grow" }, st.i === curIdx ? "▶ " : st.i < curIdx ? "✓ " : "", st.name),
+          el("p", { class: "grow" }, st.i < curIdx ? el("span", { class: "h-check" }, "✔ ") : st.i === curIdx ? "▶ " : "○ ", st.name,
+            stepTimes(st, st.i === curIdx)),
           st.i < curIdx && el("button", { class: "small quiet", onclick: () => hostGo(st, `Go back to "${st.name}"? Everything after it can be redone.`) }, "Go back here")),
         st.i <= curIdx && statRows(h.stats[st.id]))));
     details.addEventListener("toggle", () => { if (details.open) openPhases.add(p.name); else openPhases.delete(p.name); });
