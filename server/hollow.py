@@ -924,6 +924,13 @@ def act(t, data, story, guest, action, body):
     b = body
     if action == "poll":
         return answer_poll(t, data, cid, b.get("poll_id"), b.get("choice"))
+    if action == "polls":
+        answers = b.get("answers")
+        if not isinstance(answers, dict) or set(answers) != {p["id"] for p in data["polls"]}:
+            raise GameError(400, "Please answer every question.")
+        for poll_id, choice in answers.items():
+            answer_poll(t, data, cid, poll_id, choice)
+        return
     if action == "ballot":
         return cast_ballot(t, data, cid, b.get("kind"), b.get("round"), b.get("picks"))
     if action == "offer":

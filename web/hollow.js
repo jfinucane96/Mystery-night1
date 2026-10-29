@@ -131,14 +131,23 @@ function hollowAction(h) {
       el("p", { class: "muted" }, h.step === "lobby" ? "Read your dossier while you wait. The evening begins soon." : "Watch the screen and listen."),
       h.step === "reunion" && el("p", {}, el("a", { href: "#dossier" }, "Your introduction is in your dossier: read it aloud when it's your turn.")),
     ];
-    case "polls": return [
-      el("p", {}, el("strong", {}, "Vote for the real person, not their character!")),
-      el("p", { class: "small muted" }, "Answer privately. Results go on the screen. No points, just glory."),
-      a.polls.map((p) => el("label", { class: "h-field" }, el("span", {}, p.text),
-        el("select", { onchange: (e) => e.target.value && hAct("poll", { poll_id: p.id, choice: e.target.value }) },
-          el("option", { value: "" }, "Choose…"),
-          [[h.me, "Me"], ...others].map(([v, l]) => el("option", { value: v, selected: a.answers[p.id] === v }, l))))),
-    ];
+    case "polls": {
+      const chosen = Object.fromEntries(a.polls.map((p) => [p.id, draft(`poll-${p.id}`, a.answers[p.id] || "")]));
+      const done = a.polls.every((p) => a.answers[p.id]);
+      const changed = a.polls.some((p) => chosen[p.id] !== (a.answers[p.id] || ""));
+      const complete = a.polls.every((p) => chosen[p.id]);
+      return [
+        el("p", {}, el("strong", {}, "Vote for the real person, not their character!")),
+        el("p", { class: "small muted" }, "Answer privately. Results go on the screen. No points, just glory."),
+        a.polls.map((p) => el("label", { class: "h-field" }, el("span", {}, p.text),
+          select(`poll-${p.id}`, [[h.me, "Me"], ...others], "Choose…", a.answers[p.id] || ""))),
+        el("button", { class: "wide", disabled: hBusy || !complete || (done && !changed),
+          onclick: () => hAct("polls", { answers: chosen }, a.polls.map((p) => `poll-${p.id}`)) },
+        done ? (changed ? "Update my answers" : "Answers submitted ✓") : "Submit my answers"),
+        !complete && el("p", { class: "small muted" }, "Answer all the questions to submit."),
+        done && !changed && el("p", { class: "ok-text small" }, "Submitted. You can change your answers until the host closes the poll."),
+      ];
+    }
     case "ballots": return a.ballots.map((b) => {
       const key = `${b.kind}-${b.round}`;
       const saved = a.mine[key];

@@ -185,6 +185,8 @@ class Evening(unittest.TestCase):
         self.step("polls")
         for c in order:
             self.act(c, "poll", {"poll_id": "p1", "choice": "griff" if c != "griff" else "grant"})
+        self.act("grant", "polls", {"answers": {"p1": "griff"}}, 400)
+        self.act("grant", "polls", {"answers": {p["id"]: "griff" for p in self.data["polls"]}})
         self.step("poll_results")
         self.assertEqual(self.room()["polls"][0]["winners"], ["Griff"])
         self.step("covenant")
