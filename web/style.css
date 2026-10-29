@@ -473,3 +473,7 @@ body.room-mode.blackout { background: #000; }
 .h-seq-rules h2 { color: var(--accent); font-size: clamp(1.6rem, 3vw, 3rem); margin: 0 0 1vh; }
 .h-seq-rules ol { font-size: clamp(1.1rem, 2.2vw, 2.2rem); line-height: 1.6; color: #efe6d8; margin: 0; }
 .h-seq-warn { color: var(--danger); }
+
+.h-seq.ghost { background: radial-gradient(ellipse at 50% 45%, #1d3340 0%, #071219 60%, #000 100%); }
+.h-seq.ghost .h-seq-name { color: #a9d3e6; text-shadow: 0 0 24px #7fc4e0aa; animation: h-ghost 5s ease-in-out infinite; }
+@keyframes h-ghost { 0%, 100% { opacity: .9; transform: translateY(0); } 50% { opacity: .55; transform: translateY(-6px); } }

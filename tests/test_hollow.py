@@ -224,7 +224,8 @@ class Evening(unittest.TestCase):
         me = self.me("grace")
         self.assertIn("Grant", me["witnessed"])
         self.assertTrue(me["blackout"])
-        self.assertEqual(self.room()["title"], "THE HOLLOW ORDER SEES ALL")
+        self.assertEqual(self.room()["title"], "Silas Vale Is Dead")
+        self.assertTrue(self.room()["silent"])
         self.step("ghost")
         self.step("ballots2")
         for c in order:

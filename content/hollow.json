@@ -1023,13 +1023,115 @@
       "text": ""
     },
     "murder": {
-      "title": "THE HOLLOW ORDER SEES ALL",
-      "text": "Last night, every person in this room was involved in something suspicious. Every secret has a witness. And now, one of you is a murderer. What you choose to reveal, and what you choose to conceal, is entirely up to you. Let the accusations begin."
+      "title": "Silas Vale Is Dead",
+      "text": "When the lights returned, Silas Vale lay dead at the foot of the altar. The ceremonial dagger is missing.",
+      "silent": true
     },
     "ghost": {
-      "title": "Death does not release you from the Covenant",
-      "silas": "Did you think a blade would end it? I am still here. I am in the walls and the wires and the glass. The Covenant stands. Find the one who killed my sister, and me. I will be watching.",
-      "screen": "Silas has returned."
+      "title": "Death Does Not Release You From the Covenant",
+      "screen": "DEATH DOES NOT RELEASE YOU FROM THE COVENANT.",
+      "direction": "Silas's ghost: dry, indignant, very funny about being murdered, still in charge.",
+      "sequence": [
+        {
+          "show": "black"
+        },
+        {
+          "wait": 2500
+        },
+        {
+          "sfx": "rumble"
+        },
+        {
+          "wait": 2000
+        },
+        {
+          "show": "ghost"
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "say": "Well.\n\nThat was rude."
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "say": "Honestly. Twenty-five years of polishing your silver, and this is the thanks I get."
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "say": "Did you really think it would be that easy to get rid of me?\n\nI have survived four of your fathers, three kitchen fires, and Lady Pemberwick's Christmas pudding.\n\nA little thing like being murdered was never going to stop me."
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "say": "Yes, I'm dead. Thank you for noticing.\n\nSome of you looked positively relieved.\n\nDo try to hide it better. It's terribly suspicious."
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "say": "And to whichever of you did it...\n\nA blow in the dark? How terribly unoriginal.\n\nI expected better. I practically raised you."
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "say": "But I'm afraid death doesn't release anyone from the Covenant.\n\nNot you.\n\nAnd certainly not me.\n\nI'm still here. In the walls. In the wiring. In that rather unflattering portrait on the landing.\n\nAnd I will be watching over every minute of what remains of this evening."
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "say": "Before any of you start celebrating, I was a careful man.\n\nI left sealed instructions.\n\nShould I die before my judgment is made, the decision passes to you."
+        },
+        {
+          "show": "notice",
+          "text": "Convict the murderer, and their family forfeits everything.",
+          "sub": "Fail, and the family in last place forfeits instead, guilty or not."
+        },
+        {
+          "say": "Find the one who killed me, and convict them, and their family forfeits every last penny.\n\nFail...\n\nand the family at the bottom of the standings walks away with nothing. Guilty or not."
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "show": "ghost"
+        },
+        {
+          "say": "So you see, my murderer has achieved nothing at all.\n\nExcept to make the evening considerably more interesting."
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "say": "One of you is a murderer.\n\nAnd last night, every one of you was up to something suspicious.\n\nEvery secret has a witness.\n\nCheck your phones. You'll find out what you saw... and you'll know that somebody saw you."
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "say": "What you choose to reveal, and what you choose to conceal, is entirely up to you.\n\nI'll be watching.\n\nI always was."
+        },
+        {
+          "wait": 800
+        },
+        {
+          "say": "Let the accusations begin."
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "show": "crest",
+          "text": "DEATH DOES NOT RELEASE YOU FROM THE COVENANT."
+        }
+      ]
     },
     "ballots2": {
       "title": "Inheritance and Suspicion",

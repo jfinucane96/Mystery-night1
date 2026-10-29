@@ -496,13 +496,15 @@ function hollowAnnounce(view, e) {
     if (e.step !== view.step) return;
     stopSpeaking();                    // a new step cuts off whatever the last one was saying
     droneOff();
+    setVoiceEcho(false);
     if (e.step === "blackout") { strikeLightning(true); if (audioCtx) thunder(0, 5, 1); return; }
     if (view.sequence) return runSequence(view);
     const sound = e.step === "murder" ? "murder" : (["ghost", "revelations", "bridge"].includes(e.step) ? "ghost" : "phase");
     // one part per paragraph, so the voice pauses naturally between them
-    const spoken = [view.title, ...(view.silas || view.text || "").split(/\n\s*\n/)].map((x) => x.trim()).filter(Boolean);
+    const spoken = view.silent ? []
+      : [view.title, ...(view.silas || view.text || "").split(/\n\s*\n/)].map((x) => x.trim()).filter(Boolean);
     // Read the full script aloud; show only the short screen line
-    if (spoken.length) announce(sound, spoken, { title: view.title, text: view.screen || view.text });
+    if (spoken.length || view.silent) announce(sound, spoken, { title: view.title, text: view.screen || view.text });
   } else if (e.kind === "question" || e.kind === "answer") {
     const r = (view.interrogation || { log: [] }).log.find((x) => x.turn === e.turn);
     if (!r) return;
@@ -570,6 +572,9 @@ function seqShow(view, item) {
   layer.className = `h-seq ${kind}`;
   const kids = [];
   if (kind === "shadow" || kind === "warm" || kind === "glitch") kids.push(el("p", { class: "h-seq-name" }, el("span", {}, "Voice of Silas Vale"), el("span", { class: "h-seq-role" }, "(The Butler)")));
+  if (kind === "ghost") kids.push(el("p", { class: "h-seq-name" }, el("span", {}, "The Ghost of Silas Vale"), el("span", { class: "h-seq-role" }, "(Still The Butler)")));
+  setVoiceEcho(kind === "ghost" || (kind === "notice" && layer.dataset.ghost === "1"));
+  if (kind === "ghost") layer.dataset.ghost = "1";
   if (kind === "money") kids.push(el("p", { class: "h-seq-money" }, "£12,000,000"));
   if (kind === "notice") kids.push(el("p", { class: "h-seq-text" }, item.text), item.sub && el("p", { class: "h-seq-sub" }, item.sub));
   if (kind === "rules") {

@@ -1635,6 +1635,26 @@ function voiceOut() {
   return voiceGain;
 }
 
+// The ghost's voice: a faint, slow echo added on top of the normal voice
+let echo = null;
+
+function setVoiceEcho(on) {
+  if (!audioCtx) return;
+  if (!echo) {
+    const delay = audioCtx.createDelay(1);
+    delay.delayTime.value = 0.32;
+    const feedback = audioCtx.createGain();
+    feedback.gain.value = 0.35;
+    const wet = audioCtx.createGain();
+    wet.gain.value = 0;
+    voiceOut().connect(delay);
+    delay.connect(feedback).connect(delay);
+    delay.connect(wet).connect(audioCtx.destination);
+    echo = wet;
+  }
+  echo.gain.setTargetAtTime(on ? 0.4 : 0, audioCtx.currentTime, 0.3);
+}
+
 function setVoiceVolume(level) {
   if (!audioCtx) return;
   voiceOut().gain.setTargetAtTime(level, audioCtx.currentTime, 0.5);
