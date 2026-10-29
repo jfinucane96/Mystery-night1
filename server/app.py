@@ -56,8 +56,15 @@ def route(method, pattern, who, own_tx=False):
 
 # ---------------------------------------------------------------- guest API
 
+def ensure_hollow_ready(ctx, t, released):
+    """Characters released (even before this version existed) but no murderer yet: pick one, in secret."""
+    if ctx.hollow and released:
+        hollow.ensure_culprit(t, ctx.hollow)
+
+
 def guest_state(ctx, t, guest):
     released = game.is_released(t)
+    ensure_hollow_ready(ctx, t, released)
     view = storymod.guest_view(ctx.story, guest, released, casting.prep_level(guest))
     s = play.state(t)
     view["game"] = {"phase": s["phase"], "phase_name": play.PHASE_NAMES[s["phase"]],
@@ -187,6 +194,7 @@ def guest_link(ctx, g):
 
 
 def host_state(ctx, t):
+    ensure_hollow_ready(ctx, t, game.is_released(t))
     names = ctx.story["by_id"]
     a = ctx.assessment
     title = ctx.story["title"]

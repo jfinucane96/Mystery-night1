@@ -162,6 +162,12 @@ class Evening(unittest.TestCase):
                     self.assertNotIn(self.data["by_id"][other]["secret"]["text"], raw)
         self.assertTrue(self.me(culprit)["dossier"]["truth"]["tonight"])
 
+    def test_released_before_this_version_still_gets_a_secret_murderer(self):
+        with self.s.db.tx() as t:
+            t.run("DELETE FROM hollow_state")
+        self.assertTrue(self.s.host("GET", "/api/host")["hollow"]["ready"])
+        self.culprit()
+
     def test_steps_move_one_at_a_time_and_late_writes_are_refused(self):
         self.assertEqual(self.s.call("POST", "/api/host/hollow/step", self.s.host_key, {"step": "covenant"})[0], 409)
         for st in ("reunion", "polls", "poll_results", "covenant", "ballot1"):
