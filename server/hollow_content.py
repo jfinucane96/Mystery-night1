@@ -21,7 +21,8 @@ STEPS = [
     ("reunion", 1, "The Reunion: introductions"),
     ("polls", 1, "Who's Most Likely To…?"),
     ("poll_results", 1, "Poll results"),
-    ("covenant", 2, "The Covenant: the robe ceremony"),
+    ("covenant", 2, "The Covenant, part 1: robes on"),
+    ("covenant2", 2, "The Covenant, part 2: Silas's revelation"),
     ("ballot1", 2, "Inheritance ballot 1"),
     ("blackout", 3, "Blackout"),
     ("murder", 3, "Lights up: Silas is dead"),
@@ -51,7 +52,7 @@ PHASE_NAMES = {0: "Arrival", 1: "Phase 1 · The Reunion", 2: "Phase 2 · The Cov
 
 # Which step releases what
 MEMORY_TIER_AT = {1: "reunion", 2: "covenant", 3: "bridge"}
-PUBLIC_AT = {"reunion": "reunion", "covenant": "covenant", "murder": "murder", "p4": "deals", "p5": "revelations",
+PUBLIC_AT = {"reunion": "reunion", "covenant": "covenant", "covenant2": "covenant2", "murder": "murder", "p4": "deals", "p5": "revelations",
              "bridge": "bridge"}
 
 FEET = {"boots": "the clack of hobnailed boots", "slippers": "the soft pad of house slippers"}

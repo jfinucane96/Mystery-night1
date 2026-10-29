@@ -916,33 +916,38 @@
     }
   ],
   "public": {
+    "summons": {
+      "phase": "covenant",
+      "title": "What Silas revealed at the robing ceremony",
+      "text": "At the start of the robing ceremony, Silas Vale revealed that it was he, not Sir Jonathan, who arranged this reunion. Your parents belonged to a secret society, The Hollow Order: sacred rituals, oaths of secrecy, and the four families' fortunes bound together under a single covenant that survives them. Silas administers their final estate, twelve million pounds, and it will not simply be divided. Before the true will can be read, every heir must put on their ceremonial robe and complete the Ceremony of the Covenant."
+    },
     "map": {
-      "phase": "reunion",
+      "phase": "p4",
       "title": "Plan of Hollowmere Manor",
       "text": "The east wing's records room, on the first floor, can be reached three ways: along the Long Gallery, up the servants' back stair from the butler's pantry, or (according to old plans nobody can find) by a passage from the library. From the east wing you can leave by the laundry and kitchen yard, through the conservatory, or down onto the terrace."
     },
     "nanny": {
-      "phase": "reunion",
+      "phase": "p4",
       "title": "Nanny Pruitt's list, summer 1867",
       "text": "Nanny Pruitt's household list for the children's summer at Hollowmere, found in the nursery cupboard. She records what each child wore and how she treated them that week."
     },
     "eleanor": {
-      "phase": "reunion",
+      "phase": "covenant2",
       "title": "Eleanor Vale",
       "text": "Eleanor Vale, twelve years old, younger sister of Silas, the under-footman. She played with the Order's children every summer. She died in the east-wing fire of 1867. The inquest called it a tragic accident."
     },
     "inquiry": {
-      "phase": "covenant",
+      "phase": "covenant2",
       "title": "The parents' private inquiry, 1867",
       "text": "A single page, unsigned: 'The papers in the records room were set alight first; the fire did not begin with a lamp. One of the children was in that room with the girl. We cannot say which. For the sake of all our houses, the finding shall be accident.'"
     },
     "trust_letter": {
-      "phase": "covenant",
+      "phase": "covenant2",
       "title": "Excerpt: Eleanor's letter",
       "text": "'...the sums withdrawn from the Servants' Benefit Trust to be held by the Order's houses and not returned...' It is signed by the heads of every Order household. Eleanor understood enough to know it was wrong."
     },
     "register": {
-      "phase": "covenant",
+      "phase": "p4",
       "title": "The Covenant register",
       "text": "The register each guest signed tonight on entering the chapel. It records the hand each member signed with, their chair in the ceremonial circle (north or south arc) and the sigil embroidered on their robe."
     },
@@ -982,10 +987,14 @@
       "text": ""
     },
     "covenant": {
+      "title": "The Ceremony of the Covenant",
+      "screen": "THE CEREMONY OF THE COVENANT — ALL HEIRS MUST DON THEIR ROBES.",
+      "silas": "My lords. My ladies.\n\nWelcome home to Hollowmere Manor.\n\nIt warms my heart to see you all together again. Eight children who once filled these halls with laughter, now standing before me as the heirs to four great families.\n\nI imagine you've all been wondering why you've been summoned here tonight.\n\nWell, I suppose it's time you learned the truth.\n\nYou see, it was not Sir Jonathan who arranged this reunion.\n\nIt was I.\n\nFor twenty-five years, I have served your families. And for twenty-five years, I have been entrusted with a rather extraordinary responsibility.\n\nYour parents were not simply friends, business partners, or members of some fashionable gentlemen's society.\n\nThey belonged to something far more... exclusive.\n\nAn ancient and secretive society known as The Hollow Order.\n\nAnd I assure you, their gatherings involved considerably more than brandy and cigars.\n\nYour parents participated in sacred rituals, swore oaths of secrecy, and bound their family fortunes together under a single covenant.\n\nA covenant that survives them.\n\nTonight, that covenant must be fulfilled.\n\nYour parents entrusted me with the administration of their final estate.\n\nTwelve million pounds.\n\nA considerable fortune, even among people of your... expensive tastes.\n\nBut the inheritance cannot simply be divided.\n\nOh, no.\n\nThe Hollow Order has always demanded that its heirs prove themselves worthy.\n\nAnd so, before the true will can be read, each of you must complete the ancient Ceremony of the Covenant.\n\nYou will find your ceremonial robes waiting for you.\n\nPut them on.\n\nEvery last one of you.\n\nAnd once all eight heirs stand before me properly dressed...\n\nThe Hollow Order shall decide your fate.\n\nDo take your time. Some of you have always struggled with dressing yourselves."
+    },
+    "covenant2": {
       "title": "The Covenant",
-      "text": "Robes on. The lights dim. Silas Vale steps to the altar, and he is no longer a servant.",
-      "silas": "Twenty-five years ago my sister Eleanor burned to death in the east wing of this house. You were told it was an accident. It was not. One of you was in that room with her. I have the records your parents buried. I know what each of you has done since. Hollowmere's twelve million pounds will be shared tonight by three families. The fourth, the family of the guilty, will receive nothing. The doors are locked. Judge each other. Or I will judge you all.",
-      "screen": "Robes on. Silas Vale is no longer a servant."
+      "screen": "Silas Vale is no longer a servant.",
+      "silas": "Twenty-five years ago my sister Eleanor burned to death in the east wing of this house. You were told it was an accident. It was not. One of you was in that room with her. I have the records your parents buried. I know what each of you has done since. Hollowmere's twelve million pounds will be shared tonight by three families. The fourth, the family of the guilty, will receive nothing. The doors are locked. Judge each other. Or I will judge you all."
     },
     "ballot1": {
       "title": "The First Inheritance Ballot",

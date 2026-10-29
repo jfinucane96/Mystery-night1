@@ -170,7 +170,7 @@ class Evening(unittest.TestCase):
 
     def test_steps_move_one_at_a_time_and_late_writes_are_refused(self):
         self.assertEqual(self.s.call("POST", "/api/host/hollow/step", self.s.host_key, {"step": "covenant"})[0], 409)
-        for st in ("reunion", "polls", "poll_results", "covenant", "ballot1"):
+        for st in ("reunion", "polls", "poll_results", "covenant", "covenant2", "ballot1"):
             self.step(st)
         self.act("grant", "ballot", {"kind": "inheritance", "round": 1, "picks": ["caroline", "nanor", "taylor"]})
         self.act("grant", "ballot", {"kind": "inheritance", "round": 1, "picks": ["grant", "nanor", "taylor"]}, 400)
@@ -191,6 +191,9 @@ class Evening(unittest.TestCase):
         self.assertEqual(self.room()["polls"][0]["winners"], ["Griff"])
         self.step("covenant")
         self.assertEqual(len(self.me("grant")["memories"]), 2)
+        self.assertEqual([e["title"] for e in self.me("grant")["evidence"]], ["What Silas revealed at the robing ceremony"])
+        self.assertTrue(self.room()["screen"].startswith("THE CEREMONY OF THE COVENANT"))
+        self.step("covenant2")
         self.step("ballot1")
         for c in order:
             self.act(c, "ballot", {"kind": "inheritance", "round": 1, "picks": self.others(c)})

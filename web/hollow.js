@@ -485,7 +485,8 @@ function hollowAnnounce(view, e) {
     if (e.step !== view.step) return;
     if (e.step === "blackout") { strikeLightning(true); if (audioCtx) thunder(0, 5, 1); return; }
     const sound = e.step === "murder" ? "murder" : (["ghost", "revelations", "bridge"].includes(e.step) ? "ghost" : "phase");
-    const spoken = [view.title, view.silas || view.text].filter(Boolean);
+    // one part per paragraph, so the voice pauses naturally between them
+    const spoken = [view.title, ...(view.silas || view.text || "").split(/\n\s*\n/)].map((x) => x.trim()).filter(Boolean);
     // Read the full script aloud; show only the short screen line
     if (spoken.length) announce(sound, spoken, { title: view.title, text: view.screen || view.text });
   } else if (e.kind === "question" || e.kind === "answer") {
