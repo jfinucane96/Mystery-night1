@@ -569,7 +569,8 @@ function seqShow(view, item) {
       el("figcaption", {}, p.name)))));
     if (item.text) kids.push(el("p", { class: "h-seq-line" }, item.text));
   }
-  if (kind === "crest") kids.push(crest(), item.text && el("p", { class: "h-seq-text" }, item.text));
+  if (kind === "crest") kids.push(crest(), item.text && el("p", { class: "h-seq-text" }, item.text),
+    item.sub && el("p", { class: "h-seq-sub" }, item.sub));
   layer.replaceChildren(...kids.filter(Boolean));
 }
 

@@ -607,7 +607,7 @@
     "summons": {
       "phase": "covenant",
       "title": "What Silas said when you arrived",
-      "text": "Silas Vale welcomed you home to Hollowmere. Your parents, the founders of the secret society known as the Hollow Order, entrusted him with one final duty: the reading of their true and final will. Before it can be read, the Order's tradition demands that all eight heirs take part in the Ceremony of the Covenant, in robes."
+      "text": "Silas Vale welcomed you all home. Sir Jonathan invited you to celebrate his inheritance of Hollowmere Manor, but the manor is only a small part of what your parents left behind. Your four families founded a secret society, The Hollow Order, and before they died they entrusted Silas with the reading of their true and final will: a will concerning a rather extraordinary fortune. First, the Order's tradition demands that all eight heirs take part in the Ceremony of the Covenant, in robes."
     },
     "revelation": {
       "phase": "covenant2",
@@ -661,7 +661,7 @@
     },
     "covenant": {
       "title": "The Ceremony of the Covenant",
-      "screen": "THE CEREMONY OF THE COVENANT — ALL HEIRS MUST DON THEIR ROBES.",
+      "screen": "THE CEREMONY OF THE COVENANT. All eight heirs must don their ceremonial robes before the reading of the will can begin.",
       "direction": "Warm, affectionate, teasing: the beloved family servant.",
       "sequence": [
         {
@@ -671,38 +671,45 @@
           "wait": 1200
         },
         {
-          "say": "Ah, there you all are!\n\nMy goodness. Look at you.\n\nIt seems like only yesterday you were eight little troublemakers running through these halls.\n\nAnd now look at you! Distinguished gentlemen, beautiful ladies... well, most of you anyway."
+          "say": "Ah, there you all are!\n\nMy goodness, what a wonderful sight.\n\nEight old friends, reunited under one roof.\n\nIt seems like only yesterday you were running through these halls, causing all manner of trouble.\n\nAnd now look at you! Distinguished gentlemen, elegant ladies...\n\nWell, we've certainly made progress."
         },
         {
           "wait": 1200
         },
         {
-          "say": "Now, I imagine you're all rather eager to learn why you've been summoned to Hollowmere Manor.\n\nAs you know, your parents were the founding members of a rather exclusive society known as The Hollow Order.\n\nAnd before their passing, they entrusted me with one final responsibility.\n\nThe reading of their true and final will."
+          "say": "Now, I understand Sir Jonathan has invited you all here to celebrate his inheritance of Hollowmere Manor.\n\nA magnificent estate, indeed.\n\nAnd Jonathan, may I say, I'm sure you'll make a splendid master of the house.\n\nThough I do hope you'll finally have those dreadful carpets replaced."
         },
         {
-          "wait": 700
+          "wait": 1200
         },
         {
-          "say": "But, as I'm sure you remember, your parents were rather fond of their peculiar traditions.\n\nAnd this occasion is no exception!\n\nBefore the will can be unveiled, the Hollow Order requires that all eight heirs participate in the traditional Ceremony of the Covenant.\n\nYes, I'm afraid that means the robes."
+          "say": "But I'm afraid there's been a rather important detail left out of tonight's celebrations.\n\nYou see, Hollowmere Manor is merely a small part of what your parents left behind.\n\nYour four families were the founding members of a rather exclusive society known as The Hollow Order.\n\nAnd before their passing, they entrusted me with the reading of their true and final will.\n\nA will concerning not just this manor...\n\nBut a rather extraordinary fortune."
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "say": "Now, before we proceed, there is one small formality.\n\nYour parents were terribly fond of their traditions, and the Hollow Order was no exception.\n\nThe reading of the will requires all eight heirs to participate in the ancient Ceremony of the Covenant.\n\nWhich means...\n\nI'm afraid you'll have to put on the robes."
         },
         {
           "wait": 1000
         },
         {
-          "say": "Do put them on, won't you?\n\nI promise, you'll all look absolutely ridiculous.\n\nOnce everyone is properly dressed, we shall begin the reading of the will.\n\nAnd perhaps, at long last, discover what your dear parents have left you."
+          "say": "Yes, yes, I know. Quite ridiculous.\n\nBut your parents insisted, and who am I to argue with the wishes of the dearly departed?\n\nOnce you're all properly dressed, we'll proceed with the unveiling of your inheritance."
         },
         {
           "wait": 900
         },
         {
-          "say": "Come along, then. Let's not keep the dead waiting."
+          "say": "Come along, then!\n\nThere's a fortune waiting to be discussed, and I'd hate for you to miss it on account of a wardrobe change."
         },
         {
           "wait": 1200
         },
         {
           "show": "crest",
-          "text": "THE CEREMONY OF THE COVENANT — ALL HEIRS MUST DON THEIR ROBES."
+          "text": "THE CEREMONY OF THE COVENANT",
+          "sub": "All eight heirs must don their ceremonial robes before the reading of the will can begin."
         }
       ]
     },

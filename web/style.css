@@ -461,3 +461,5 @@ body.room-mode.blackout { background: #000; }
 .h-seq-money { color: var(--accent); font-size: clamp(3rem, 10vw, 9rem); letter-spacing: .04em; animation: h-fadein 2s ease both;
   text-shadow: 0 0 40px #d9a44166; }
 @keyframes h-glitch { 0% { transform: translateX(0); filter: none; } 50% { transform: translateX(-6px); filter: invert(.15); } 100% { transform: translateX(4px); } }
+.h-seq-sub { color: #d8c9b0; font-style: italic; font-size: clamp(1rem, 1.8vw, 1.7rem); max-width: 60vw; margin-top: 1.5vh;
+  animation: h-fadein 2.5s ease both; }
