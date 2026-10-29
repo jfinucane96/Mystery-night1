@@ -69,17 +69,21 @@ class Content(unittest.TestCase):
         self.assertEqual(hc.check(data), [])
         for culprit in data["order"]:
             case = hc.build(data, story, culprit)
-            # The public evidence by the bridge singles out the murderer on BOTH routes
-            for keys in (("feet", "sleeve", "scent"), ("hand", "side", "sigil")):
-                tell = {"boots": "studded with hobnails", "slippers": "without a single nail"}
-                words = [tell.get(v, data["words"][v]) for v in
-                         (data["by_id"][culprit]["traits"][k] for k in keys)]
-                public = " ".join(p["text"] for p in case["public"].values() if p["id"] not in ("nanny", "register"))
-                for w in words:
-                    self.assertIn(w, public, (culprit, w))
-            # Innocent witnesses only; the decoy is cleared by the medical evidence
-            self.assertNotIn(culprit, case["witnesses"].values())
+            # By the bridge, the public evidence names all three of the murderer's register marks,
+            # and those three marks fit nobody else
+            marks = [data["words"][data["by_id"][culprit]["traits"][k]] for k in hc.CLUE_TRAITS]
+            public = " ".join(p["text"] for p in case["public"].values() if p["id"] != "register")
+            for w in marks:
+                self.assertIn(w, public, (culprit, w))
+            fits = [c for c in data["order"] if all(data["by_id"][c]["traits"][k] == data["by_id"][culprit]["traits"][k]
+                                                     for k in hc.CLUE_TRAITS)]
+            self.assertEqual(fits, [culprit])
+            # The dagger witness is innocent; the decoy is cleared by the medical evidence
+            self.assertNotEqual(case["dagger_witness"], culprit)
             self.assertIn(data["by_id"][case["decoy"]]["traits"]["hand"], case["public"]["dagger_found"]["text"])
+            # The murderer's own phone knows why, and every phone has one childhood memory
+            self.assertIn(data["by_id"][culprit]["secret"]["title"], case["truth"]["why"])
+            self.assertTrue(all(len(m) == 1 for m in case["memories"].values()))
 
     def test_witness_network_is_one_to_one(self):
         data = hc.load()
@@ -203,8 +207,8 @@ class Evening(unittest.TestCase):
         self.step("poll_results")
         self.assertEqual(self.room()["polls"][0]["winners"], ["Griff"])
         self.step("covenant")
-        self.assertEqual(len(self.me("grant")["memories"]), 2)
-        self.assertEqual([e["title"] for e in self.me("grant")["evidence"]], ["What Silas revealed at the robing ceremony"])
+        self.assertEqual(len(self.me("grant")["memories"]), 1)
+        self.assertEqual([e["title"] for e in self.me("grant")["evidence"]], ["What Silas said when you arrived"])
         self.assertTrue(self.room()["screen"].startswith("THE CEREMONY OF THE COVENANT"))
         self.step("covenant2")
         self.step("ballot1")
@@ -242,11 +246,11 @@ class Evening(unittest.TestCase):
             if asker == "jonathan":
                 target, track, qid = "grant", "silas", "s1"
             elif asker == "griff":
-                target, track, qid = "taylor", "fire", "f4"         # breaks the protection deal
+                target, track, qid = "taylor", "silas", "s4"       # breaks the protection deal
             else:
                 k = order.index(asker)
                 target = next(order[(k + d) % 8] for d in range(1, 8) if order[(k + d) % 8] != "grant")
-                track, qid = "fire", f"f{k % 5 + 1}"
+                track, qid = "silas", f"s{k % 5 + 1}"
                 if not tried_reserved and asker != "grant":          # Jonathan's reserved question is off limits
                     self.act(asker, "interrogate", {"target": "grant", "track": "silas", "qid": "s1"}, 409)
                     tried_reserved = True
@@ -304,7 +308,7 @@ class Evening(unittest.TestCase):
             picks = [culprit] + [x for x in self.others(c, 4) if x != culprit][:2] if c != culprit else self.others(c)
             self.act(c, "ballot", {"kind": "suspicion", "round": 3, "picks": picks})
         self.step("bridge")
-        self.assertEqual(len(self.me("grant")["memories"]), 3)
+        self.assertEqual(len(self.me("grant")["memories"]), 1)
         self.step("wagers")
         self.act("grant", "wager", {"side": "guilty", "amount": 100_000})
         self.act("caroline", "wager", {"side": "not_guilty", "amount": 50_000_000}, 409)

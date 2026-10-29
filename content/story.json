@@ -8,7 +8,7 @@
   "background": [
     "Blackthorn Hollow, England. Autumn, 1892.",
     "Twenty-five years ago, eight children from four old families spent their summers together at Hollowmere Manor, running wild through its gardens, its library and the corridors their parents told them never to enter.",
-    "Those summers ended suddenly. During the last of them, a fire swept through the manor's east wing, and a child died in it: Eleanor Vale, twelve years old, the little sister of Silas, the under-footman, who still serves the four families today. The inquest called it a tragic accident. The east wing was sealed, the children were sent home, and nobody ever spoke of that night again.",
+    "Those summers ended suddenly. On the last night of the last summer, a fire swept through the manor's east wing, and a child died in it: Eleanor Vale, the little sister of Silas, the under-footman, who still serves the four families today. The inquest called it a tragic accident. The east wing was sealed, the children were sent home, and nobody ever spoke of that night again.",
     "The eight children grew up, and grew closer in other ways: four of them married the other four. Now Sir Jonathan Pemberwick has inherited Hollowmere from his great-uncle, Lord Edmund Hollowmere, and has invited his oldest friends back to the manor for the first time since that final summer, to celebrate, to reminisce, and to hear his plans for the estate's future.",
     "Formal evening dress is expected. Old friendships will be renewed. Old questions may be asked."
   ],
@@ -65,7 +65,7 @@
         "personality": "Charming, bold, persuasive and relentlessly optimistic; occasionally reckless.",
         "background": "You have recently inherited Hollowmere Manor from your great-uncle, Lord Edmund, and have invited your old friends back to reconnect and to consider restoring and developing the estate.",
         "how_met": "You turned up at the Ashford midsummer ball in 1884 without an invitation (yours, you insisted, had been lost in the post). Danielle recognised you at once from those Hollowmere summers, covered for you with her mother, and spent the rest of the night pretending not to be amused by you. Six months later you proposed in a box at Covent Garden. She said yes before you had finished the speech you had rehearsed for a week.",
-        "childhood_memory": "Hide-and-seek, summer 1867. You were folded inside the tall clock in the Long Gallery, the pendulum ticking against your ear, so pleased with yourself that nobody would ever find you.",
+        "childhood_memory": "You and Grant were wrestling over who got to hold the spirit board when somebody's elbow caught the candelabra. It went over onto the papers. You have always been certain it was Grant's elbow. You have never been entirely certain.",
         "motto": "Every great fortune begins with someone willing to take a risk.",
         "costume": "Tailored Victorian evening coat, waistcoat, pocket watch.",
         "photo": "/static/portraits/jonathan.webp"
@@ -122,7 +122,7 @@
         "personality": "Sophisticated, observant, composed and devastatingly polite.",
         "background": "You were raised among families that prized discretion and tradition. You manage society occasions, and sometimes the fallout from Jonathan's ambitions.",
         "how_met": "Jonathan Pemberwick appeared at your family's midsummer ball in 1884 without an invitation. You recognised him instantly, the same boy who once dared everyone to climb Hollowmere's bell tower, and you covered for him with your mother. Six months later he proposed at Covent Garden in the middle of a speech so long you said yes just to save the second act. Your mother, unusually, raised no objection at all.",
-        "childhood_memory": "You were under the billiard table, the felt above you smelling of chalk and cigars. Right above your head, through the old iron grate in the ceiling, you could hear the floorboards of the room upstairs.",
+        "childhood_memory": "Eleanor didn't want to go to the séance. You told her that if she refused, you would tell Silas she had stolen your hair ribbons. She came, crying. You have never told a soul why Eleanor was in that room that night.",
         "motto": "Good manners are simply the most elegant form of control.",
         "costume": "Elegant late-Victorian evening dress, gloves, understated jewellery.",
         "photo": "/static/portraits/danielle.webp"
@@ -179,7 +179,7 @@
         "personality": "Precise, competitive, arrogant in a charming way, and loyal to the friends he chooses.",
         "background": "You come from a family that kept the estate's boundaries, maps and routes. You believe you know Hollowmere far better than its new owner does.",
         "how_met": "In 1885 you attended Caroline's lecture at the Royal Botanic Society (not entirely by chance) and challenged her findings from the floor. She took your argument apart in front of two hundred people. You asked her to dinner to 'continue the discussion'. You have been continuing it ever since; you married the following spring.",
-        "childhood_memory": "You were the only child who knew about the passage behind the library shelves. You hid in the dark inside it, chalk in your pocket, marking the walls so you could find your way.",
+        "childhood_memory": "You were the only one who knew the secret passage behind the library, so you led everyone into the east wing. Then you wedged a chair under the records-room door so no grown-up could walk in on you. When the fire started, everyone fled down your passage in single file, in the dark. Eleanor was the smallest, and she was furthest from it.",
         "motto": "I am not arguing. I am explaining why you are mistaken.",
         "costume": "Structured Victorian suit, measuring tools or a rolled map.",
         "photo": "/static/portraits/grant.webp"
@@ -236,7 +236,7 @@
         "personality": "Independent, sharp-witted, curious and thoroughly unimpressed by pomp.",
         "background": "You spent your childhood afternoons in the manor's gardens and later pursued rare and unconventional botanical specimens.",
         "how_met": "In 1885 a pompous surveyor stood up at your Royal Botanic Society lecture and announced that your soil maps were wrong. It was Grant Blackthorne, the boy who used to trample your seedlings at Hollowmere. You took his argument apart in front of two hundred people, and he asked you to dinner to 'continue the discussion'. You said yes mostly so you could win. You married the following spring.",
-        "childhood_memory": "You hid in the conservatory, between the potted ferns, breathing in wet earth and orange blossom. Even then you noticed every smell in a room.",
+        "childhood_memory": "You smuggled a bottle of your father's surgical spirit into the séance, because Griff's book said it would make the candles burn blue. You poured it into a saucer on the desk. When the candles went over, the spirit went up in a sheet of flame. You were nine years old, and you knew exactly what was in that bottle.",
         "motto": "Nature is rarely cruel without a reason. People are another matter.",
         "costume": "Botanical brooch, dark green gown, pressed-flower notebook.",
         "photo": "/static/portraits/caroline.webp"
@@ -293,7 +293,7 @@
         "personality": "Charming, calculating, comfortable with risk and always alert to a deal.",
         "background": "You were raised to manage fortunes, and you have always been fascinated by the strange traditions attached to inherited wealth.",
         "how_met": "In 1886 Taylor held a charity auction for a children's hospital. You bid an outrageous sum for a truly dreadful painting of a horse, partly to impress her and partly because you cannot resist winning. She thanked you sweetly, then talked you into funding an entire new ward. You have never closed a worse deal, or a better one. You married the following summer.",
-        "childhood_memory": "You hid in the butler's pantry among the silver, holding a brass key you had taken from your father's study. You were very proud of having a key nobody else had.",
+        "childhood_memory": "You were the lookout at the far end of the passage. You saw the first flames, and you ran: not to the grown-ups, but to your own room, where you climbed into bed and pretended to be asleep. If you had shouted, the adults would have come five minutes sooner. You have done the arithmetic many times.",
         "motto": "Everything has a price. The trick is discovering who is willing to pay it.",
         "costume": "Rich waistcoat, signet ring, a ledger or an antique coin.",
         "photo": "/static/portraits/nanor.webp"
@@ -350,7 +350,7 @@
         "personality": "Warm, socially adept, principled but not naive.",
         "background": "You are known for supporting schools and hospitals, and you grew up hearing that wealth requires duty and sacrifice.",
         "how_met": "In 1886 you organised a charity auction for a children's hospital, and Nanor Ravenscroft bid a ridiculous sum for the worst painting in the room, a lopsided horse. Afterwards you persuaded him to fund a whole new ward as well. He still claims it was his idea. You married the following summer.",
-        "childhood_memory": "You were on the window seat behind the heavy blue curtains, knees tucked up, watching rain on the terrace and practising your best curtsey in the reflection.",
+        "childhood_memory": "You were the keeper of the candles. You lit every one of them, more than a dozen, crowded together on the old desk among the papers, because it looked so beautiful in the dark. Nanny had told you a hundred times never to leave a flame beside paper. You have always told yourself that someone else knocked them over, so it couldn't have been your fault.",
         "motto": "Wealth means very little if one has nothing worthwhile to do with it.",
         "costume": "Elegant jewel-toned gown, with a candle or charity-ribbon motif.",
         "photo": "/static/portraits/taylor.webp"
@@ -407,7 +407,7 @@
         "personality": "Eccentric, brilliant, dramatic, and wildly excitable about forgotten history.",
         "background": "You study ancient civilisations, hidden societies and unexplained events. Your family's records tie you to Blackthorn Hollow.",
         "how_met": "In 1887, in a gallery of the British Museum, you were explaining (loudly) to a small crowd why a carved stone was a genuine Druidic relic. A woman in the crowd calmly informed you it was a forgery from the 1840s. It was Grace Sinclair, whom you had last seen hiding from you in Hollowmere's library. You argued for three hours. The next morning you returned with flowers and a twelve-page rebuttal. She read both. You married the following year.",
-        "childhood_memory": "You hid inside the great copper in the laundry, lid on, hugging your knees, keeping a notebook even then: 'Eight o'clock. Very dark. Smells of soap.'",
+        "childhood_memory": "The night of the fire was your idea. You had read about a séance in one of your father's forbidden books, and you dared the others to hold one in the locked records room of the east wing. When little Eleanor Vale said she was frightened, you called her a baby until she came along. You have spent twenty-five years telling yourself it was only a game.",
         "motto": "The absence of evidence is often merely evidence that someone has hidden it.",
         "costume": "Tweed Victorian suit, spectacles, notebook, an old book.",
         "photo": "/static/portraits/griff.webp"
@@ -464,7 +464,7 @@
         "personality": "Practical, sceptical, independent and quietly observant.",
         "background": "You are an expert in authenticating rare artefacts, and you much prefer physical proof to your husband's dramatic supernatural theories.",
         "how_met": "In 1887 you were consulting at the British Museum when a man in tweed began lecturing a crowd about a 'genuine Druidic relic'. You informed him it was an 1840s forgery. It was Griffin Wraithmore, the boy who once chased you round Hollowmere's library with a 'cursed' book. You argued for three hours. He came back the next morning with flowers and a twelve-page rebuttal. The rebuttal was wrong; the flowers were lovely. You married the following year.",
-        "childhood_memory": "You hid in the linen cupboard at the top of the east stair, among the folded sheets, so close to the records room that you could hear its door rattle in the draught.",
+        "childhood_memory": "You were the last one into the passage. Behind you, through the smoke, you heard Eleanor calling your name. You did not go back. Afterwards you told everyone the room was already full of fire. It wasn't.",
         "motto": "Extraordinary claims are considerably more interesting when accompanied by proof.",
         "costume": "Refined Victorian dress, cameo, a magnifying glass or an artefact sketch.",
         "photo": "/static/portraits/grace.webp"

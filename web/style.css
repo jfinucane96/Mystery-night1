@@ -454,3 +454,10 @@ body.room-mode.blackout { background: #000; }
 @keyframes h-flicker { 0%, 47%, 49%, 73%, 100% { opacity: .7; } 48% { opacity: .25; } 72% { opacity: .5; } }
 @keyframes h-burn { from { opacity: .75; transform: scale(1); } to { opacity: 1; transform: scale(1.015); } }
 @keyframes h-fadein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+.h-seq.warm { background: radial-gradient(ellipse at 50% 40%, #6b4a22 0%, #2a1a0c 55%, #0d0805 100%); }
+.h-seq.warm .h-seq-name { color: #e9c98d; opacity: .85; animation: none; }
+.h-seq.glitch { background: #050307; animation: h-glitch .25s steps(2) infinite; }
+.h-seq-money { color: var(--accent); font-size: clamp(3rem, 10vw, 9rem); letter-spacing: .04em; animation: h-fadein 2s ease both;
+  text-shadow: 0 0 40px #d9a44166; }
+@keyframes h-glitch { 0% { transform: translateX(0); filter: none; } 50% { transform: translateX(-6px); filter: invert(.15); } 100% { transform: translateX(4px); } }

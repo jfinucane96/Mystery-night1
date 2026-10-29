@@ -59,7 +59,7 @@ async function hAct(action, body, clear = []) {
 
 const H_SECTIONS = {
   dossier: { title: "My Dossier", blurb: "Who you are, your secret, what you saw" },
-  memories: { title: "Memories of 1867", blurb: "What you remember of the fire" },
+  memories: { title: "The Night Eleanor Died", blurb: "Your part in the fire of 1867" },
   evidence: { title: "Evidence", blurb: "Everything the Order has made public" },
   deals: { title: "Deals & Ledger", blurb: "Your offers, promises and payments" },
   clues: { title: "Private Intelligence", blurb: "What your family's investigation found" },
@@ -207,7 +207,6 @@ function dealForm(h, a) {
   if (kind === "force") {
     const track = draft("dtrack", "silas");
     extra.push(el("label", { class: "h-field" }, el("span", {}, "They must question"), select("dtarget", [[h.me, "Me"], ...everyone].filter(([v]) => v !== draft("drec")), "Choose…")),
-      el("label", { class: "h-field" }, el("span", {}, "About"), select("dtrack", [["fire", "Eleanor's Fire"], ["silas", "Silas's Murder"]], "Choose…", "silas")),
       el("label", { class: "h-field" }, el("span", {}, "Asking"), select("dqid", a.questions[track].map((q) => [q.id, q.text]), "Choose…")));
     Object.assign(terms, { target: draft("dtarget"), track, qid: draft("dqid") });
   }
@@ -257,7 +256,6 @@ function interrogationAction(h, a) {
     out.push(el("div", { class: "h-turn" },
       el("p", { class: "eyebrow" }, "Your turn to interrogate"),
       el("label", { class: "h-field" }, el("span", {}, "Who"), select("itarget", h.others.map((o) => [o.id, o.name]), "Choose…")),
-      el("label", { class: "h-field" }, el("span", {}, "Which mystery"), select("itrack", [["fire", "Eleanor's Fire (1867)"], ["silas", "Silas's Murder (tonight)"]], "Choose…", "silas")),
       el("label", { class: "h-field" }, el("span", {}, "Question"), select("iqid", qs.map((q) => [q.id, q.text]), "Choose…")),
       el("button", { class: "wide", disabled: !target || !draft("iqid") || hBusy,
         onclick: () => hAct("interrogate", { target, track, qid: draft("iqid") }, ["itarget", "iqid"]) }, "Ask, out loud")));
@@ -346,7 +344,7 @@ function hollowDossier(h) {
     d.truth && el("section", { class: "card h-truth" },
       el("h2", {}, "You are the murderer"),
       el("p", { class: "note" }, "Only you can see this. Never show this screen to anyone."),
-      el("h3", {}, "1867"), el("p", {}, d.truth.fire),
+      el("h3", {}, "Why"), el("p", {}, d.truth.why),
       el("h3", {}, "Tonight"), el("p", {}, d.truth.tonight),
       el("h3", {}, "Your story"), el("p", {}, d.truth.cover),
       el("p", {}, el("strong", {}, d.truth.goal)),
@@ -381,16 +379,14 @@ function hollowDossier(h) {
       el("p", { class: "small muted" }, "Reveal it, hide it, or sell it. Your choice.")),
     h.blackout && el("section", { class: "card" }, el("h2", {}, "In the blackout"), el("p", {}, h.blackout)),
     el("section", { class: "card" }, el("h2", {}, "Your marks"),
-      el("p", { class: "small" }, `1867, on Nanny Pruitt's list: ${d.traits_1867.feet}, ${d.traits_1867.sleeve} sleeves, ${d.traits_1867.scent}.`),
       el("p", { class: "small" }, `Tonight, in the Covenant register: ${d.traits_1892.hand}-handed, ${d.traits_1892.side} arc, ${d.traits_1892.sigil} sigil.`)),
   ];
 }
 
 function hollowMemories(h) {
-  if (!h.memories.length) return el("section", { class: "card" }, el("p", { class: "muted" }, "Your memories of 1867 return during the evening."));
   return [
-    el("p", { class: "muted small" }, "Memories come back during the evening. They're honest, but a child's view: incomplete."),
-    h.memories.map((m, i) => el("section", { class: "card" }, el("p", { class: "eyebrow" }, `Memory ${i + 1}`), el("p", {}, m))),
+    el("p", { class: "muted small" }, "Summer, 1867. Eleanor Vale's death was ruled an accident, and it was one. But every one of you played a part, and Silas blames you all. This is yours. Share it, hide it, or rewrite it: it's up to you."),
+    h.memories.map((m) => el("section", { class: "card" }, el("p", {}, m))),
   ];
 }
 
@@ -490,6 +486,7 @@ function hollowAnnounce(view, e) {
   if (e.kind === "step") {
     if (e.step !== view.step) return;
     stopSpeaking();                    // a new step cuts off whatever the last one was saying
+    droneOff();
     if (e.step === "blackout") { strikeLightning(true); if (audioCtx) thunder(0, 5, 1); return; }
     if (view.sequence) return runSequence(view);
     const sound = e.step === "murder" ? "murder" : (["ghost", "revelations", "bridge"].includes(e.step) ? "ghost" : "phase");
@@ -563,13 +560,14 @@ function seqShow(view, item) {
   const kind = item.show;
   layer.className = `h-seq ${kind}`;
   const kids = [];
-  if (kind === "shadow") kids.push(el("p", { class: "h-seq-name" }, "Silas Vale"));
+  if (kind === "shadow" || kind === "warm" || kind === "glitch") kids.push(el("p", { class: "h-seq-name" }, "Silas Vale"));
+  if (kind === "money") kids.push(el("p", { class: "h-seq-money" }, "£12,000,000"));
   if (kind === "fire") kids.push(el("img", { class: "h-seq-fire", src: "/static/mansion.webp", alt: "" }));
   if (kind === "portraits") {
     kids.push(el("div", { class: "h-seq-portraits" }, (view.portraits || []).map((p) => el("figure", {},
       p.photo ? el("img", { src: p.photo, alt: p.name }) : el("div", { class: "portrait placeholder" }),
       el("figcaption", {}, p.name)))));
-    kids.push(el("p", { class: "h-seq-line" }, "One of you eight killed my sister."));
+    if (item.text) kids.push(el("p", { class: "h-seq-line" }, item.text));
   }
   if (kind === "crest") kids.push(crest(), item.text && el("p", { class: "h-seq-text" }, item.text));
   layer.replaceChildren(...kids.filter(Boolean));
@@ -632,7 +630,50 @@ function noise(seconds, filterHz, volume, shape) {
   src.start();
 }
 
+// Low, ominous music under the second half of the Covenant: two detuned low notes through a slowly
+// breathing filter. Stopped by "drone_off" or by any change of step.
+let drone = null;
+
+function droneOn() {
+  if (drone || !audioCtx) return;
+  const gain = audioCtx.createGain();
+  gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.09, audioCtx.currentTime + 4);
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = "lowpass";
+  filter.frequency.value = 260;
+  const lfo = audioCtx.createOscillator();
+  const lfoGain = audioCtx.createGain();
+  lfo.frequency.value = 0.08;
+  lfoGain.gain.value = 120;
+  lfo.connect(lfoGain).connect(filter.frequency);
+  const oscs = [55, 55.6, 82.4].map((f) => {
+    const o = audioCtx.createOscillator();
+    o.type = "sawtooth";
+    o.frequency.value = f;
+    o.connect(filter);
+    o.start();
+    return o;
+  });
+  filter.connect(gain).connect(audioCtx.destination);
+  lfo.start();
+  drone = { gain, oscs: [...oscs, lfo] };
+}
+
+function droneOff() {
+  if (!drone || !audioCtx) return;
+  const { gain, oscs } = drone;
+  drone = null;
+  const t = audioCtx.currentTime;
+  gain.gain.cancelScheduledValues(t);
+  gain.gain.setValueAtTime(Math.max(gain.gain.value, 0.0001), t);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t + 2.5);
+  oscs.forEach((o) => o.stop(t + 2.6));
+}
+
 const SFX = {
+  drone_on: droneOn,
+  drone_off: droneOff,
   rumble: () => thunder(0, 6, 0.7),
   fire: () => {                          // crackling: a low roar with random pops
     noise(4, 900, 0.25, (t) => Math.min(1, t * 4) * (1 - t));
