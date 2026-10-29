@@ -1015,7 +1015,8 @@
     },
     "ballot1": {
       "title": "The First Inheritance Ballot",
-      "text": "Rank three fellow guests on your phone. Not yourself. Not your spouse. Last place inherits nothing."
+      "screen": "Round 1 of 4. Rank three fellow guests on your phone: not yourself, not your spouse. Every round adds to a running total, and the final total decides the inheritance.",
+      "silas": "Oh, and one more thing.\n\nThis is only the first round.\n\nThere will be several more votes as the evening unfolds, and every one of them is added to a running total.\n\nSo if your family finds itself at the bottom tonight... there is still time.\n\nAnd if you find yourselves at the top...\n\nI wouldn't get too comfortable.\n\nCast your votes."
     },
     "blackout": {
       "title": "",

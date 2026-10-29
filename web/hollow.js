@@ -123,6 +123,7 @@ function ballotLabel(b) {
       "Rank three fellow guests by who most deserves the fortune. Not yourself, and not your spouse.",
       "Your 1st choice gets 3 points, 2nd gets 2, 3rd gets 1. Each family's points (both spouses together) decide its share.",
       "The family in last place inherits nothing; the other three split the £12 million by points. Suspicion votes later in the night take points away.",
+      `This is round ${b.round} of 4. Every round adds to a running total, so the standings can change all night; the final total decides the inheritance.`,
       "Your vote is secret, and you can change it until the host closes the ballot."] }
     : { title: `Suspicion ballot ${b.round}`, note: "Rank your three prime suspects in Silas's murder. Every point of suspicion costs the accused one point of influence." };
 }
