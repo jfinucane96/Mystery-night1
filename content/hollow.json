@@ -970,7 +970,8 @@
     "reunion": {
       "title": "The Reunion",
       "text": "Welcome to Hollowmere. Each guest, in turn, introduce yourself to the room.",
-      "silas": "Good evening, my lords, my ladies. Coats to me, quarrels to Sir Jonathan. Dinner is at nine, the sherry is now, and the east wing is still haunted, so I'd stay out of it."
+      "silas": "Good evening, my lords, my ladies. Coats to me, quarrels to Sir Jonathan. Dinner is at nine, the sherry is now, and the east wing is still haunted, so I'd stay out of it.",
+      "screen": "Welcome to Hollowmere. Introduce yourselves."
     },
     "polls": {
       "title": "Who's Most Likely To…?",
@@ -983,7 +984,8 @@
     "covenant": {
       "title": "The Covenant",
       "text": "Robes on. The lights dim. Silas Vale steps to the altar, and he is no longer a servant.",
-      "silas": "Twenty-five years ago my sister Eleanor burned to death in the east wing of this house. You were told it was an accident. It was not. One of you was in that room with her. I have the records your parents buried. I know what each of you has done since. Hollowmere's twelve million pounds will be shared tonight by three families. The fourth, the family of the guilty, will receive nothing. The doors are locked. Judge each other. Or I will judge you all."
+      "silas": "Twenty-five years ago my sister Eleanor burned to death in the east wing of this house. You were told it was an accident. It was not. One of you was in that room with her. I have the records your parents buried. I know what each of you has done since. Hollowmere's twelve million pounds will be shared tonight by three families. The fourth, the family of the guilty, will receive nothing. The doors are locked. Judge each other. Or I will judge you all.",
+      "screen": "Robes on. Silas Vale is no longer a servant."
     },
     "ballot1": {
       "title": "The First Inheritance Ballot",
@@ -999,7 +1001,8 @@
     },
     "ghost": {
       "title": "Death does not release you from the Covenant",
-      "silas": "Did you think a blade would end it? I am still here. I am in the walls and the wires and the glass. The Covenant stands. Find the one who killed my sister, and me. I will be watching."
+      "silas": "Did you think a blade would end it? I am still here. I am in the walls and the wires and the glass. The Covenant stands. Find the one who killed my sister, and me. I will be watching.",
+      "screen": "Silas has returned."
     },
     "ballots2": {
       "title": "Inheritance and Suspicion",
@@ -1027,7 +1030,8 @@
     },
     "revelations": {
       "title": "Silas's Revenge",
-      "silas": "You lied to me. Some of you, a great deal. You also paid each other. Let us see who."
+      "silas": "You lied to me. Some of you, a great deal. You also paid each other. Let us see who.",
+      "screen": "Silas has seen everything."
     },
     "confront": {
       "title": "Confrontation",
@@ -1051,7 +1055,8 @@
     },
     "bridge": {
       "title": "The Ghost Remembers",
-      "silas": "I cannot tell you who. The dead are not permitted. But I can show you what my sister saw, and what my hand closed on as I fell."
+      "silas": "I cannot tell you who. The dead are not permitted. But I can show you what my sister saw, and what my hand closed on as I fell.",
+      "screen": "The ghost remembers."
     },
     "wagers": {
       "title": "The Devil's Wager",

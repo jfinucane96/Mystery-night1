@@ -486,7 +486,8 @@ function hollowAnnounce(view, e) {
     if (e.step === "blackout") { strikeLightning(true); if (audioCtx) thunder(0, 5, 1); return; }
     const sound = e.step === "murder" ? "murder" : (["ghost", "revelations", "bridge"].includes(e.step) ? "ghost" : "phase");
     const spoken = [view.title, view.silas || view.text].filter(Boolean);
-    if (spoken.length) announce(sound, spoken, { title: view.title, text: view.silas ? `“${view.silas}”` : view.text });
+    // Read the full script aloud; show only the short screen line
+    if (spoken.length) announce(sound, spoken, { title: view.title, text: view.screen || view.text });
   } else if (e.kind === "question" || e.kind === "answer") {
     const r = (view.interrogation || { log: [] }).log.find((x) => x.turn === e.turn);
     if (!r) return;
@@ -564,14 +565,13 @@ function renderHollowTv(v) {
       el("p", {}, `Disinherited: ${r.eliminated}`),
       board("The Inheritance", r.payouts.map((p) => el("li", {}, `${p.name}: ${money(p.amount)}`))))));
   }
-  if (v.evidence && v.evidence.length && !v.reveal) {
-    main.push(el("div", { class: "h-evidence-row" }, v.evidence.map((e) => el("div", { class: "h-card" }, el("h3", {}, e.title),
-      e.text.split("\n").map((line) => el("p", {}, line))))));
+  if (v.evidence && v.evidence.length && !v.reveal) {          // the evidence itself lives on the phones
+    main.push(el("p", { class: "h-note" }, `New evidence on your phones: ${v.evidence.map((e) => e.title).join(" · ")}`));
   }
   parts.push(el("div", { class: "h-main" },
     el("p", { class: "h-phase" }, v.phase),
     v.title && el("h1", {}, v.title),
-    v.text && el("p", {}, v.text),
+    (v.screen || v.text) && el("p", {}, v.screen || v.text),
     hTimer(v.timer_end),
     main));
   if ((b.families || b.suspicion) && !v.reveal) {

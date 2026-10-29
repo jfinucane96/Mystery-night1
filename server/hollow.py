@@ -676,6 +676,7 @@ def room_view(t, data, story):
     view = {
         "step": step, "phase": hc.PHASE_NAMES[hc.PHASE_OF[step]], "step_name": hc.STEP_NAME[step],
         "title": script.get("title", ""), "text": script.get("text", ""), "silas": script.get("silas", ""),
+        "screen": script.get("screen", ""),          # what the TV shows while it reads `silas` aloud
         "timer_end": s["timer_end"], "paused": bool(s["paused"]),
         "boards": _boards(t, data, story) if hc.reached(step, "ballot1") and step not in ("blackout",) else {},
         "events": [{"seq": e["seq"], "kind": e["kind"], **json.loads(e["data"])}
