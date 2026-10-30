@@ -1930,12 +1930,12 @@ function strikeLightning(strong = false) {
   if (strong) setTimeout(() => drawBolt(bolt), 220);
   // Thunder follows the flash; skip it while the voice is talking so announcements stay clear
   if (roomSoundOn && !strong && !speaking) {
-    setTimeout(() => { if (!speaking) rumble(0.7 + Math.random() * 0.5); }, 600 + Math.random() * 1500);
+    setTimeout(() => { if (!speaking) rumble(0.2 + Math.random() * 0.15); }, 600 + Math.random() * 1500);   // distant: background only
   }
 }
 
 function scheduleLightning() {
-  setTimeout(() => { strikeLightning(); scheduleLightning(); }, 9000 + Math.random() * 14000);
+  setTimeout(() => { strikeLightning(); scheduleLightning(); }, 18000 + Math.random() * 20000);
 }
 
 function rumble(volume) {
