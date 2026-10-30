@@ -30,7 +30,8 @@ STEPS = [
     ("murder", 3, "Lights up: Silas is dead"),
     ("ghost", 3, "The ghost returns"),
     ("ballots2", 3, "Inheritance ballot 2 + suspicion ballot 1"),
-    ("deals", 4, "First deal window"),
+    ("deals_intro", 4, "Silas explains the deals"),
+    ("deals", 4, "First deal window (offers open)"),
     ("interrogations", 4, "Public interrogations"),
     ("investigations", 4, "Private investigations"),
     ("bribes4", 4, "Inheritance bribes"),
@@ -51,7 +52,7 @@ PLAN_MINUTES = {
     "lobby": 0, "reunion": 15, "polls": 8, "poll_results": 5,
     "covenant": 5, "covenant2": 6, "envelopes": 4, "covenant3": 4, "ballot1": 3,
     "blackout": 2, "murder": 12, "ghost": 4, "ballots2": 6,
-    "deals": 8, "interrogations": 20, "investigations": 10, "bribes4": 4, "ballots3": 4,
+    "deals_intro": 3, "deals": 7, "interrogations": 20, "investigations": 10, "bribes4": 4, "ballots3": 4,
     "revelations": 6, "confront": 5, "temptation": 5, "ballot4": 3, "hotseat": 10, "suspicion3": 3, "bridge": 4,
     "wagers": 5, "verdict": 6, "reveal": 10,
 }

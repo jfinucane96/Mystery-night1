@@ -231,6 +231,8 @@ class Evening(unittest.TestCase):
         for c in order:
             self.act(c, "ballot", {"kind": "inheritance", "round": 2, "picks": self.heirs(c)})
             self.act(c, "ballot", {"kind": "suspicion", "round": 1, "picks": self.others(c)[::-1]})
+        self.step("deals_intro")
+        self.act("taylor", "offer", {"kind": "protect", "recipient": "griff", "amount": 500_000}, 409)   # not open yet
         self.step("deals")
         boards = self.room()["boards"]
         self.assertEqual(len(boards["families"]), 4)
