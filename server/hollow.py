@@ -501,7 +501,7 @@ def investigate(t, data, cid, target, category):
     _require_step(t, "investigations")
     fam = data["family_of"][cid]
     if t.one("SELECT family FROM h_investigations WHERE family = ?", (fam,)):
-        raise GameError(409, "Your family has already used its investigation.")
+        raise GameError(409, "Your couple has already asked its private question.")
     if target not in players(t, data) or data["family_of"][target] == fam:
         raise GameError(400, "Choose a guest from another family.")
     if category not in {c["id"] for c in data["categories"]}:
