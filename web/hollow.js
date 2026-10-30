@@ -87,7 +87,7 @@ const H_SECTIONS = {
   dossier: { title: "My Dossier", blurb: "Who you are, your secret, what you saw" },
   memories: { title: "The Night Eleanor Died", blurb: "Your part in the fire of 1867" },
   evidence: { title: "Evidence", blurb: "Everything the Order has made public" },
-  deals: { title: "Deals & Ledger", blurb: "Your offers, promises and payments" },
+  deals: { title: "Deals & Ledger", blurb: "Your offers, deals and payments" },
   clues: { title: "Private Intelligence", blurb: "What your family's investigation found" },
 };
 
@@ -250,7 +250,15 @@ function dealForm(h, a) {
   }
   const incoming = h.deals.filter((d) => !d.mine && d.status === "offered");
   return [
-    el("p", { class: "small muted" }, `Your family can still promise up to ${money(h.available)}. Promises can be broken; the app checks afterwards.`),
+    el("p", { class: "small muted" }, `Your family can still offer up to ${money(h.available)}. An accepted offer can still be broken; Silas checks afterwards and only honoured deals are paid.`),
+    el("details", { class: "small" }, el("summary", {}, "How deals work"),
+      el("ul", {},
+        el("li", {}, "Offer money to a guest from another family. They accept or reject. Only the two of you see the terms."),
+        el("li", {}, "Protect me / Protect us: they promise not to interrogate you (and your spouse)."),
+        el("li", {}, "Force an interrogation: they promise to ask the guest and question you choose."),
+        el("li", {}, "You can only offer what your family stands to inherit right now."),
+        el("li", {}, "Nothing is paid until the end of the night, and only if they keep their word."),
+        el("li", {}, "If either family is disinherited, the deal is void and the payer keeps the money."))),
     incoming.length > 0 && el("div", { class: "h-offers" }, el("h3", {}, "Offers to you"),
       incoming.map((d) => el("div", { class: "h-offer" },
         el("p", {}, d.summary, " ", el("strong", {}, money(d.amount))),

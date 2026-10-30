@@ -1208,7 +1208,92 @@
     },
     "deals": {
       "title": "The Dinner of Deception",
-      "text": "The first deals may now be struck. Pay for protection, or pay to force a question. Every promise can be broken."
+      "screen": "The deal window is open. Make, accept or reject offers on your phone before the interrogations begin.",
+      "sequence": [
+        {
+          "show": "ghost"
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "Dinner is served.\n\nAnd with it, I think, a little commerce."
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "Soon you will interrogate one another, one at a time, in front of everyone.\n\nBut before the questions begin, you may make offers.\n\nPrivately. On your phones. Between any two of you, from different families."
+        },
+        {
+          "wait": 800
+        },
+        {
+          "show": "card",
+          "title": "What you can offer",
+          "items": [
+            "Protect me: pay someone not to interrogate you",
+            "Protect us: pay someone not to interrogate you or your spouse",
+            "Force an interrogation: pay someone to ask a chosen guest a chosen question",
+            "They accept or reject. Only the two of you ever see the terms."
+          ]
+        },
+        {
+          "say": "You may pay a guest not to interrogate you.\n\nOr not to interrogate you, or your spouse.\n\nOr you may pay a guest to interrogate someone else, with the exact question of your choosing.\n\nThey may accept your offer, or refuse it."
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "show": "card",
+          "title": "How the money works",
+          "items": [
+            "You can only offer what your family stands to inherit right now",
+            "Payments come out of your family's share and go to theirs, at the end of the night",
+            "A promise can be broken. Silas checks: only honoured deals are paid",
+            "If either family is disinherited, the deal is void and the payer keeps the money"
+          ],
+          "warn": 3
+        },
+        {
+          "say": "The money comes from your family's share of the inheritance, and it goes to theirs.\n\nYou may only offer what your family stands to inherit at this moment. No more."
+        },
+        {
+          "wait": 800
+        },
+        {
+          "say": "Nothing is paid until the end of the night.\n\nAnd a promise, as you all know, can be broken.\n\nI shall be watching. If your partner keeps their word, they are paid. If they break it... they get nothing, and you keep your money."
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "One more thing.\n\nIf either family is disinherited at the end of the night, every deal between them is void.\n\nThe family that offered keeps its money. The family that took it... loses it.\n\nSo do think twice before you take money from a family that may not survive the evening."
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "show": "ghost"
+        },
+        {
+          "say": "There will be more chances to bargain later. For inheritance votes, and for silence.\n\nBut never for a murder vote. Even I have standards."
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "And later tonight, I shall reveal exactly how much each of you paid... and how much each of you received.\n\nNot to whom. Just how much.\n\nSpend wisely."
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "show": "notice",
+          "text": "The deal window is open.",
+          "sub": "Make, accept or reject offers on your phone before the interrogations begin."
+        }
+      ]
     },
     "interrogations": {
       "title": "The Order's Inquisition",

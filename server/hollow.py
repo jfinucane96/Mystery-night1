@@ -326,7 +326,7 @@ def _check_amount(t, data, cid, amount):
     if not isinstance(amount, int) or amount <= 0 or amount % step or amount > MAX_AMOUNT:
         raise GameError(400, f"Amounts are in steps of £{step:,}.")
     if data["game"]["rules"]["cap_offers_to_projection"] and amount > available(t, data, cid):
-        raise GameError(409, f"Your family can only promise up to £{available(t, data, cid):,} right now.")
+        raise GameError(409, f"Your family can only offer up to £{available(t, data, cid):,} right now.")
 
 
 # ---------------------------------------------------------------- deals
