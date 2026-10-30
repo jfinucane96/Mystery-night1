@@ -47,7 +47,7 @@
     {
       "id": "jonathan",
       "family": "pemberwick",
-      "intro": "Ladies and gentlemen, welcome to Hollowmere! Yes, it is mine. Yes, all of it, including the damp. I am Sir Jonathan Reginald Pemberwick, property investor, visionary, and as of this spring the owner of forty-one bedrooms, nine of which still have roofs. Tonight I have gathered my oldest friends to celebrate the Order our families founded, and to announce the estate covenant: twelve million pounds, to be shared among us. Don't thank me. Well, do, a little. As your host I naturally have the final word on everything, which my wife assures me is not how marriage works. This, by the way, is the key to the chapel: heavy iron, on its chain. As master of the house I never let it out of my sight.",
+      "intro": "Ladies and gentlemen, welcome to Hollowmere! Yes, it is mine. Yes, all of it, including the damp. I am Sir Jonathan Reginald Pemberwick, property investor, visionary, and as of this spring the owner of forty-one bedrooms, nine of which still have roofs. Tonight I have gathered my oldest friends to celebrate the Order our families founded, and to announce the estate covenant: twelve million pounds, to be shared among us. Don't thank me. Well, do, a little. As your host I naturally have the final word on everything, which my wife assures me is not how marriage works. This, by the way, is the key to the wine cellar: heavy iron, on its chain. As master of the house I never let it out of my sight.",
       "secret": {
         "title": "The Hidden Will",
         "text": "When your great-uncle died, you found a later will among his papers leaving Hollowmere's farms to your cousin Thomas Pemberwick. You burned it. The older will stood, the estate came to you whole, and Thomas emigrated to Canada with nothing.",
@@ -87,9 +87,9 @@
       "blackout": "The thunder shook the floor under your feet. In the dark you heard Silas begin a word, 'Wh-', and then a dull, heavy sound, like a sack set down hard.",
       "last_word": "Silas favoured you as a boy. Tonight you found out he was planning to put you on trial.",
       "item": {
-        "name": "the heavy iron key to the chapel, on its chain",
-        "short": "chapel key",
-        "owner": "Sir Jonathan's chapel key",
+        "name": "the heavy iron key to the wine cellar, on its chain",
+        "short": "cellar key",
+        "owner": "Sir Jonathan's wine-cellar key",
         "group": "swung"
       }
     },
@@ -170,7 +170,7 @@
           "lie": "Everyone. I'm very hard to miss."
         },
         "s3": {
-          "truth": "He asked whether I'd ever found the old plans of the chapel passage. Odd question. I said no.",
+          "truth": "He asked whether I'd ever found the old plans of the secret passage behind the library. Odd question. I said no.",
           "lie": "We spoke about the weather. It was going to storm."
         },
         "s4": {
@@ -490,35 +490,35 @@
   "cases": {
     "jonathan": {
       "decoy": "nanor",
-      "hidden": "inside the chapel's collection box"
+      "hidden": "behind the grandfather clock in the Great Hall"
     },
     "danielle": {
       "decoy": "taylor",
-      "hidden": "rolled inside the altar cloth"
+      "hidden": "inside the piano in the Drawing Room"
     },
     "grant": {
       "decoy": "griff",
-      "hidden": "behind the organ pipes"
+      "hidden": "in the coal scuttle by the Great Hall fireplace"
     },
     "caroline": {
       "decoy": "grace",
-      "hidden": "in the soil of the chapel's potted lilies"
+      "hidden": "in a flowerpot on the Great Hall windowsill"
     },
     "nanor": {
       "decoy": "jonathan",
-      "hidden": "in the umbrella stand by the chapel door"
+      "hidden": "in the umbrella stand by the front door"
     },
     "taylor": {
       "decoy": "danielle",
-      "hidden": "pushed into a hassock on the front pew"
+      "hidden": "under a sofa cushion in the Drawing Room"
     },
     "griff": {
       "decoy": "grant",
-      "hidden": "under the loose flagstone by the font"
+      "hidden": "in the log basket by the Great Hall fireplace"
     },
     "grace": {
       "decoy": "caroline",
-      "hidden": "in the empty reliquary on the side altar"
+      "hidden": "inside a vase on the Great Hall mantelpiece"
     }
   },
   "polls": [
@@ -622,12 +622,12 @@
     "dagger_stand": {
       "phase": "murder",
       "title": "The ceremonial dagger",
-      "text": "Photographed on its stand beside the altar at two minutes past nine. Fourteen inches, broad ceremonial blade."
+      "text": "Photographed on its stand in the Great Hall at two minutes past nine. Fourteen inches, broad ceremonial blade."
     },
     "scene": {
       "phase": "murder",
       "title": "The scene",
-      "text": "When the lights returned, Silas Vale lay dead at the foot of the altar. The ceremonial dagger was gone from its stand. Everyone was where they had been standing before the lights went out. Or said they were."
+      "text": "When the lights returned, Silas Vale lay dead in the Great Hall, beside the ceremony table. The ceremonial dagger was gone from its stand. Everyone says they were somewhere else in the house."
     },
     "instructions": {
       "phase": "murder",
@@ -1019,7 +1019,7 @@
     },
     "murder": {
       "title": "Silas Vale Is Dead",
-      "text": "When the lights returned, Silas Vale lay dead at the foot of the altar. The ceremonial dagger is missing.",
+      "text": "When the lights returned, Silas Vale lay dead in the Great Hall. The ceremonial dagger is missing.",
       "silent": true
     },
     "ghost": {

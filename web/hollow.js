@@ -102,6 +102,34 @@ function nameOf(h, id) {
   return o ? o.name : id;
 }
 
+// The murderer is told once, discreetly, when the lights go out: a plain "private message"
+// that only shows its contents when tapped, and never appears again once acknowledged.
+let killerStage = "sealed";
+
+function killerAcked() {
+  try { return localStorage.getItem(`hollow-told-${KEY.slice(0, 12)}`) === "1"; } catch { return killerStage === "done"; }
+}
+
+function killerAlert(h) {
+  if (!h.killer_alert || killerAcked() || killerStage === "done") return null;
+  if (killerStage === "sealed") {
+    return el("div", { class: "overlay h-private" }, el("div", { class: "overlay-inner" },
+      el("p", { class: "eyebrow" }, "A private message"),
+      el("p", {}, "Make sure nobody can see your screen before you open it."),
+      el("button", { class: "wide", onclick: () => { killerStage = "open"; redrawQuietly(renderGuest); } }, "Open")));
+  }
+  return el("div", { class: "overlay h-private" }, el("div", { class: "overlay-inner" },
+    el("h1", {}, "You killed Silas."),
+    el("p", {}, "It happened in the Great Hall, while the lights were out. Silas was alone there; everyone else was elsewhere in the house."),
+    el("p", {}, h.dossier.truth.cover),
+    el("p", { class: "small muted" }, "The full details are in your dossier. This message will not appear again."),
+    el("button", { class: "wide", onclick: () => {
+      killerStage = "done";
+      try { localStorage.setItem(`hollow-told-${KEY.slice(0, 12)}`, "1"); } catch { /* fine */ }
+      redrawQuietly(renderGuest);
+    } }, "I understand")));
+}
+
 function renderHollowGuest() {
   const h = me.hollow;
   const c = me.character;
@@ -118,6 +146,7 @@ function renderHollowGuest() {
       el("a", { class: "back", href: "#" }, "‹ Menu"),
       el("h1", { class: "screen-title" }, H_SECTIONS[section].title)),
     hErr && el("p", { class: "error", role: "alert" }, hErr),
+    killerAlert(h),
     body);
 }
 

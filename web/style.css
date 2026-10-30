@@ -497,3 +497,5 @@ button.h-tab.on { background: var(--accent); color: #1b1408; border-color: var(-
 .h-ok { color: #8fd19e; }
 .h-over, .h-elapsed.over { color: var(--danger); font-weight: bold; }
 .h-steptime { font-weight: normal; }
+.alert.h-killer { background: #4a0f18; border: 2px solid var(--danger); color: #fbe9ec; }
+.h-private .overlay-inner h1 { color: var(--danger); }

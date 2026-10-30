@@ -853,6 +853,7 @@ def guest_view(t, data, story, guest):
         "evidence": _public(case, step),
         "script": data["script"].get(step, {}),
     }
+    view["killer_alert"] = me_culprit and hc.reached(step, "blackout")   # told once, when the lights go out
     if hc.reached(step, "murder"):
         net = data["witness_network"]
         view["witnessed"] = next(w["saw"] for w in net if w["witness"] == cid)

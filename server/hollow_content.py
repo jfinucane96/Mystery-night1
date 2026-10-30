@@ -151,8 +151,10 @@ def check_case(data, cid):
     return p
 
 
-LOCATIONS = ["by the chapel window", "at the vestry door", "at the side table with the candles",
-             "by the chapel's main door", "beside the stone font", "by the organ", "in the front pew"]
+# Where everyone was when the lights went out. After the first ballot the guests drifted around the
+# house with their drinks; Silas stayed alone in the Great Hall. Simple rooms everyone knows.
+LOCATIONS = ["in the Library", "in the Dining Room", "in the Drawing Room", "in the Kitchen"]
+MURDER_ROOM = "the Great Hall"
 
 
 def alibis(data, culprit):
@@ -229,13 +231,14 @@ def build(data, story, culprit):
         text = (f"When the lights went out you were {loc}, with {nick(partner)}. You held on to each other until they came back."
                 if partner else f"When the lights went out you were {loc}, on your own. Nobody can vouch for you.")
         if cid == x:
-            text += " You heard quick footsteps somewhere in the dark, going toward the altar, but you couldn't see whose."
+            text += " You heard quick footsteps out in the corridor, going toward the Great Hall, but you couldn't see whose."
         if cid == w:
-            text += f" In one flash of lightning you saw the chapel window clearly: {nick(x)} was standing there, alone. Nobody else near."
+            text += f" In one flash of lightning you could see straight into the Library: {nick(x)} was in there, alone. Nobody else."
         if cid == v:
-            text += " Just after the lights died, someone in a robe brushed hard past you, hurrying toward the altar. You never saw a face."
+            text += " Just after the lights died, someone in a robe brushed hard past you in the doorway, hurrying toward the Great Hall. You never saw a face."
         blackout[cid] = text
-    kill = (f"When the lightning took the lights, you slipped away to the altar and struck Silas down with {weapon_you}. "
+    kill = (f"YOU KILLED SILAS. When the lightning took the lights, you slipped into the Great Hall, where Silas was "
+            f"alone, and struck him down with {weapon_you}. "
             f"You pushed the ceremonial dagger under the cushion of {name(decoy)}'s chair to throw suspicion their way, "
             f"hid your {it['short']} {case['hidden']}, and were back before the lights returned.")
     blackout[culprit] = kill
@@ -261,9 +264,9 @@ def build(data, story, culprit):
     reconstruction = [
         f"{name(culprit)}. It was you.",
         f"I knew what you had done, {nick(culprit)}. '{secret['title']}'. I had the proof, and tonight I meant to read it "
-        f"aloud. So when the lightning took the lights, you slipped through the dark and struck me down with "
+        f"aloud. So when the lightning took the lights, you slipped into the Great Hall and struck me down with "
         f"your own {it['short']}.",
-        f"You hid the dagger under {nick(decoy)}'s chair, and you told everyone you had been by the window with "
+        f"You hid the dagger under {nick(decoy)}'s chair, and you told everyone you had been in the Library with "
         f"{nick(x)}. But {nick(x)} was alone, and {nick(w)} saw it in the lightning. A lie needs a witness, my dear. Yours had one.",
     ]
     return {
@@ -275,7 +278,7 @@ def build(data, story, culprit):
                     f"expose it in front of everyone, and take your family's fortune with it."),
             "tonight": kill,
             "cover": (f"Your story: you were {al['where'][x]} with {nick(x)} the whole time. {nick(x)} really was there, "
-                      f"alone in the dark, so {nick(x)} can't prove you weren't. Stick to it."),
+                      f"alone in the dark, so {nick(x)} can't prove you weren't. Never admit you went into the Great Hall."),
             "goal": "Nobody must ever find out. Lie when you need to, deflect suspicion onto others, and make sure your family still inherits.",
         },
     }
@@ -294,23 +297,23 @@ def answer(data, case, target, qid, story):
     x = al["alone"]
     if target == case["culprit"]:
         return {
-            "s1": ("At the altar. With Silas.", f"{al['claim'][0].upper()}{al['claim'][1:]}, with {nick(x)}."),
-            "s2": ("Nobody. I was with Silas, and then he was dead.", f"{nick(x)}. We were together by the window the whole time."),
+            "s1": ("In the Great Hall. With Silas.", f"{al['claim'][0].upper()}{al['claim'][1:]}, with {nick(x)}."),
+            "s2": ("Nobody. I was with Silas, and then he was dead.", f"{nick(x)}. We were together {al['claim']} the whole time."),
             "s5": ("Silas's last breath.", "Nothing at all. Just the thunder."),
         }[qid]
     where = al["where"][target]
     partner = al["partner"].get(target)
     seen = "Only the thunder, and my companion gripping my arm."
     if target == x:
-        seen = "I heard quick footsteps somewhere in the dark, going toward the altar. I couldn't see whose."
+        seen = "I heard quick footsteps out in the corridor, going toward the Great Hall. I couldn't see whose."
     if target == al["saw_alone"]:
-        seen = f"In one flash of lightning I saw the chapel window. {nick(x)} was standing there, alone. Nobody else near."
+        seen = f"In one flash of lightning I could see straight into the Library. {nick(x)} was in there, alone. Nobody else."
     if target == al["heard"]:
-        seen = "Someone in a robe brushed hard past me just after the lights died, hurrying toward the altar. I never saw a face."
+        seen = "Someone in a robe brushed hard past me in the doorway just after the lights died, hurrying toward the Great Hall. I never saw a face."
     return {
         "s1": (f"{where[0].upper()}{where[1:]}.", "I honestly don't know. It was pitch dark."),
         "s2": ((f"{nick(partner)}. We held on to each other until the lights came back." if partner
-                else "Nobody. I was on my own by the window, I'm afraid."),
+                else f"Nobody. I was on my own {where}, I'm afraid."),
                ("Nobody. I was alone." if partner else "I'm not sure. Someone may have been near me.")),
         "s5": (seen, "Nothing at all."),
     }[qid]
