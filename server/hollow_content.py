@@ -18,7 +18,7 @@ PATH = os.environ.get("MM_HOLLOW") or os.path.join(
 
 STEPS = [
     ("lobby", 0, "Before the party"),
-    ("reunion", 1, "The Reunion: introductions"),
+    ("reunion", 1, "The Reunion: Silas's welcome, then introductions"),
     ("polls", 1, "Who's Most Likely To…?"),
     ("poll_results", 1, "Poll results"),
     ("covenant", 2, "The Covenant, part 1: robes on"),
@@ -49,7 +49,7 @@ STEPS = [
 ]
 # Target minutes for each step (about three hours from the Reunion to the reveal)
 PLAN_MINUTES = {
-    "lobby": 0, "reunion": 15, "polls": 8, "poll_results": 5,
+    "lobby": 0, "reunion": 17, "polls": 8, "poll_results": 5,
     "covenant": 5, "covenant2": 6, "envelopes": 4, "covenant3": 4, "ballot1": 3,
     "blackout": 2, "murder": 12, "ghost": 4, "ballots2": 6,
     "deals_intro": 3, "deals": 7, "interrogations": 20, "investigations": 10, "bribes4": 4, "ballots3": 4,

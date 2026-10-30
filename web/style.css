@@ -501,3 +501,4 @@ button.h-tab.on { background: var(--accent); color: #1b1408; border-color: var(-
 .h-private .overlay-inner h1 { color: var(--danger); }
 .h-haunt { color: #c9b8ff; font-style: italic; }
 .h-letter-last { margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--danger); }
+.h-seq.red { background: #d40000; transition: none; }

@@ -959,6 +959,32 @@ const SFX = {
   drone_on: droneOn,
   drone_off: droneOff,
   rumble: () => thunder(0, 6, 0.7),
+  thunder_loud: () => thunder(0, 6, 1.2),
+  scream: () => {                        // a loud, rising shriek with a rough edge
+    const t = audioCtx.currentTime;
+    const g = audioCtx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.5, t + 0.08);
+    g.gain.setValueAtTime(0.5, t + 1.1);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 1.9);
+    const f = audioCtx.createBiquadFilter();
+    f.type = "bandpass"; f.frequency.value = 1400; f.Q.value = 0.8;
+    const vib = audioCtx.createOscillator(), vibGain = audioCtx.createGain();
+    vib.frequency.value = 9; vibGain.gain.value = 60;
+    [[0, "sawtooth"], [7, "square"]].forEach(([detune, type]) => {
+      const o = audioCtx.createOscillator();
+      o.type = type; o.detune.value = detune * 10;
+      o.frequency.setValueAtTime(650, t);
+      o.frequency.exponentialRampToValueAtTime(1500, t + 0.35);
+      o.frequency.exponentialRampToValueAtTime(1100, t + 1.2);
+      o.frequency.exponentialRampToValueAtTime(500, t + 1.9);
+      vibGain.connect(o.frequency);
+      o.connect(f); o.start(t); o.stop(t + 2);
+    });
+    vib.connect(vibGain); vib.start(t); vib.stop(t + 2);
+    f.connect(g).connect(audioCtx.destination);
+    noise(1.6, 3500, 0.25, (x) => Math.min(1, x * 10) * (1 - x));
+  },
   fire: () => {                          // crackling: a low roar with random pops
     noise(4, 900, 0.25, (t) => Math.min(1, t * 4) * (1 - t));
     for (let i = 0; i < 26; i++) setTimeout(() => noise(0.04, 3000, 0.5, (t) => 1 - t), Math.random() * 3800);

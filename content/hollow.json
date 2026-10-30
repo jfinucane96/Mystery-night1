@@ -636,9 +636,60 @@
     },
     "reunion": {
       "title": "The Reunion",
-      "text": "Welcome to Hollowmere. Each guest, in turn, introduce yourself to the room.",
-      "silas": "Good evening, my lords, my ladies. Coats to me, quarrels to Sir Jonathan. Dinner is at nine, the sherry is now, and the east wing is still haunted, so I'd stay out of it.",
-      "screen": "Welcome to Hollowmere. Introduce yourselves."
+      "screen": "Welcome to Hollowmere. Introduce yourselves, in the order on the screen.",
+      "sequence": [
+        {
+          "show": "warm"
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "say": "Good evening, my lords. My ladies.\n\nWelcome to Hollowmere Manor."
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "For those of you who don't remember me... and I can see from your faces that's most of you...\n\nMy name is Silas Vale.\n\nI am the butler."
+        },
+        {
+          "wait": 800
+        },
+        {
+          "say": "I was the under-footman, once, when you were all considerably shorter, and considerably louder.\n\nFor twenty-five years I have served your families.\n\nI have polished your silver, decanted your port, and fished at least two of you out of the ornamental lake."
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "A few house rules.\n\nCoats to me. Quarrels to Sir Jonathan.\n\nThe sherry is now. Dinner is later.\n\nAnd the east wing is still closed, so I would stay out of it."
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "say": "It has been a very long time since the eight of you were in one room.\n\nSo before anything else, I think a few introductions are in order.\n\nWho you are. What you do. And what on earth you have made of yourselves."
+        },
+        {
+          "wait": 800
+        },
+        {
+          "say": "You'll find your introduction on your phone.\n\nDo read it with feeling.\n\nI shall be listening. I always am."
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "Sir Jonathan, as our host, you will go first. The rest of you will follow in the order on the screen.\n\nSir Jonathan... the floor is yours.\n\nDo try not to keep it all night."
+        },
+        {
+          "wait": 800
+        },
+        {
+          "show": "clear"
+        }
+      ]
     },
     "polls": {
       "title": "Who's Most Likely To…?",
@@ -719,13 +770,19 @@
           "show": "black"
         },
         {
-          "wait": 2500
+          "wait": 5000
         },
         {
-          "sfx": "rumble"
+          "sfx": "scream"
         },
         {
-          "wait": 1500
+          "sfx": "thunder_loud"
+        },
+        {
+          "show": "red"
+        },
+        {
+          "wait": 3500
         },
         {
           "show": "shadow"
