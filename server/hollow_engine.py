@@ -17,10 +17,11 @@ def tally(ballots):
 
 
 def influence(inheritance_ballots, suspicion_ballots, order):
-    """Hidden Cult Influence per person: inheritance points received minus suspicion
-    points received (every suspicion point costs one influence point)."""
+    """Hidden Cult Influence per person: inheritance points received minus half the
+    suspicion points received. Counted in half points (everything doubled) so it stays
+    whole numbers; only the proportions and the order matter."""
     gain, loss = tally(inheritance_ballots), tally(suspicion_ballots)
-    return {c: gain.get(c, 0) - loss.get(c, 0) for c in order}
+    return {c: 2 * gain.get(c, 0) - loss.get(c, 0) for c in order}
 
 
 def ranking(scores, order):

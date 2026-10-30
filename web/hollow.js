@@ -311,12 +311,19 @@ function interrogationAction(h, a) {
   const out = [];
   if (a.questioned) {
     const q = a.questioned;
+    const pick = draft("ans");                       // tap an answer, then confirm it, so a slip can't lock it in
+    const choice = (kind, label, text) => el("button", {
+      class: "choice" + (pick === kind ? " chosen" : ""),
+      onclick: () => { hDraft.ans = kind; redrawQuietly(renderGuest); },
+    }, el("span", {}, el("strong", {}, label), text));
     out.push(el("div", { class: "questioned" },
       el("p", { class: "eyebrow" }, `${q.by} is questioning you, out loud`),
       el("p", { class: "spoken" }, `“${q.question}”`),
       el("p", { class: "small muted" }, "Choose your answer, then say it out loud. You may lie, but it may cost you later: Silas keeps score, and later tonight he reveals to everyone who lied."),
-      el("button", { class: "choice", onclick: () => hAct("answer", { choice: "truth" }) }, el("span", {}, el("strong", {}, "The truth: "), q.truth)),
-      el("button", { class: "choice", onclick: () => confirm("Lie? The board will show you LIED.") && hAct("answer", { choice: "lie" }) }, el("span", {}, el("strong", {}, "A lie: "), q.lie))));
+      choice("truth", "The truth: ", q.truth),
+      choice("lie", "A lie: ", q.lie),
+      pick && el("button", { class: "wide", disabled: hBusy, onclick: () => hAct("answer", { choice: pick }, ["ans"]) },
+        pick === "lie" ? "Lock in the lie" : "Lock in the truth")));
   }
   if (a.my_turn) {
     const target = draft("itarget");

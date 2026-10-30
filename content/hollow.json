@@ -560,14 +560,6 @@
       {
         "id": "s5",
         "text": "Did you see or hear anything during the blackout?"
-      },
-      {
-        "id": "s4",
-        "text": "What were you doing last night?"
-      },
-      {
-        "id": "s3",
-        "text": "What did you and Silas last talk about?"
       }
     ]
   },
@@ -588,18 +580,6 @@
       "id": "s5",
       "track": "silas",
       "name": "Did you see or hear anything during the blackout?",
-      "blurb": ""
-    },
-    {
-      "id": "s4",
-      "track": "silas",
-      "name": "What were you doing last night?",
-      "blurb": ""
-    },
-    {
-      "id": "s3",
-      "track": "silas",
-      "name": "What did you and Silas last talk about?",
       "blurb": ""
     }
   ],
@@ -1130,7 +1110,7 @@
     },
     "ballots2": {
       "title": "Inheritance and Suspicion",
-      "screen": "Cast both ballots on your phone. Every point of suspicion is taken off the accused family's inheritance total.",
+      "screen": "Cast both ballots on your phone. Suspicion counts half against the accused family's inheritance total.",
       "sequence": [
         {
           "show": "ghost"
@@ -1155,8 +1135,8 @@
           "title": "The Suspicion Ballot",
           "items": [
             "Rank your three prime suspects in Silas's murder",
-            "1st choice: they lose 3 inheritance points",
-            "2nd choice: they lose 2 · 3rd choice: they lose 1",
+            "1st choice: they lose 1½ inheritance points",
+            "2nd choice: they lose 1 · 3rd choice: they lose ½",
             "Suspicion comes off your family's running total"
           ],
           "warn": 3
@@ -1168,7 +1148,7 @@
           "wait": 800
         },
         {
-          "say": "And here is the delicious part.\n\nEvery point of suspicion you receive is taken away from your inheritance.\n\nYour first choice loses three points. Your second, two. Your third, one."
+          "say": "And here is the delicious part.\n\nEvery point of suspicion you receive counts half against your inheritance.\n\nYour first choice costs them a point and a half. Your second, one. Your third, half a point."
         },
         {
           "wait": 1200
@@ -1197,7 +1177,7 @@
         {
           "show": "notice",
           "text": "Cast both ballots on your phone.",
-          "sub": "Inheritance: who deserves the fortune. Suspicion: who killed Silas. Suspicion costs the accused points."
+          "sub": "Inheritance: who deserves the fortune. Suspicion: who killed Silas. Suspicion costs the accused half points."
         }
       ]
     },

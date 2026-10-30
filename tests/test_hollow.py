@@ -29,7 +29,7 @@ class Engine(unittest.TestCase):
 
     def test_suspicion_costs_influence(self):
         infl = eng.influence([["a1", "b1", "c1"]], [["a1", "d1", "d2"]], self.ORDER)
-        self.assertEqual((infl["a1"], infl["b1"], infl["d1"]), (0, 2, -2))
+        self.assertEqual((infl["a1"], infl["b1"], infl["d1"]), (3, 4, -2))   # half points, doubled
 
     def test_transfers_void_if_either_family_is_eliminated(self):
         shares = {"a": 4_000_000, "b": 4_000_000, "c": 4_000_000}
@@ -253,7 +253,7 @@ class Evening(unittest.TestCase):
         self.step("interrogations")
         tried_reserved = False
         asked = {("grant", "s1")}                                   # reserved for Jonathan's forced question
-        qids = ["s1", "s2", "s5", "s4", "s3"]
+        qids = ["s1", "s2", "s5"]
         for turn in range(len(order)):                               # one public question each
             asker = next(c for c in order if self.me(c)["action"].get("my_turn"))
             if asker == "jonathan" and ("grant", "s1") in asked and turn < len(order):
@@ -288,9 +288,9 @@ class Evening(unittest.TestCase):
         self.act("caroline", "inv_decide", {"action": "counter", "amount": 400_000})
         self.act("nanor", "inv_target", {"family": "blackthorne", "action": "accept"})
         self.assertEqual(self.me("grant")["clues"], [])
-        self.act("jonathan", "investigate", {"target": "griff", "category": "s4"})
+        self.act("jonathan", "investigate", {"target": "griff", "category": "s5"})
         self.act("griff", "inv_target", {"family": "pemberwick", "action": "decline"})
-        self.assertIn("instruments", self.me("danielle")["clues"][0]["text"])   # Griff's true answer about last night
+        self.assertIn("Griff, privately", self.me("danielle")["clues"][0]["text"])   # Griff's true answer, to the couple
         self.act("danielle", "investigate", {"target": "grace", "category": "s1"}, 409)
         self.step("bribes4")
         self.act("nanor", "offer", {"kind": "bribe", "recipient": "griff", "amount": 100_000,
