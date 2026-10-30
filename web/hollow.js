@@ -474,7 +474,7 @@ function hollowDossier(h) {
       d.silas_holds && el("p", {}, el("strong", {}, "Silas has proof: "), d.silas_holds)),
     el("section", { class: "card" }, el("h2", {}, "Why you need Silas alive"), el("p", {}, d.need_alive)),
     el("section", { class: "card" }, el("h2", {}, "A scandal you know"),
-      el("p", {}, d.scandal.text), el("p", { class: "small muted" }, "Use it for leverage, comedy or revenge. It has nothing to do with the murders.")),
+      el("p", {}, d.scandal.text), el("p", { class: "small muted" }, "Use it for leverage, comedy or revenge. It has nothing to do with the murder.")),
     el("section", { class: "card" }, el("h2", {}, "What you did last night"),
       el("p", {}, d.last_night),
       h.seen_by_someone && el("p", { class: "warn" }, "Someone saw you. You don't know who.")),

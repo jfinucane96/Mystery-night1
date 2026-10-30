@@ -47,7 +47,7 @@
     {
       "id": "jonathan",
       "family": "pemberwick",
-      "intro": "Ladies and gentlemen, welcome to Hollowmere! Yes, it is mine. Yes, all of it, including the damp. I am Sir Jonathan Reginald Pemberwick, property investor, visionary, and as of this spring the owner of forty-one bedrooms, nine of which still have roofs. Tonight I have gathered my oldest friends to celebrate the Order our families founded, and to announce the estate covenant: twelve million pounds, to be shared among us. Don't thank me. Well, do, a little. As your host I naturally have the final word on everything, which my wife assures me is not how marriage works. This, by the way, is the key to the wine cellar: heavy iron, on its chain. As master of the house I never let it out of my sight.",
+      "intro": "Ladies and gentlemen, welcome to Hollowmere! Yes, it is mine. Yes, all of it, including the damp. I am Sir Jonathan Reginald Pemberwick, property investor, visionary, and as of this spring the owner of forty-one bedrooms, nine of which still have roofs. Tonight I have gathered my oldest friends to celebrate my inheritance, and to share my plans for the estate. They involve a great deal of money. Mostly yours. Don't thank me. Well, do, a little. As your host I naturally have the final word on everything, which my wife assures me is not how marriage works. This, by the way, is the key to the wine cellar: heavy iron, on its chain. As master of the house I never let it out of my sight.",
       "secret": {
         "title": "The Hidden Will",
         "text": "When your great-uncle died, you found a later will among his papers leaving Hollowmere's farms to your cousin Thomas Pemberwick. You burned it. The older will stood, the estate came to you whole, and Thomas emigrated to Canada with nothing.",
@@ -399,13 +399,13 @@
       "family": "wraithmore",
       "intro": "Lady Grace Wraithmore. I collect antiquities: Roman bronzes, Egyptian scarabs, Etruscan mirrors, and grudges, which keep better than any of them. My husband discovers things; I acquire them, which is far more civilised. I can tell a forgery across a ballroom, and I can tell when someone is lying across a dinner table, so do sit somewhere else. I'm delighted to be here. I'm always delighted. You can tell by my face. Tonight I'm carrying a bronze scarab from the tomb of a minor pharaoh. It goes with everything, and it's heavier than it looks.",
       "secret": {
-        "title": "The Child in the East Wing",
-        "text": "In the fire of 1867 you were the last one into the passage. Behind you, through the smoke, you heard Eleanor calling your name. You could have gone back for her. You ran. Afterwards you told everyone the room was already full of fire. It wasn't.",
-        "excuse": "You were a frightened child. Nobody blames a child. You tell yourself that nobody blames a child.",
-        "proof": "A statement you gave the parents' private inquiry in 1867, in your own childish hand, that contradicts what you told everyone else.",
-        "proof_public": "A statement Grace gave the parents' private inquiry in 1867, in her own childish hand, that contradicts what she told everyone else."
+        "title": "The Museum Copy",
+        "text": "In 1889, while cleaning the Sinclair family's Etruscan gold mirror on loan to the British Museum, you replaced it with a copy you had commissioned, and sold the original to a dealer in Paris to pay your father's debts. When the copy was spotted two years later, the museum blamed its junior conservator, Miss Ada Pell, for careless handling. She was dismissed. You said nothing.",
+        "excuse": "The mirror belonged to your family. You only sold what was yours. The museum's mistake was its own.",
+        "proof": "The Paris dealer's bill of sale, made out in your name and signed in your hand.",
+        "proof_public": "The Paris dealer's bill of sale, made out in Grace's name and signed in her hand."
       },
-      "need_alive": "Silas alone can tell you whether a rescue would really have been possible. You have needed to know for twenty-five years.",
+      "need_alive": "Silas knows the Paris dealer who bought the mirror. Only he can buy it back quietly, before the museum's audit next month.",
       "scandal": {
         "about": "caroline",
         "text": "Caroline has been sending herself anonymous love letters to make Grant jealous."
