@@ -311,7 +311,7 @@ function interrogationAction(h, a) {
 }
 
 function investigationAction(h, a) {
-  const out = [];
+  const out = [el("p", { class: "small muted" }, `Your family can offer up to ${money(h.available)} in hush money.`)];
   if (!a.mine) {
     const target = draft("vtarget");
     const taken = new Set(a.taken.map((x) => x.join("|")));
@@ -348,13 +348,13 @@ function investigationAction(h, a) {
       el("p", {}, `“${r.category}”`),
       el("p", { class: "small muted" }, "If you let them, they get your true answer, privately."),
       r.status === "waiting" ? [
-        el("p", { class: "small muted" }, "Offer money for them to drop the question, or let them have the answer."),
+        el("p", { class: "small muted" }, `Offer money for them to drop the question (up to ${money(h.available)}), or let them have the answer.`),
         amountInput(`hush-${r.family}`, h.available),
         el("div", { class: "row" },
           el("button", { class: "grow small", onclick: () => hAct("inv_target", { family: r.family, action: "offer", amount: parseInt(draft(`hush-${r.family}`, "0"), 10) || 0 }) }, "Offer money"),
           el("button", { class: "grow small quiet", onclick: () => hAct("inv_target", { family: r.family, action: "decline" }) }, "Let them have the answer")),
       ] : [
-        el("p", {}, `They want ${money(r.counter)} instead.`),
+        el("p", {}, `They want ${money(r.counter)} instead. Your family can offer up to ${money(h.available)}.`),
         el("div", { class: "row" },
           el("button", { class: "grow small", onclick: () => hAct("inv_target", { family: r.family, action: "accept" }) }, "Pay it"),
           el("button", { class: "grow small quiet", onclick: () => hAct("inv_target", { family: r.family, action: "reject" }) }, "Refuse")),
