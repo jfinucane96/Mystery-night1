@@ -4,10 +4,10 @@ character was secretly chosen as Silas's murderer.
 Backstory: Eleanor Vale died in the 1867 fire by accident, and all eight children
 played some part in it (each character's childhood memory says what). There is ONE
 mystery tonight: who killed Silas. Every case shares one canon (dossiers, the witness
-network, memories); what changes per murderer is the weapon and the decoy in `cases`,
-plus the clue logic below. The clues are fair by construction: the Covenant register
-gives every guest a unique combination of signing hand, circle side and robe sigil,
-and the public evidence reveals the murderer's three, one at a time.
+network, memories); what changes per murderer is the decoy and hiding place in `cases`.
+The clues are concrete and fair: every guest carries one personal item (named in their
+introduction), and the evidence narrows the suspects from eight, to four, to two, to the
+owner of the weapon itself.
 No AI writes any of this at runtime."""
 
 import json
@@ -67,7 +67,6 @@ MEMORY_TIER_AT = {1: "lobby"}
 PUBLIC_AT = {"reunion": "reunion", "covenant": "covenant", "covenant2": "covenant2", "covenant3": "covenant3",
              "murder": "murder", "p4": "deals",
              "p5": "revelations", "bridge": "bridge"}
-CLUE_TRAITS = ("hand", "side", "sigil")
 
 
 class HollowError(Exception):
@@ -99,9 +98,19 @@ def check(data):
     for f, fam in data["families"].items():
         if len(fam["members"]) != 2 or any(m not in ids for m in fam["members"]):
             problems.append(f"family '{f}' must have two known members")
-    combos = [tuple(data["by_id"][c]["traits"][k] for k in CLUE_TRAITS) for c in ids]
-    if len(set(combos)) != len(combos):
-        problems.append("the Covenant register doesn't single out every character")
+    # Two guests per weapon kind, so the doctor's second look narrows it to exactly two
+    groups = {}
+    for c in data["characters"]:
+        it = c.get("item") or {}
+        if not all(it.get(k) for k in ("name", "short", "owner", "group")):
+            problems.append(f"character '{c['id']}' needs an item with name, short, owner and group")
+            continue
+        if it["group"] not in data["clue_groups"]:
+            problems.append(f"character '{c['id']}': unknown item group '{it['group']}'")
+        groups.setdefault(it["group"], []).append(c["id"])
+    for g, members in groups.items():
+        if len(members) != 2 or data["family_of"][members[0]] == data["family_of"][members[1]]:
+            problems.append(f"item group '{g}' must hold two guests from different families")
     # Locked witness network: one witness per subject, one subject per witness, never yourself
     net = data["witness_network"]
     if sorted(w["witness"] for w in net) != sorted(ids) or sorted(w["subject"] for w in net) != sorted(ids):
@@ -128,14 +137,12 @@ def check(data):
 
 def check_case(data, cid):
     case = data["cases"][cid]
-    p = [f"missing '{f}'" for f in ("decoy", "weapon") if not case.get(f)]
+    p = [f"missing '{f}'" for f in ("decoy", "hidden") if not case.get(f)]
     if p:
         return p
     decoy = case["decoy"]
     if decoy == cid or data["family_of"][decoy] == data["family_of"][cid]:
         p.append("the decoy must be from another family")
-    if data["by_id"][decoy]["traits"]["hand"] == data["by_id"][cid]["traits"]["hand"]:
-        p.append("the decoy must sign with the other hand, so the medical evidence clears them")
     if dagger_witness(cid) == cid:
         p.append("the dagger witness is the murderer")
     return p
@@ -150,52 +157,55 @@ def short(data, cid):
     return {"danielle": "Danielle"}.get(cid, cid.capitalize())
 
 
+def item(data, cid):
+    return data["by_id"][cid]["item"]
+
+
 # ------------------------------------------------------------ building a case
 
 def build(data, story, culprit):
-    """Everything the game needs for one murderer, derived deterministically."""
+    """Everything the game needs for one murderer, derived deterministically.
+    Evidence narrows the suspects from eight, to four (sharp or blunt), to two (the exact
+    kind of wound), to one (the weapon itself, found with blood on it)."""
     if culprit not in data["by_id"]:
         raise HollowError("unknown murderer")
     case = data["cases"][culprit]
-    W = data["words"]
-    ct = data["by_id"][culprit]["traits"]
     name = lambda c: story["by_id"][c]["name"] if c in story.get("by_id", {}) else short(data, c)
     nick = lambda c: short(data, c)
     decoy = case["decoy"]
-    dt = data["by_id"][decoy]["traits"]
+    it = item(data, culprit)
+    group = data["clue_groups"][it["group"]]
     secret = data["by_id"][culprit]["secret"]
+    weapon_you = it["name"] if it["name"].startswith(("your ", "the ")) else it["name"]
 
     memories = {cid: list(data["by_id"][cid]["memories"]) for cid in data["order"]}
 
     # --- the blackout
     blackout = {cid: data["by_id"][cid]["blackout"] for cid in data["order"]}
-    blackout[dagger_witness(culprit)] += f" Then quick footsteps, going toward the {ct['side']} side of the circle."
-    kill = (f"When the lightning took the lights, you crossed the circle from the {ct['side']} arc and struck Silas down "
-            f"with {case['weapon']}. You lifted the dagger from its stand and pushed it under the cushion of {name(decoy)}'s "
-            f"chair, then went back to your place before the lights returned. As he fell, Silas tore at your robe: threads are "
-            f"missing from your {W[ct['sigil']]} sigil, and there is wax from the tall candles on your hem.")
+    blackout[dagger_witness(culprit)] += " Then quick, soft footsteps, and the swish of a robe hurrying away from the altar."
+    kill = (f"When the lightning took the lights, you crossed the chapel in the dark and struck Silas down with "
+            f"{weapon_you}. You lifted the dagger from its stand and pushed it under the cushion of {name(decoy)}'s chair, "
+            f"to throw suspicion their way. Then you hid your {it['short']} {case['hidden']} and were back in your place "
+            f"before the lights returned. If anyone asks where your {it['short']} is, you left it with your coat.")
     blackout[culprit] = kill
 
     # --- public evidence
-    register = "\n".join(f"{nick(c)}: signed {data['by_id'][c]['traits']['hand']}-handed, {data['by_id'][c]['traits']['side']} arc, "
-                         f"{W[data['by_id'][c]['traits']['sigil']]} sigil" for c in data["order"])
     public = {}
     for pid, p in data["public"].items():
         public[pid] = {"id": pid, "title": p["title"], "text": p["text"], "at": PUBLIC_AT[p["phase"]]}
-    if "register" in public:
-        public["register"]["text"] += "\n" + register
+    sharp = group["first"] == "sharp"
     extra = [
-        ("medical", "p4", "The doctor's examination",
-         f"Silas was not killed with the ceremonial dagger: its blade is blunt and his wound is not a blade wound at all. "
-         f"From the angle of the blow, the doctor is certain the attacker struck {ct['hand']}-handed."),
+        ("medical", "p4", "The doctor's first look",
+         "Silas was not killed with the ceremonial dagger. "
+         + ("He was stabbed once, with something narrow and sharp." if sharp
+            else "He was killed by a single heavy blow to the head with something hard and blunt.")),
         ("dagger_found", "p4", "The dagger is found",
-         f"The missing dagger has been found pushed under the cushion of {name(decoy)}'s chair. It has no blood on it. "
-         f"{nick(decoy)} signed the Covenant register {dt['hand']}-handed."),
-        ("wax", "p5", "A trail of wax",
-         f"A trail of fresh wax drops runs across the chapel floor between the altar and the {ct['side']} arc of the circle, "
-         f"where the tall candles stand."),
-        ("sigil", "bridge", "What Silas held",
-         f"Silas's right hand was closed tight when he fell. In it: a few torn threads of embroidery from a {W[ct['sigil']]} sigil."),
+         f"The missing ceremonial dagger has been found pushed under the cushion of {name(decoy)}'s chair. "
+         f"There is no blood on it, and its blade is far too blunt to have done this. Somebody wanted it found there."),
+        ("wound", "p5", "The doctor's closer look",
+         f"Having examined the wound properly, the doctor is now certain of the weapon's kind: {group['detail']}."),
+        ("weapon", "bridge", "The weapon is found",
+         f"Found hidden {case['hidden']}: {it['owner']}, with Silas's blood still on it."),
     ]
     for pid, at, t, text in extra:
         public[pid] = {"id": pid, "title": t, "text": text, "at": PUBLIC_AT[at]}
@@ -204,10 +214,10 @@ def build(data, story, culprit):
     reconstruction = [
         f"{name(culprit)}. It was you.",
         f"I knew what you had done, {nick(culprit)}. '{secret['title']}'. I had the proof, and tonight I meant to read it "
-        f"aloud. So when the lightning took the lights, you crossed from the {ct['side']} arc and struck me down with "
-        f"{case['weapon']}.",
-        f"Not the dagger: you took that to hang the blame on {nick(decoy)}. But your {ct['hand']} hand gave you away, the "
-        f"candle wax marked your path, and my fingers kept your {W[ct['sigil']]} thread.",
+        f"aloud. So when the lightning took the lights, you crossed the chapel in the dark and struck me down with "
+        f"your own {it['short']}.",
+        f"You took the dagger to hang the blame on {nick(decoy)}, and you hid your {it['short']} {case['hidden']}. "
+        f"But a dagger that blunt never killed anyone, and the wound told the doctor exactly what kind of thing you carried.",
     ]
     return {
         "culprit": culprit, "memories": memories, "blackout": blackout, "public": public,
@@ -217,7 +227,7 @@ def build(data, story, culprit):
             "why": (f"Silas knew your darkest secret ('{secret['title']}') and had the proof. Tonight he was going to "
                     f"expose it in front of everyone, and take your family's fortune with it."),
             "tonight": kill,
-            "cover": "Tonight you never left your place in the circle. Keep to that.",
+            "cover": "Tonight you never left your place. Keep to that.",
             "goal": "Nobody must ever find out. Lie when you need to, deflect suspicion onto others, and make sure your family still inherits.",
         },
     }
@@ -233,7 +243,7 @@ def answer(data, case, target, qid, story):
         return truth, lie
     decoy = story["by_id"][case["decoy"]]["name"] if case["decoy"] in story.get("by_id", {}) else case["decoy"]
     over = {
-        "s1": ("I crossed the circle in the dark, to Silas.", truth),
+        "s1": ("I crossed the chapel in the dark, to Silas.", truth),
         "s2": ("No one. I wasn't in my place.", truth),
         "s5": (f"I took it from the stand and hid it under {decoy}'s cushion.", truth),
     }
@@ -267,21 +277,20 @@ def investigation_clue(data, case, story, target, category):
     c = data["by_id"][target]
     n = short(data, target)
     culprit = target == case["culprit"]
-    W = data["words"]
+    it = c["item"]
     if category == "motive":
         s = c["secret"]
         return f"Silas's file on {n}, marked '{s['title']}': {s['proof']} Silas had evidence that could ruin them."
     if category == "last_night":
         return f"{SEEN[target]} What really happened: {CORROBORATION[target]}"
-    if category == "opportunity":
-        side = c["traits"]["side"]
-        others = [short(data, o) for o in data["order"] if data["by_id"][o]["traits"]["side"] == side and o != target]
-        return f"{n} stood on the {side} arc of the circle, with {', '.join(others[:-1])} and {others[-1]}. In the dark nobody can swear {n} stayed put."
-    if category == "physical":
-        sig = W[c["traits"]["sigil"]]
+    if category == "belongings":
         if culprit:
-            return f"Threads are missing from {n}'s {sig} sigil, pinned over from the inside, and there is fresh candle wax on the hem of their robe."
-        return f"{n}'s robe is undamaged: the {sig} sigil is intact, and there is no fresh wax on the hem."
+            return f"{n}'s {it['short']} is nowhere to be seen. {n} says it was left with their coat. It isn't with their coat."
+        return f"{n}'s {it['short']} is with them, clean, exactly where it should be."
+    if category == "physical":
+        if culprit:
+            return f"There are tiny dark spots on the cuff of {n}'s robe, hastily dabbed with water. They might be wine. They might not."
+        return f"{n}'s robe and hands are spotless. Nothing out of place."
     raise HollowError("unknown category")
 
 

@@ -425,8 +425,8 @@ function hollowDossier(h) {
     h.witnessed && el("section", { class: "card" }, el("h2", {}, "What you saw last night"), el("p", {}, h.witnessed),
       el("p", { class: "small muted" }, "Reveal it, hide it, or sell it. Your choice.")),
     h.blackout && el("section", { class: "card" }, el("h2", {}, "In the blackout"), el("p", {}, h.blackout)),
-    el("section", { class: "card" }, el("h2", {}, "Your marks"),
-      el("p", { class: "small" }, `Tonight, in the Covenant register: ${d.traits_1892.hand}-handed, ${d.traits_1892.side} arc, ${d.traits_1892.sigil} sigil.`)),
+    el("section", { class: "card" }, el("h2", {}, "What you carry tonight"),
+      el("p", {}, `You never go anywhere without ${d.item}. Everyone knows it: you mention it in your introduction.`)),
   ];
 }
 

@@ -836,7 +836,7 @@ def guest_view(t, data, story, guest):
         "need_alive": c["need_alive"],
         "scandal": {"about": nick(story, data, c["scandal"]["about"]), "text": c["scandal"]["text"]},
         "last_night": next(w["truth"] for w in data["witness_network"] if w["subject"] == cid),
-        "traits_1892": {k: data["words"][c["traits"][k]] for k in ("hand", "side", "sigil")},
+        "item": c["item"]["name"].replace("your ", "", 1),
         "family": data["families"][c["family"]]["name"],
         "spouse": nick(story, data, spouse(data, cid)),
         "spouse_id": spouse(data, cid),

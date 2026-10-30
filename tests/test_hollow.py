@@ -69,18 +69,18 @@ class Content(unittest.TestCase):
         self.assertEqual(hc.check(data), [])
         for culprit in data["order"]:
             case = hc.build(data, story, culprit)
-            # By the bridge, the public evidence names all three of the murderer's register marks,
-            # and those three marks fit nobody else
-            marks = [data["words"][data["by_id"][culprit]["traits"][k]] for k in hc.CLUE_TRAITS]
-            public = " ".join(p["text"] for p in case["public"].values() if p["id"] != "register")
-            for w in marks:
-                self.assertIn(w, public, (culprit, w))
-            fits = [c for c in data["order"] if all(data["by_id"][c]["traits"][k] == data["by_id"][culprit]["traits"][k]
-                                                     for k in hc.CLUE_TRAITS)]
-            self.assertEqual(fits, [culprit])
-            # The dagger witness is innocent; the decoy is cleared by the medical evidence
+            # The evidence narrows it down: sharp/blunt -> the exact kind of wound -> the weapon itself
+            it = data["by_id"][culprit]["item"]
+            same_group = [c for c in data["order"] if data["by_id"][c]["item"]["group"] == it["group"]]
+            self.assertEqual(len(same_group), 2)
+            self.assertIn(data["clue_groups"][it["group"]]["detail"], case["public"]["wound"]["text"])
+            self.assertIn(it["owner"], case["public"]["weapon"]["text"])
+            others = [data["by_id"][c]["item"]["owner"] for c in data["order"] if c != culprit]
+            self.assertFalse(any(o in case["public"]["weapon"]["text"] for o in others))
+            # The dagger witness is innocent; the dagger is clearly not the weapon
             self.assertNotEqual(case["dagger_witness"], culprit)
-            self.assertIn(data["by_id"][case["decoy"]]["traits"]["hand"], case["public"]["dagger_found"]["text"])
+            self.assertIn("far too blunt", case["public"]["dagger_found"]["text"])
+            self.assertNotIn("register", json.dumps(case["public"]).lower())
             # The murderer's own phone knows why, and every phone has one childhood memory
             self.assertIn(data["by_id"][culprit]["secret"]["title"], case["truth"]["why"])
             self.assertTrue(all(len(m) == 1 for m in case["memories"].values()))

@@ -47,12 +47,7 @@
     {
       "id": "jonathan",
       "family": "pemberwick",
-      "traits": {
-        "hand": "right",
-        "side": "north",
-        "sigil": "moon"
-      },
-      "intro": "Ladies and gentlemen, welcome to Hollowmere! Yes, it is mine. Yes, all of it, including the damp. I am Sir Jonathan Reginald Pemberwick, property investor, visionary, and as of this spring the owner of forty-one bedrooms, nine of which still have roofs. Tonight I have gathered my oldest friends to celebrate the Order our families founded, and to announce the estate covenant: twelve million pounds, to be shared among us. Don't thank me. Well, do, a little. As your host I naturally have the final word on everything, which my wife assures me is not how marriage works.",
+      "intro": "Ladies and gentlemen, welcome to Hollowmere! Yes, it is mine. Yes, all of it, including the damp. I am Sir Jonathan Reginald Pemberwick, property investor, visionary, and as of this spring the owner of forty-one bedrooms, nine of which still have roofs. Tonight I have gathered my oldest friends to celebrate the Order our families founded, and to announce the estate covenant: twelve million pounds, to be shared among us. Don't thank me. Well, do, a little. As your host I naturally have the final word on everything, which my wife assures me is not how marriage works. This, by the way, is the key to the chapel: heavy iron, on its chain. As master of the house I never let it out of my sight.",
       "secret": {
         "title": "The Hidden Will",
         "text": "When your great-uncle died, you found a later will among his papers leaving Hollowmere's farms to your cousin Thomas Pemberwick. You burned it. The older will stood, the estate came to you whole, and Thomas emigrated to Canada with nothing.",
@@ -90,17 +85,18 @@
         }
       },
       "blackout": "The thunder shook the floor under your feet. In the dark you heard Silas begin a word, 'Wh-', and then a dull, heavy sound, like a sack set down hard.",
-      "last_word": "Silas favoured you as a boy. Tonight you found out he was planning to put you on trial."
+      "last_word": "Silas favoured you as a boy. Tonight you found out he was planning to put you on trial.",
+      "item": {
+        "name": "the heavy iron key to the chapel, on its chain",
+        "short": "chapel key",
+        "owner": "Sir Jonathan's chapel key",
+        "group": "swung"
+      }
     },
     {
       "id": "danielle",
       "family": "pemberwick",
-      "traits": {
-        "hand": "left",
-        "side": "north",
-        "sigil": "sun"
-      },
-      "intro": "Good evening, darlings. Lady Danielle Pemberwick: hostess, art collector, and the only person in this house who knows which fork is for the fish. I have hung every painting at Hollowmere myself, twice, because Jonathan hung them the first time. I collect beautiful things and I keep them. That includes secrets, so do be careful what you tell me after the second glass. Tonight I intend to be gracious, charming and utterly unbothered, and if anything embarrassing happens I shall simply pretend it was planned.",
+      "intro": "Good evening, darlings. Lady Danielle Pemberwick: hostess, art collector, and the only person in this house who knows which fork is for the fish. I have hung every painting at Hollowmere myself, twice, because Jonathan hung them the first time. I collect beautiful things and I keep them. That includes secrets, so do be careful what you tell me after the second glass. Tonight I intend to be gracious, charming and utterly unbothered, and if anything embarrassing happens I shall simply pretend it was planned. You'll notice my hairpin: Venetian, jewelled, eight inches long. A collector's piece. Do try not to stare.",
       "secret": {
         "title": "The Forged Farewell",
         "text": "When your younger sister Rose fell in love with a penniless painter, Daniel Hale, you forged a letter in her hand breaking off the engagement. He left for Paris believing she had rejected him. Rose has never been happy since, and she has never known why he went.",
@@ -138,17 +134,18 @@
         }
       },
       "blackout": "The moment the lights died you smelled hot candle wax, and you felt a cold draught across your ankles, as if a door had opened somewhere behind you.",
-      "last_word": "Silas helped you hide a debt from your husband. Kindly. Which means he knows exactly where your secrets are kept."
+      "last_word": "Silas helped you hide a debt from your husband. Kindly. Which means he knows exactly where your secrets are kept.",
+      "item": {
+        "name": "a jewelled stiletto hairpin, eight inches long",
+        "short": "jewelled hairpin",
+        "owner": "Lady Danielle's jewelled hairpin",
+        "group": "pin"
+      }
     },
     {
       "id": "grant",
       "family": "blackthorne",
-      "traits": {
-        "hand": "left",
-        "side": "south",
-        "sigil": "moon"
-      },
-      "intro": "Lord Grant Bartholomew Blackthorne the Third, estate surveyor and cartographer. I have measured this house. Twice. It is eleven inches wider than the plans claim, and somebody owes me an explanation. I believe every dispute in human history could have been settled with a theodolite and a little patience. Wars, marriages, the matter of who took the last sherry. Tonight I shall be watching, measuring and taking notes, and if anyone moves the furniture I will know.",
+      "intro": "Lord Grant Bartholomew Blackthorne the Third, estate surveyor and cartographer. I have measured this house. Twice. It is eleven inches wider than the plans claim, and somebody owes me an explanation. I believe every dispute in human history could have been settled with a theodolite and a little patience. Wars, marriages, the matter of who took the last sherry. Tonight I shall be watching, measuring and taking notes, and if anyone moves the furniture I will know. And yes, that is a surveyor's plumb bob on a cord in my pocket. A gentleman should always know which way is down.",
       "secret": {
         "title": "The Warning",
         "text": "In 1888 you received an engineer's signed warning that the Millbrook viaduct's foundations were unsound. You had money in the scheme, so you filed the warning away. The viaduct cracked, the line was closed for a year, and the junior engineer, Arthur Penn, was blamed and dismissed. Nobody was killed. You remind yourself of that often.",
@@ -186,17 +183,18 @@
         }
       },
       "blackout": "By the luminous hands of your pocket watch, the lights were out for almost exactly two minutes. You counted the seconds out of habit. You could not see your own hands.",
-      "last_word": "Silas has the one document that could ruin your reputation, and the one map that could save your land."
+      "last_word": "Silas has the one document that could ruin your reputation, and the one map that could save your land.",
+      "item": {
+        "name": "your surveyor's steel plumb bob, on its cord",
+        "short": "plumb bob",
+        "owner": "Lord Grant's steel plumb bob",
+        "group": "swung"
+      }
     },
     {
       "id": "caroline",
       "family": "blackthorne",
-      "traits": {
-        "hand": "right",
-        "side": "south",
-        "sigil": "sun"
-      },
-      "intro": "Lady Caroline Blackthorne, botanist. Fellow of absolutely everything. I have grown orchids that the Royal Horticultural Society said could not be grown, and I've won the gold medal three years running, which some people find hard to forgive. If you have a garden, I have opinions about it. If you have roses, I'm sorry. My husband measures things; I make them grow. Between us we are unbearable, and we know it.",
+      "intro": "Lady Caroline Blackthorne, botanist. Fellow of absolutely everything. I have grown orchids that the Royal Horticultural Society said could not be grown, and I've won the gold medal three years running, which some people find hard to forgive. If you have a garden, I have opinions about it. If you have roses, I'm sorry. My husband measures things; I make them grow. Between us we are unbearable, and we know it. I carry my pruning knife everywhere. One never knows when a rose will need correcting.",
       "secret": {
         "title": "The Blighted Garden",
         "text": "Before the Royal medal of 1889 you crept into your rival Agatha Fenn's orchid house and treated her plants with a blight of your own devising. Her collection died. Worse, people decided she had smuggled diseased plants, and she was disgraced. You won the medal.",
@@ -234,17 +232,18 @@
         }
       },
       "blackout": "In the dark you heard a thin metallic scrape from the direction of the altar, the sound of something lifted off a stand.",
-      "last_word": "Someone saw you put a vial in Silas's drink. Silas is the only person who could prove what was in it."
+      "last_word": "Someone saw you put a vial in Silas's drink. Silas is the only person who could prove what was in it.",
+      "item": {
+        "name": "your folding pruning knife",
+        "short": "pruning knife",
+        "owner": "Lady Caroline's pruning knife",
+        "group": "blade"
+      }
     },
     {
       "id": "nanor",
       "family": "ravenscroft",
-      "traits": {
-        "hand": "left",
-        "side": "north",
-        "sigil": "moon"
-      },
-      "intro": "Baron Nanor Percival Ravenscroft. Financier. You may have heard of my investments; you certainly will before the night is out. I have money in railways, rubber, mines in places I can't pronounce, and a very promising scheme involving Peruvian guano. I am, as they say in the City, liquid. Extremely liquid. Practically a waterfall. Tonight I intend to make a modest fortune, a few friends, and a great deal of noise about both.",
+      "intro": "Baron Nanor Percival Ravenscroft. Financier. You may have heard of my investments; you certainly will before the night is out. I have money in railways, rubber, mines in places I can't pronounce, and a very promising scheme involving Peruvian guano. I am, as they say in the City, liquid. Extremely liquid. Practically a waterfall. Tonight I intend to make a modest fortune, a few friends, and a great deal of noise about both. This cane? Solid silver top. Worth more than most of your carriages. I never put it down.",
       "secret": {
         "title": "The Clerk's Ledger",
         "text": "When £8,000 went missing from your bank's accounts, you altered the ledger so the blame fell on your clerk, Edwin Marsh. He was dismissed and blacklisted across the City. The money was yours to explain, and you had spent it. Later you burned the one page that would have cleared him.",
@@ -282,17 +281,18 @@
         }
       },
       "blackout": "A robe brushed hard across the back of your hand in the dark, someone moving fast. You smelled nothing, saw nothing, and grabbed at nothing.",
-      "last_word": "Silas knows what you did to Edwin Marsh. He also knows the one claim that could keep you solvent."
+      "last_word": "Silas knows what you did to Edwin Marsh. He also knows the one claim that could keep you solvent.",
+      "item": {
+        "name": "your silver-topped walking cane",
+        "short": "walking cane",
+        "owner": "Baron Nanor's silver-topped cane",
+        "group": "heavy"
+      }
     },
     {
       "id": "taylor",
       "family": "ravenscroft",
-      "traits": {
-        "hand": "right",
-        "side": "north",
-        "sigil": "sun"
-      },
-      "intro": "Lady Taylor Ravenscroft, philanthropist. I chair eleven committees, nine of which I founded, and two of which exist mainly to keep the other nine in order. I have raised money for orphans, widows, fallen women, distressed gentlefolk and, on one occasion, a donkey. I believe good manners are the foundation of civilisation, and I will be correcting yours all evening, purely out of love. Elbows off the table, Griffin.",
+      "intro": "Lady Taylor Ravenscroft, philanthropist. I chair eleven committees, nine of which I founded, and two of which exist mainly to keep the other nine in order. I have raised money for orphans, widows, fallen women, distressed gentlefolk and, on one occasion, a donkey. I believe good manners are the foundation of civilisation, and I will be correcting yours all evening, purely out of love. Elbows off the table, Griffin. My hat is held on by a single pearl-headed hatpin, which is also how I keep order on my committees.",
       "secret": {
         "title": "The Aunt's Last Will",
         "text": "Sitting with your dying Aunt Hester, you found a new will in her writing box leaving her fortune to a children's hospital. You burned it in the grate. The older will, leaving everything to you, stood, and it has kept the Ravenscrofts afloat.",
@@ -330,17 +330,18 @@
         }
       },
       "blackout": "Somewhere across the circle, a chair creaked as if someone had stood up or sat down. Then the thunder covered everything.",
-      "last_word": "You tried to keep Silas away from tonight. If anyone finds out, it will look like you knew what he was planning."
+      "last_word": "You tried to keep Silas away from tonight. If anyone finds out, it will look like you knew what he was planning.",
+      "item": {
+        "name": "a long pearl-headed hatpin",
+        "short": "pearl hatpin",
+        "owner": "Lady Taylor's pearl hatpin",
+        "group": "pin"
+      }
     },
     {
       "id": "griff",
       "family": "wraithmore",
-      "traits": {
-        "hand": "right",
-        "side": "south",
-        "sigil": "moon"
-      },
-      "intro": "Professor Griffin Thaddeus Wraithmore, historian and explorer. I have crossed the Atlas Mountains, lectured to the Royal Geographical Society, and been bitten by a camel in front of the Khedive of Egypt. All true. Mostly true. True in spirit. I have known everyone in this room since we were children, and I have a story about each of you, which I shall tell at the worst possible moment. Do stop me if you've heard this one. You won't have.",
+      "intro": "Professor Griffin Thaddeus Wraithmore, historian and explorer. I have crossed the Atlas Mountains, lectured to the Royal Geographical Society, and been bitten by a camel in front of the Khedive of Egypt. All true. Mostly true. True in spirit. I have known everyone in this room since we were children, and I have a story about each of you, which I shall tell at the worst possible moment. Do stop me if you've heard this one. You won't have. And this is the very knife that saw me across the Atlas Mountains. I sleep with it under my pillow. My wife sleeps elsewhere.",
       "secret": {
         "title": "The Abandoned Companion",
         "text": "On the 1886 Atlas expedition, your colleague Dr Samuel Okafor broke his leg in a snowbound pass. You left him behind to save yourself. Shepherds found him days later. He lived, but lost the leg and his career, while you published a heroic account claiming you had gone back for him.",
@@ -378,17 +379,18 @@
         }
       },
       "blackout": "In the dark, close by the altar, you heard Silas whisper a single word: 'Eleanor.'",
-      "last_word": "Silas has Okafor's logbook. He also knows where the one witness who could save you is living."
+      "last_word": "Silas has Okafor's logbook. He also knows where the one witness who could save you is living.",
+      "item": {
+        "name": "the bone-handled knife you carried across the Atlas",
+        "short": "bone-handled knife",
+        "owner": "Professor Griff's bone-handled knife",
+        "group": "blade"
+      }
     },
     {
       "id": "grace",
       "family": "wraithmore",
-      "traits": {
-        "hand": "left",
-        "side": "south",
-        "sigil": "sun"
-      },
-      "intro": "Lady Grace Wraithmore. I collect antiquities: Roman bronzes, Egyptian scarabs, Etruscan mirrors, and grudges, which keep better than any of them. My husband discovers things; I acquire them, which is far more civilised. I can tell a forgery across a ballroom, and I can tell when someone is lying across a dinner table, so do sit somewhere else. I'm delighted to be here. I'm always delighted. You can tell by my face.",
+      "intro": "Lady Grace Wraithmore. I collect antiquities: Roman bronzes, Egyptian scarabs, Etruscan mirrors, and grudges, which keep better than any of them. My husband discovers things; I acquire them, which is far more civilised. I can tell a forgery across a ballroom, and I can tell when someone is lying across a dinner table, so do sit somewhere else. I'm delighted to be here. I'm always delighted. You can tell by my face. Tonight I'm carrying a bronze scarab from the tomb of a minor pharaoh. It goes with everything, and it's heavier than it looks.",
       "secret": {
         "title": "The Child in the East Wing",
         "text": "In the fire of 1867 you were the last one into the passage. Behind you, through the smoke, you heard Eleanor calling your name. You could have gone back for her. You ran. Afterwards you told everyone the room was already full of fire. It wasn't.",
@@ -426,23 +428,15 @@
         }
       },
       "blackout": "You felt cold air on the back of your neck: the vestry door had blown open behind you, and then slammed shut in the wind.",
-      "last_word": "Silas knows you could have saved Eleanor. If anyone here had a reason to dread tonight, it was you."
+      "last_word": "Silas knows you could have saved Eleanor. If anyone here had a reason to dread tonight, it was you.",
+      "item": {
+        "name": "a bronze Egyptian scarab from your collection",
+        "short": "bronze scarab",
+        "owner": "Lady Grace's bronze scarab",
+        "group": "heavy"
+      }
     }
   ],
-  "words": {
-    "boots": "hobnailed boots",
-    "slippers": "soft house slippers",
-    "dark": "navy",
-    "pale": "cream",
-    "lavender": "lavender water",
-    "camphor": "camphor oil",
-    "left": "left",
-    "right": "right",
-    "north": "north",
-    "south": "south",
-    "sun": "golden sun",
-    "moon": "silver moon"
-  },
   "witness_network": [
     {
       "witness": "grace",
@@ -496,35 +490,35 @@
   "cases": {
     "jonathan": {
       "decoy": "nanor",
-      "weapon": "the heavy iron key to the chapel, which you carry as master of the house"
+      "hidden": "inside the chapel's collection box"
     },
     "danielle": {
       "decoy": "taylor",
-      "weapon": "a jewelled stiletto hairpin from your collection, eight inches long"
+      "hidden": "rolled inside the altar cloth"
     },
     "grant": {
       "decoy": "griff",
-      "weapon": "your surveyor's steel plumb bob on its cord"
+      "hidden": "behind the organ pipes"
     },
     "caroline": {
       "decoy": "grace",
-      "weapon": "your folding pruning knife"
+      "hidden": "in the soil of the chapel's potted lilies"
     },
     "nanor": {
       "decoy": "jonathan",
-      "weapon": "your silver-topped walking cane"
+      "hidden": "in the umbrella stand by the chapel door"
     },
     "taylor": {
       "decoy": "danielle",
-      "weapon": "a long pearl-headed hatpin"
+      "hidden": "pushed into a hassock on the front pew"
     },
     "griff": {
       "decoy": "grant",
-      "weapon": "the bone-handled knife you carried across the Atlas"
+      "hidden": "under the loose flagstone by the font"
     },
     "grace": {
       "decoy": "caroline",
-      "weapon": "a bronze Egyptian scarab paperweight from your collection"
+      "hidden": "in the empty reliquary on the side altar"
     }
   },
   "polls": [
@@ -591,10 +585,10 @@
       "blurb": "Where they went last night and why"
     },
     {
-      "id": "opportunity",
+      "id": "belongings",
       "track": "silas",
-      "name": "Blackout opportunity",
-      "blurb": "Where they were when the lights died"
+      "name": "Belongings",
+      "blurb": "Whether their personal item is where it should be"
     },
     {
       "id": "physical",
@@ -618,11 +612,6 @@
       "phase": "covenant3",
       "title": "How Silas will decide your inheritance",
       "text": "Silas's competition: in each inheritance ballot you rank three fellow guests by who most deserves the fortune (1st gets 3 points, 2nd gets 2, 3rd gets 1). You may not vote for yourself or your spouse. Each family's points decide its standing. The family in last place receives nothing; the other three divide the £12 million. For now your secret is yours alone. Whether it stays that way depends on how the evening unfolds."
-    },
-    "register": {
-      "phase": "p4",
-      "title": "The Covenant register",
-      "text": "The register each guest signed tonight on entering the chapel. It records the hand each member signed with, their chair in the ceremonial circle (north or south arc) and the sigil embroidered on their robe."
     },
     "dagger_stand": {
       "phase": "murder",
@@ -1357,6 +1346,24 @@
     "reveal": {
       "title": "The Truth",
       "text": ""
+    }
+  },
+  "clue_groups": {
+    "pin": {
+      "first": "sharp",
+      "detail": "a tiny, round, very deep puncture, as if from a long pin or a needle"
+    },
+    "blade": {
+      "first": "sharp",
+      "detail": "a short, clean cut from a single-edged blade, like a small folding knife"
+    },
+    "swung": {
+      "first": "blunt",
+      "detail": "a small, deep dent in the skull, as if from a heavy metal weight swung on a cord or a chain"
+    },
+    "heavy": {
+      "first": "blunt",
+      "detail": "a broad, rounded bruise, as if from a heavy ornament or the knob of a cane"
     }
   }
 }
