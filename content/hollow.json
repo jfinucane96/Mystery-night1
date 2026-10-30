@@ -52,7 +52,8 @@
         "title": "The Hidden Will",
         "text": "When your great-uncle died, you found a later will among his papers leaving Hollowmere's farms to your cousin Thomas Pemberwick. You burned it. The older will stood, the estate came to you whole, and Thomas emigrated to Canada with nothing.",
         "excuse": "Thomas would have sold the farms within a year. You kept Hollowmere together. Somebody had to.",
-        "proof": "A copy of the later will, witnessed by Silas himself on the day it was signed."
+        "proof": "A copy of the later will, witnessed by Silas himself on the day it was signed.",
+        "proof_public": "A copy of the later will, witnessed by Silas himself on the day it was signed."
       },
       "need_alive": "Silas knows where the authoritative deed to the manor is kept. With it, the Ravenscroft claim to part of the estate collapses.",
       "scandal": {
@@ -101,7 +102,8 @@
         "title": "The Forged Farewell",
         "text": "When your younger sister Rose fell in love with a penniless painter, Daniel Hale, you forged a letter in her hand breaking off the engagement. He left for Paris believing she had rejected him. Rose has never been happy since, and she has never known why he went.",
         "excuse": "He had nothing. You saved her from a garret and a lifetime of debt. You were the sensible one. You always are.",
-        "proof": "Your practice sheets, copying Rose's handwriting line by line."
+        "proof": "Your practice sheets, copying Rose's handwriting line by line.",
+        "proof_public": "Danielle's practice sheets, copying Rose's handwriting line by line."
       },
       "need_alive": "Silas knows where Daniel Hale lives now. If you are ever going to put it right, you need him.",
       "scandal": {
@@ -150,7 +152,8 @@
         "title": "The Warning",
         "text": "In 1888 you received an engineer's signed warning that the Millbrook viaduct's foundations were unsound. You had money in the scheme, so you filed the warning away. The viaduct cracked, the line was closed for a year, and the junior engineer, Arthur Penn, was blamed and dismissed. Nobody was killed. You remind yourself of that often.",
         "excuse": "Engineers always cry wolf. The warning was speculative. You had no way of knowing.",
-        "proof": "The original warning, in an envelope with your own handwriting on it: 'File. Not to be shown.'"
+        "proof": "The original warning, in an envelope with your own handwriting on it: 'File. Not to be shown.'",
+        "proof_public": "The original warning, in an envelope with Grant's own handwriting on it: 'File. Not to be shown.'"
       },
       "need_alive": "Silas knows where the original Blackthorne boundary plans are kept. Without them, a neighbour's challenge could take a third of your land.",
       "scandal": {
@@ -199,7 +202,8 @@
         "title": "The Blighted Garden",
         "text": "Before the Royal medal of 1889 you crept into your rival Agatha Fenn's orchid house and treated her plants with a blight of your own devising. Her collection died. Worse, people decided she had smuggled diseased plants, and she was disgraced. You won the medal.",
         "excuse": "She was a fraud in all but name, and you were the better botanist. You only hurried along the inevitable.",
-        "proof": "An apothecary's ledger showing your purchases, and your own notes for the blight formula."
+        "proof": "An apothecary's ledger showing your purchases, and your own notes for the blight formula.",
+        "proof_public": "An apothecary's ledger showing Caroline's purchases, and her own notes for the blight formula."
       },
       "need_alive": "Silas holds your notes proving that the remedy you gave him last night was harmless feverfew and willow bark. Without him, that vial looks like poison.",
       "scandal": {
@@ -248,7 +252,8 @@
         "title": "The Clerk's Ledger",
         "text": "When £8,000 went missing from your bank's accounts, you altered the ledger so the blame fell on your clerk, Edwin Marsh. He was dismissed and blacklisted across the City. The money was yours to explain, and you had spent it. Later you burned the one page that would have cleared him.",
         "excuse": "Marsh was careless anyway. The bank would have collapsed and taken a hundred families with it. You protected far more people than you hurt.",
-        "proof": "A copy of the original ledger page, made by Marsh before it disappeared."
+        "proof": "A copy of the original ledger page, made by Marsh before it disappeared.",
+        "proof_public": "A copy of the original ledger page, made by Marsh before it disappeared."
       },
       "need_alive": "Silas knows of a dormant Ravenscroft claim on the estate trust that could rescue your finances. Only he can find the paperwork.",
       "scandal": {
@@ -297,7 +302,8 @@
         "title": "The Aunt's Last Will",
         "text": "Sitting with your dying Aunt Hester, you found a new will in her writing box leaving her fortune to a children's hospital. You burned it in the grate. The older will, leaving everything to you, stood, and it has kept the Ravenscrofts afloat.",
         "excuse": "Aunt Hester was confused at the end. The new will was a whim of her nurse's making. You only kept the family's money in the family.",
-        "proof": "The attendant's diary: 'Lady Taylor alone with the writing box. A smell of burning paper.'"
+        "proof": "The attendant's diary: 'Lady Taylor alone with the writing box. A smell of burning paper.'",
+        "proof_public": "The attendant's diary: 'Lady Taylor alone with the writing box. A smell of burning paper.'"
       },
       "need_alive": "Silas knows a witness who could show Aunt Hester was not of sound mind that week, which would mean you had done nothing so very wrong.",
       "scandal": {
@@ -346,7 +352,8 @@
         "title": "The Abandoned Companion",
         "text": "On the 1886 Atlas expedition, your colleague Dr Samuel Okafor broke his leg in a snowbound pass. You left him behind to save yourself. Shepherds found him days later. He lived, but lost the leg and his career, while you published a heroic account claiming you had gone back for him.",
         "excuse": "Two men would have died. Somebody had to get out and raise the alarm. You simply improved the story afterwards, as historians do.",
-        "proof": "Dr Okafor's own logbook from the pass, which contradicts every word of your book."
+        "proof": "Dr Okafor's own logbook from the pass, which contradicts every word of your book.",
+        "proof_public": "Dr Okafor's own logbook from the pass, which contradicts every word of Griff's book."
       },
       "need_alive": "Silas can find the expedition's surviving guide before the Royal Geographical Society's inquiry next month. That guide could save you or ruin you.",
       "scandal": {
@@ -395,7 +402,8 @@
         "title": "The Child in the East Wing",
         "text": "In the fire of 1867 you were the last one into the passage. Behind you, through the smoke, you heard Eleanor calling your name. You could have gone back for her. You ran. Afterwards you told everyone the room was already full of fire. It wasn't.",
         "excuse": "You were a frightened child. Nobody blames a child. You tell yourself that nobody blames a child.",
-        "proof": "A statement you gave the parents' private inquiry in 1867, in your own childish hand, that contradicts what you told everyone else."
+        "proof": "A statement you gave the parents' private inquiry in 1867, in your own childish hand, that contradicts what you told everyone else.",
+        "proof_public": "A statement Grace gave the parents' private inquiry in 1867, in her own childish hand, that contradicts what she told everyone else."
       },
       "need_alive": "Silas alone can tell you whether a rescue would really have been possible. You have needed to know for twenty-five years.",
       "scandal": {
@@ -1283,53 +1291,644 @@
     },
     "bribes4": {
       "title": "A Word in Your Ear",
-      "text": "Offers may now be made for inheritance votes. Only inheritance votes."
+      "screen": "Inheritance votes are for sale. Make your offers on your phone.",
+      "sequence": [
+        {
+          "show": "ghost"
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "I couldn't help noticing that some of you have been rather... free with your money this evening.\n\nGood. Let's encourage that."
+        },
+        {
+          "wait": 800
+        },
+        {
+          "show": "card",
+          "title": "Buying a vote",
+          "items": [
+            "Offer a guest from another family money to rank someone in a set place on the next inheritance ballot",
+            "For example: 'Put me first.' Or: 'Put my wife second.'",
+            "They accept or refuse, privately, on their phone",
+            "Silas checks the ballot. Only kept promises are paid",
+            "Inheritance votes only. Never murder votes."
+          ],
+          "warn": 4
+        },
+        {
+          "say": "For the next few minutes, inheritance votes are for sale.\n\nYou may offer any guest from another family money to rank someone in a particular place on the next inheritance ballot.\n\nFirst place, second, or third. You choose."
+        },
+        {
+          "wait": 800
+        },
+        {
+          "say": "And yes, I check the ballots.\n\nIf they vote as promised, they are paid.\n\nIf they take your money and vote however they please... they get nothing, and you keep it.\n\nIt's almost as if honesty were profitable. What a novel idea."
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "Suspicion, however, is not for sale.\n\nYou cannot buy a murder vote.\n\nI'd like to think my death is worth more than a few thousand pounds."
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "show": "notice",
+          "text": "Inheritance votes are for sale.",
+          "sub": "Offer on your phone. Silas checks every ballot."
+        }
+      ]
     },
     "ballots3": {
       "title": "Inheritance and Suspicion",
-      "text": "The third inheritance ballot, and the second suspicion ballot."
+      "screen": "Cast both ballots on your phone: the third inheritance ballot and the second suspicion ballot.",
+      "sequence": [
+        {
+          "show": "ghost"
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "Ballot time again.\n\nI do so enjoy watching you pretend to think about it."
+        },
+        {
+          "wait": 800
+        },
+        {
+          "say": "Your third inheritance ballot. Three fellow guests, in order. Not yourself. Not your spouse.\n\nAnd if someone paid you for your vote... I'm watching."
+        },
+        {
+          "wait": 800
+        },
+        {
+          "say": "And your second suspicion ballot.\n\nYou've heard the questions. You've heard the answers. Some of those answers were lies.\n\nWho do you think killed me?"
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "Remember, suspicion costs the accused half a point each.\n\nSo vote for who you believe did it.\n\nOr, if you're feeling ruthless, for whoever you'd most like to see poor."
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "show": "notice",
+          "text": "Cast both ballots on your phone.",
+          "sub": "Inheritance ballot 3 · Suspicion ballot 2"
+        }
+      ]
     },
     "revelations": {
       "title": "Silas's Revenge",
-      "silas": "You lied to me. Some of you, a great deal. You also paid each other. Let us see who.",
-      "screen": "Silas has seen everything."
+      "screen": "Silas has seen everything.",
+      "sequence": [
+        {
+          "show": "black"
+        },
+        {
+          "wait": 2000
+        },
+        {
+          "sfx": "rumble"
+        },
+        {
+          "wait": 1800
+        },
+        {
+          "show": "ghost"
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "say": "I said I would keep score.\n\nDid you think I was joking?\n\nI am a butler. I have never joked in my life. Or, indeed, after it."
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "All evening you've answered questions. In public. And in private, when you thought nobody else could hear.\n\nSome of you told the truth.\n\nSome of you... did not."
+        },
+        {
+          "wait": 800
+        },
+        {
+          "sfx": "drone_on"
+        },
+        {
+          "say": "Let's see who."
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "show": "clear"
+        },
+        {
+          "wait": 2500
+        },
+        {
+          "say": "There it is. The truth, and the lies.\n\nIf your name says LIED, I suggest you start explaining.\n\nAnd if it says NOT QUESTIONED... well. Nobody thought you were interesting enough to ask. How fortunate. Or how suspicious."
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "say": "And now the money.\n\nThe Ledger of Corruption. How much each of you paid, and how much each of you received.\n\nNot to whom. I'm a ghost, not a gossip."
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "say": "Some of you have been very generous.\n\nAnd some of you have been very well paid.\n\nI wonder what for."
+        },
+        {
+          "sfx": "drone_off"
+        }
+      ]
     },
     "confront": {
       "title": "Confrontation",
-      "text": "Five minutes. Accuse, defend, deny."
+      "screen": "Five minutes. Accuse, defend, deny.",
+      "sequence": [
+        {
+          "show": "ghost"
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "Now. Five minutes.\n\nYou have the truth board. You have the ledger. You have whatever your little private questions told you."
+        },
+        {
+          "wait": 800
+        },
+        {
+          "say": "Use them.\n\nAsk the liars why they lied. Ask the big spenders what they were buying.\n\nAccuse. Defend. Deny. Shout, if you must. Though not at the staff. There are no staff. You killed them. Well, him. Me."
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "Somebody in this room was in the Great Hall when the lights went out.\n\nAnd somebody in this room knows they're lying about it.\n\nOff you go."
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "show": "clear"
+        }
+      ]
     },
     "temptation": {
       "title": "The Last Temptation",
-      "text": "The final chance to buy an inheritance vote."
+      "screen": "The final chance to buy an inheritance vote. Make your offers on your phone.",
+      "sequence": [
+        {
+          "show": "ghost"
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "The last temptation.\n\nOne final chance to buy a vote before the final inheritance ballot."
+        },
+        {
+          "wait": 800
+        },
+        {
+          "say": "Same rules as before. Offer money for a guest to rank someone in a set place.\n\nI check. Kept promises are paid. Broken ones are not."
+        },
+        {
+          "wait": 800
+        },
+        {
+          "say": "Do think about who you're paying, though.\n\nIf their family is disinherited tonight, the deal is void. You keep your money, and they get nothing.\n\nNever bribe a family that's about to lose everything. It's terribly bad manners. And worse business."
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "show": "notice",
+          "text": "Last chance to buy an inheritance vote.",
+          "sub": "Offer on your phone."
+        }
+      ]
     },
     "ballot4": {
       "title": "The Final Inheritance Ballot",
-      "text": "Your last inheritance vote. Suspicion will still cost influence."
+      "screen": "Your last inheritance vote. Cast it on your phone.",
+      "sequence": [
+        {
+          "show": "ghost"
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "Your final inheritance ballot.\n\nAfter this, the standings are fixed. Whatever happens next, this is how the fortune will be shared."
+        },
+        {
+          "wait": 800
+        },
+        {
+          "say": "Three guests. In order. Not yourself, not your spouse.\n\nThink of everything you've learned tonight. Who deserves it. Who has lied to you. Who has paid you.\n\nAnd who you'd simply enjoy watching go home poor."
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "Choose well. There are no more chances after this one."
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "show": "notice",
+          "text": "Cast your final inheritance ballot on your phone.",
+          "sub": "The standings are fixed after this."
+        }
+      ]
     },
     "hotseat": {
       "title": "The Devil's Defense",
-      "text": "The two prime suspects take the hot seat. Each may defend themselves, or accuse another."
+      "screen": "The two prime suspects take the hot seat. Each may defend themselves, or accuse another.",
+      "sequence": [
+        {
+          "show": "black"
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "sfx": "door"
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "show": "ghost"
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "Two of you have attracted rather more suspicion than the rest.\n\nCome. Take the hot seat."
+        },
+        {
+          "wait": 800
+        },
+        {
+          "say_from": "hotseat"
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "show": "card",
+          "title": "The Devil's Defense",
+          "items": [
+            "Each of you makes one choice, on your phone",
+            "DEFEND yourself: Silas reveals evidence in your favour",
+            "or ACCUSE another guest: Silas reveals evidence against them",
+            "Both choices appear on the screen at the same moment"
+          ]
+        },
+        {
+          "say": "You each get one choice.\n\nDefend yourself, and I'll show everyone something that speaks in your favour.\n\nOr accuse someone else, and I'll show everyone something that speaks against them."
+        },
+        {
+          "wait": 800
+        },
+        {
+          "say": "Choose on your phones. Neither of you will see the other's choice until both are made.\n\nAnd then, I imagine, you'll have quite a lot to say to each other."
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "show": "clear"
+        }
+      ]
     },
     "suspicion3": {
       "title": "The Final Suspicion Ballot",
-      "text": "Rank your three suspects for the last time."
+      "screen": "Rank your three suspects for the last time. The guest with the most suspicion stands trial.",
+      "sequence": [
+        {
+          "show": "ghost"
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "The final suspicion ballot.\n\nRank your three suspects, one last time."
+        },
+        {
+          "wait": 800
+        },
+        {
+          "say": "This one matters more than the others.\n\nWhoever ends up with the most suspicion, across the whole evening, stands trial for my murder.\n\nAnd then the eight of you decide their fate."
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "So no more voting for your brother-in-law because he took the last canapé.\n\nVote for the person who killed me."
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "show": "notice",
+          "text": "Cast your final suspicion ballot on your phone.",
+          "sub": "The most suspected guest stands trial."
+        }
+      ]
     },
     "bridge": {
       "title": "The Ghost Remembers",
-      "silas": "I cannot tell you who. The dead are not permitted. But I can show you what my sister saw, and what my hand closed on as I fell.",
-      "screen": "The ghost remembers."
+      "screen": "One last piece of evidence. Check your phones.",
+      "sequence": [
+        {
+          "show": "black"
+        },
+        {
+          "wait": 2000
+        },
+        {
+          "sfx": "rumble"
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "show": "ghost"
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "say": "I'm afraid I'm not permitted to tell you who did it.\n\nThere are rules, even for the dead. Mostly about paperwork."
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "But I can tell you this.\n\nThe ceremonial dagger they found under that cushion was never the weapon.\n\nThat blade couldn't cut a birthday cake. Believe me. I've tried."
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "The doctor has finished with me now. Rather undignified, being examined.\n\nHis report is on your phones. It tells you what kind of thing killed me."
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "Look at the report. Then look at what everyone was carrying tonight.\n\nAnd ask yourselves who was really where they said they were when the lights went out."
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "show": "notice",
+          "text": "The doctor's report is on your phones.",
+          "sub": "Evidence → The doctor's report"
+        }
+      ]
     },
     "wagers": {
       "title": "The Devil's Wager",
-      "text": "Wager on the accused: guilty, or not guilty. Up to a quarter of your family's share."
+      "screen": "Wager on the accused: guilty, or not guilty. Up to a quarter of your family's share.",
+      "sequence": [
+        {
+          "show": "ghost"
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "The votes are counted. The accused is..."
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "sfx": "door"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "say_from": "nominee"
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "say": "Before the tribunal decides, a little sport.\n\nThe Devil's Wager."
+        },
+        {
+          "wait": 800
+        },
+        {
+          "show": "card",
+          "title": "The Devil's Wager",
+          "items": [
+            "Bet GUILTY or NOT GUILTY on the accused, on your phone",
+            "Up to a quarter of your family's share",
+            "The losers' stakes are shared among the winners",
+            "Wagers from a disinherited family are cancelled"
+          ],
+          "warn": 3
+        },
+        {
+          "say": "Bet on the verdict. Guilty, or not guilty.\n\nYou may wager up to a quarter of what your family stands to inherit.\n\nEveryone who bets wrong loses their stake, and it's shared among everyone who bets right."
+        },
+        {
+          "wait": 800
+        },
+        {
+          "say": "And if your family is disinherited tonight, your wager is cancelled. Win or lose.\n\nThe dead have no use for money. Neither, it turns out, do the disinherited."
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "Bet with your head.\n\nOr bet with your heart.\n\nI've seen what's in most of your hearts. I'd use your head."
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "show": "clear"
+        }
+      ]
     },
     "verdict": {
       "title": "The Final Tribunal",
-      "text": "Four votes of eight convict. Vote YES or NO."
+      "screen": "Four votes of eight convict. Vote GUILTY or NOT GUILTY on your phone.",
+      "sequence": [
+        {
+          "show": "black"
+        },
+        {
+          "wait": 2000
+        },
+        {
+          "sfx": "drone_on"
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "show": "ghost"
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "say": "This is it.\n\nThe Final Tribunal."
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say_from": "nominee_trial"
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "show": "card",
+          "title": "The Final Tribunal",
+          "items": [
+            "All eight of you vote: GUILTY or NOT GUILTY",
+            "Four guilty votes of eight convict",
+            "Convict the murderer: their family inherits nothing",
+            "Convict the wrong person, or nobody: the family in last place inherits nothing"
+          ],
+          "warn": 3
+        },
+        {
+          "say": "All eight of you vote. Guilty, or not guilty.\n\nFour guilty votes are enough to convict."
+        },
+        {
+          "wait": 800
+        },
+        {
+          "say": "Convict the person who killed me, and their family forfeits everything.\n\nConvict the wrong person, or nobody at all, and the killer walks free.\n\nAnd the family at the bottom of the standings goes home with nothing instead."
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "Look at them.\n\nLook at what they told you tonight.\n\nAnd then vote."
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "sfx": "drone_off"
+        },
+        {
+          "show": "clear"
+        }
+      ]
     },
     "reveal": {
       "title": "The Truth",
-      "text": ""
+      "screen": "The truth.",
+      "sequence": [
+        {
+          "show": "black"
+        },
+        {
+          "wait": 3000
+        },
+        {
+          "sfx": "rumble"
+        },
+        {
+          "wait": 2500
+        },
+        {
+          "show": "ghost"
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "say": "The votes are in."
+        },
+        {
+          "wait": 2000
+        },
+        {
+          "say_from": "verdict"
+        },
+        {
+          "wait": 2000
+        },
+        {
+          "sfx": "drone_on"
+        },
+        {
+          "say": "And now, at last, you deserve the truth."
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "show": "clear"
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say_from": "reconstruction"
+        },
+        {
+          "wait": 2000
+        },
+        {
+          "sfx": "drone_off"
+        },
+        {
+          "say": "And so, to the money."
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "say_from": "payouts"
+        },
+        {
+          "wait": 2000
+        },
+        {
+          "say": "Spend it wisely.\n\nOr don't. You never have before."
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "say": "My work here is done.\n\nThe Covenant is closed.\n\nAnd I, at last, may take an evening off."
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "Goodnight, my dears.\n\nDo mind the stairs on your way out. They're terribly dark."
+        }
+      ]
     }
   },
   "clue_groups": {

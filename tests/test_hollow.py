@@ -58,8 +58,10 @@ class Engine(unittest.TestCase):
 
     def test_four_of_eight_convicts_otherwise_lowest_influence_goes(self):
         fi = {"a": 5, "b": -2, "c": 9, "d": -2}
-        self.assertEqual(eng.eliminate(4, "c1", self.FAMILY_OF, fi, list(self.FAMS)), ("c1", "c"))
-        self.assertEqual(eng.eliminate(3, "c1", self.FAMILY_OF, fi, list(self.FAMS)), (None, "b"))
+        self.assertEqual(eng.eliminate(4, "c1", self.FAMILY_OF, fi, list(self.FAMS), culprit="c1"), ("c1", "c"))
+        self.assertEqual(eng.eliminate(3, "c1", self.FAMILY_OF, fi, list(self.FAMS), culprit="c1"), (None, "b"))
+        # convicting an innocent: last place forfeits, as Silas's sealed instructions say
+        self.assertEqual(eng.eliminate(4, "c1", self.FAMILY_OF, fi, list(self.FAMS), culprit="a1"), ("c1", "b"))
 
 
 class Content(unittest.TestCase):

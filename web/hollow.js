@@ -792,6 +792,7 @@ function crest() {
 }
 
 function seqShow(view, item) {
+  if (item.show === "clear") { clearSeq(); return; }   // step aside so the TV's own content shows
   const layer = seqLayer();
   if (!layer) return;
   const kind = item.show;
@@ -840,7 +841,8 @@ async function runSequence(view) {
   seqRunning = true;
   speaking = true;
   showBox(null);
-  const items = view.sequence;
+  // "say_from": words that depend on tonight's game (e.g. the murderer's name), filled in here
+  const items = view.sequence.map((x) => (x.say_from ? { ...x, say: dynamicSpeech(view, x.say_from) } : x)).filter((x) => !x.say_from || x.say);
   const lines = items.filter((x) => x.say).map((x) => x.say);
   const voiced = roomSoundOn && room && room.voice && audioCtx;
   let fetched = 0;
@@ -866,6 +868,26 @@ async function runSequence(view) {
   } finally {
     if (gen === speechGen) { seqRunning = false; speaking = false; }
   }
+}
+
+function dynamicSpeech(view, what) {
+  const r = view.reveal;
+  const P = '\n\n';                       // a pause between spoken parts
+  if (what === 'verdict' && r) {
+    if (!r.convicted) return 'Only ' + r.yes + ' of you said guilty. Not enough.' + P + 'Nobody is convicted tonight.';
+    return r.convicted + '.' + P + 'The tribunal says guilty.' + P + 'And the tribunal... is ' + (r.correct ? 'right.' : 'wrong.');
+  }
+  if (what === 'reconstruction' && r) return r.reconstruction.join(P);
+  if (what === 'hotseat' && view.hotseat && view.hotseat.pair.length) return view.hotseat.pair.join('.' + P + 'And ') + '.';
+  if (what === 'nominee' && view.nominee) return view.nominee + '.';
+  if (what === 'nominee_trial' && view.nominee) {
+    return view.nominee + '.' + P + 'The room suspects you of my murder. Have you anything to say?' + P + 'No? Pity. It doesn\'t matter much now anyway.';
+  }
+  if (what === 'payouts' && r) {
+    return 'The ' + r.eliminated.replace(/^The /, '') + ' walk away with nothing.' + P
+      + r.payouts.filter((p) => p.amount > 0).map((p) => p.name + ': ' + (p.amount / 1e6).toFixed(1) + ' million pounds.').join(P);
+  }
+  return '';
 }
 
 function noise(seconds, filterHz, volume, shape) {
@@ -994,7 +1016,7 @@ function renderHollowTv(v) {
       el("div", {}, el("p", { class: "h-verdict" }, r.convicted
         ? (r.correct ? `The tribunal convicted ${r.convicted}. Correctly. Eleanor and Silas are free!` : `The tribunal convicted ${r.convicted}. Wrongly. The spirits remain in these walls.`)
         : `No conviction (${r.yes} of 8). The killer walks free, and the spirits remain.`),
-      el("p", {}, `Disinherited: ${r.eliminated}`),
+      el("p", {}, r.correct ? `Disinherited, for the murder: ${r.eliminated}` : `Disinherited, in last place: ${r.eliminated}`),
       board("The Inheritance", r.payouts.map((p) => el("li", {}, `${p.name}: ${money(p.amount)}`))))));
   }
   if (v.evidence && v.evidence.length && !v.reveal) {          // the evidence itself lives on the phones

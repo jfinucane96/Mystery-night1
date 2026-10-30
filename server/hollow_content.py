@@ -385,4 +385,4 @@ def accuse_card(data, target, n):
     if n == 0:
         return {"title": f"Against {short(data, target)}: a witness", "text": SEEN[target]}
     s = data["by_id"][target]["secret"]
-    return {"title": f"Against {short(data, target)}: Silas's file", "text": f"Silas's file marked '{s['title']}': {s['proof']}"}
+    return {"title": f"Against {short(data, target)}: Silas's file", "text": f"Silas's file marked '{s['title']}': {s.get('proof_public', s['proof'])}"}

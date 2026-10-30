@@ -130,10 +130,12 @@ def settle(total, families, infl, eliminated, transfers, wagers, family_of, guil
     return {"payouts": {f: shares[f] for f in fam_order}, "deals": settled, "wagers": wager_result}
 
 
-def eliminate(yes_votes, nominee, family_of, fam_infl, fam_order, threshold=4):
-    """4 YES of 8 convicts: the nominee's family is disinherited. Otherwise the family with
-    the lowest influence is (ties in family order)."""
-    if nominee and yes_votes >= threshold:
-        return nominee, family_of[nominee]
+def eliminate(yes_votes, nominee, family_of, fam_infl, fam_order, threshold=4, culprit=None):
+    """4 YES of 8 convicts the nominee. Convict the real murderer and their family is
+    disinherited. Otherwise (no conviction, or the wrong person) the family with the lowest
+    influence is (ties in family order). Returns (convicted or None, disinherited family)."""
+    convicted = nominee if nominee and yes_votes >= threshold else None
+    if convicted and convicted == culprit:
+        return convicted, family_of[convicted]
     low = sorted(fam_order, key=lambda f: (fam_infl.get(f, 0), fam_order.index(f)))[0]
-    return None, low
+    return convicted, low

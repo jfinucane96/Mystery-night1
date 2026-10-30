@@ -646,7 +646,8 @@ def outcome(t, data, story):
     infl = influence(t, data)
     fam_order = list(data["families"])
     convicted, eliminated = eng.eliminate(yes, nominee, data["family_of"],
-                                          eng.family_influence(infl, data["families"]), fam_order)
+                                          eng.family_influence(infl, data["families"]), fam_order,
+                                          culprit=s["culprit"])
     wagers = {r["cid"]: (r["side"], r["amount"]) for r in t.all("SELECT * FROM h_wagers")}
     result = eng.settle(data["game"]["total_estate"], data["families"], infl, eliminated, transfers(t, data),
                         wagers, data["family_of"], nominee == s["culprit"], data["order"])
