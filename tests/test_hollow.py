@@ -69,16 +69,20 @@ class Content(unittest.TestCase):
         self.assertEqual(hc.check(data), [])
         for culprit in data["order"]:
             case = hc.build(data, story, culprit)
-            # The evidence narrows it down: sharp/blunt -> the exact kind of wound -> the weapon itself
-            it = data["by_id"][culprit]["item"]
-            same_group = [c for c in data["order"] if data["by_id"][c]["item"]["group"] == it["group"]]
-            self.assertEqual(len(same_group), 2)
-            self.assertIn(data["clue_groups"][it["group"]]["detail"], case["public"]["wound"]["text"])
-            self.assertIn(it["owner"], case["public"]["weapon"]["text"])
-            others = [data["by_id"][c]["item"]["owner"] for c in data["order"] if c != culprit]
-            self.assertFalse(any(o in case["public"]["weapon"]["text"] for o in others))
-            # The dagger witness is innocent; the dagger is clearly not the weapon
-            self.assertNotEqual(case["dagger_witness"], culprit)
+            # The alibi chain: the murderer's lie names someone who was really alone,
+            # and a third guest saw that person alone. Nobody in the chain is the murderer.
+            al = case["alibi"]
+            x, w = al["alone"], al["saw_alone"]
+            self.assertNotIn(culprit, (x, w, al["heard"]))
+            self.assertNotEqual(data["family_of"][x], data["family_of"][culprit])
+            truth, lie = hc.answer(data, case, culprit, "s2", story)
+            self.assertIn(hc.short(data, x), lie)
+            self.assertIn("on my own", hc.answer(data, case, x, "s2", story)[0])
+            self.assertIn(hc.short(data, x), hc.answer(data, case, w, "s5", story)[0])
+            paired = [c for c in data["order"] if c not in (culprit, x)]
+            self.assertTrue(all(c in al["partner"] for c in paired))
+            self.assertFalse(any(data["family_of"][a] == data["family_of"][b] for a, b in al["pairs"]))
+            # Light evidence: the planted dagger, and a late sharp-or-blunt hint
             self.assertIn("far too blunt", case["public"]["dagger_found"]["text"])
             self.assertNotIn("register", json.dumps(case["public"]).lower())
             # The murderer's own phone knows why, and every phone has one childhood memory
@@ -248,21 +252,28 @@ class Evening(unittest.TestCase):
         self.act("jonathan", "decide", {"id": force["id"], "accept": True})
         self.step("interrogations")
         tried_reserved = False
-        for _ in order:
+        asked = {("grant", "s1")}                                   # reserved for Jonathan's forced question
+        qids = ["s1", "s2", "s5", "s4", "s3"]
+        for turn in range(2 * len(order)):                           # two rounds of interrogations
             asker = next(c for c in order if self.me(c)["action"].get("my_turn"))
-            if asker == "jonathan":
-                target, track, qid = "grant", "silas", "s1"
+            if asker == "jonathan" and ("grant", "s1") in asked and turn < len(order):
+                target, qid = "grant", "s1"
             elif asker == "griff":
-                target, track, qid = "taylor", "silas", "s4"       # breaks the protection deal
+                target = "taylor"                                    # breaks the protection deal
+                qid = next(q for q in qids if ("taylor", q) not in asked)
             else:
                 k = order.index(asker)
-                target = next(order[(k + d) % 8] for d in range(1, 8) if order[(k + d) % 8] != "grant")
-                track, qid = "silas", f"s{k % 5 + 1}"
+                target = next(order[(k + d) % 8] for d in range(1, 8)
+                              if order[(k + d) % 8] not in ("grant", asker)
+                              and any((order[(k + d) % 8], q) not in asked for q in qids))
+                qid = next(q for q in qids if (target, q) not in asked)
                 if not tried_reserved and asker != "grant":          # Jonathan's reserved question is off limits
                     self.act(asker, "interrogate", {"target": "grant", "track": "silas", "qid": "s1"}, 409)
                     tried_reserved = True
-            self.act(asker, "interrogate", {"target": target, "track": track, "qid": qid})
-            self.act(asker, "interrogate", {"target": target, "track": track, "qid": qid}, 409)
+            if (target, qid) != ("grant", "s1"):
+                asked.add((target, qid))
+            self.act(asker, "interrogate", {"target": target, "track": "silas", "qid": qid})
+            self.act(asker, "interrogate", {"target": target, "track": "silas", "qid": qid}, 409)
             q = self.me(target)["action"]["questioned"]
             self.assertTrue(q["truth"] and q["lie"])
             self.act(target, "answer", {"choice": "lie" if target in (culprit, "taylor") else "truth"})   # Taylor is always questioned

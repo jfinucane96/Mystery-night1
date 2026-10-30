@@ -5,9 +5,9 @@ Backstory: Eleanor Vale died in the 1867 fire by accident, and all eight childre
 played some part in it (each character's childhood memory says what). There is ONE
 mystery tonight: who killed Silas. Every case shares one canon (dossiers, the witness
 network, memories); what changes per murderer is the decoy and hiding place in `cases`.
-The clues are concrete and fair: every guest carries one personal item (named in their
-introduction), and the evidence narrows the suspects from eight, to four, to two, to the
-owner of the weapon itself.
+The mystery is solved by asking the right questions about the blackout: everyone's alibi,
+who was with whom, and what they saw. Physical evidence is kept light (a planted dagger,
+and a late sharp-or-blunt hint matched against the personal items guests carry).
 No AI writes any of this at runtime."""
 
 import json
@@ -52,7 +52,7 @@ PLAN_MINUTES = {
     "lobby": 0, "reunion": 15, "polls": 8, "poll_results": 5,
     "covenant": 5, "covenant2": 6, "envelopes": 4, "covenant3": 4, "ballot1": 3,
     "blackout": 2, "murder": 12, "ghost": 4, "ballots2": 6,
-    "deals_intro": 3, "deals": 7, "interrogations": 20, "investigations": 10, "bribes4": 4, "ballots3": 4,
+    "deals_intro": 3, "deals": 7, "interrogations": 28, "investigations": 10, "bribes4": 4, "ballots3": 4,
     "revelations": 6, "confront": 5, "temptation": 5, "ballot4": 3, "hotseat": 10, "suspicion3": 3, "bridge": 4,
     "wagers": 5, "verdict": 6, "reveal": 10,
 }
@@ -143,13 +143,50 @@ def check_case(data, cid):
     decoy = case["decoy"]
     if decoy == cid or data["family_of"][decoy] == data["family_of"][cid]:
         p.append("the decoy must be from another family")
-    if dagger_witness(cid) == cid:
-        p.append("the dagger witness is the murderer")
+    al = alibis(data, cid)
+    if al["pairs"] is None or len(al["pairs"]) != 3:
+        p.append("can't pair up the innocent guests")
+    elif cid in (al["alone"], al["saw_alone"], al["heard"]):
+        p.append("a key witness is the murderer")
     return p
 
 
-def dagger_witness(culprit):
-    return next(c for c in ("caroline", "jonathan", "taylor") if c != culprit)
+LOCATIONS = ["by the chapel window", "at the vestry door", "at the side table with the candles",
+             "by the chapel's main door", "beside the stone font", "by the organ", "in the front pew"]
+
+
+def alibis(data, culprit):
+    """Where everyone was in the dark. Six innocents were in pairs and vouch for each other;
+    one innocent was alone by the window (the murderer's false alibi); a witness in one pair
+    saw that person alone in a lightning flash; someone in another pair felt the killer pass."""
+    order = data["order"]
+    fam = data["family_of"]
+    start = order.index(culprit)
+    ring = [order[(start + k) % len(order)] for k in range(1, len(order))]
+    alone = next(c for c in ring if fam[c] != fam[culprit])
+    rest = [c for c in ring if c != alone]
+    pairs = _pair_up(rest, fam)
+    where = {alone: LOCATIONS[0]}
+    partner = {}
+    for k, (a, b) in enumerate(pairs):
+        where[a] = where[b] = LOCATIONS[k + 1]
+        partner[a], partner[b] = b, a
+    return {"alone": alone, "where": where, "partner": partner, "pairs": pairs,
+            "saw_alone": pairs[0][0], "heard": pairs[1][0], "claim": LOCATIONS[0]}
+
+
+def _pair_up(people, fam):
+    """Pairs with no married couples in them (deterministic)."""
+    if not people:
+        return []
+    first = people[0]
+    for other in people[1:]:
+        if fam[other] != fam[first]:
+            rest = [p for p in people[1:] if p != other]
+            sub = _pair_up(rest, fam)
+            if sub is not None:
+                return [(first, other)] + sub
+    return None
 
 
 def short(data, cid):
@@ -165,8 +202,8 @@ def item(data, cid):
 
 def build(data, story, culprit):
     """Everything the game needs for one murderer, derived deterministically.
-    Evidence narrows the suspects from eight, to four (sharp or blunt), to two (the exact
-    kind of wound), to one (the weapon itself, found with blood on it)."""
+    The mystery is solved by questioning: the murderer's alibi names a guest who was really
+    alone, and one other guest saw that guest alone in a flash of lightning."""
     if culprit not in data["by_id"]:
         raise HollowError("unknown murderer")
     case = data["cases"][culprit]
@@ -179,33 +216,43 @@ def build(data, story, culprit):
     weapon_you = it["name"] if it["name"].startswith(("your ", "the ")) else it["name"]
 
     memories = {cid: list(data["by_id"][cid]["memories"]) for cid in data["order"]}
+    al = alibis(data, culprit)
+    x, w, v = al["alone"], al["saw_alone"], al["heard"]
 
-    # --- the blackout
-    blackout = {cid: data["by_id"][cid]["blackout"] for cid in data["order"]}
-    blackout[dagger_witness(culprit)] += " Then quick, soft footsteps, and the swish of a robe hurrying away from the altar."
-    kill = (f"When the lightning took the lights, you crossed the chapel in the dark and struck Silas down with "
-            f"{weapon_you}. You lifted the dagger from its stand and pushed it under the cushion of {name(decoy)}'s chair, "
-            f"to throw suspicion their way. Then you hid your {it['short']} {case['hidden']} and were back in your place "
-            f"before the lights returned. If anyone asks where your {it['short']} is, you left it with your coat.")
+    # --- the blackout: where everyone really was, and what they noticed
+    blackout = {}
+    for cid in data["order"]:
+        if cid == culprit:
+            continue
+        loc = al["where"][cid]
+        partner = al["partner"].get(cid)
+        text = (f"When the lights went out you were {loc}, with {nick(partner)}. You held on to each other until they came back."
+                if partner else f"When the lights went out you were {loc}, on your own. Nobody can vouch for you.")
+        if cid == x:
+            text += " You heard quick footsteps somewhere in the dark, going toward the altar, but you couldn't see whose."
+        if cid == w:
+            text += f" In one flash of lightning you saw the chapel window clearly: {nick(x)} was standing there, alone. Nobody else near."
+        if cid == v:
+            text += " Just after the lights died, someone in a robe brushed hard past you, hurrying toward the altar. You never saw a face."
+        blackout[cid] = text
+    kill = (f"When the lightning took the lights, you slipped away to the altar and struck Silas down with {weapon_you}. "
+            f"You pushed the ceremonial dagger under the cushion of {name(decoy)}'s chair to throw suspicion their way, "
+            f"hid your {it['short']} {case['hidden']}, and were back before the lights returned.")
     blackout[culprit] = kill
 
-    # --- public evidence
+    # --- public evidence (kept light: the questions do the work)
     public = {}
     for pid, p in data["public"].items():
         public[pid] = {"id": pid, "title": p["title"], "text": p["text"], "at": PUBLIC_AT[p["phase"]]}
     sharp = group["first"] == "sharp"
     extra = [
-        ("medical", "p4", "The doctor's first look",
-         "Silas was not killed with the ceremonial dagger. "
-         + ("He was stabbed once, with something narrow and sharp." if sharp
-            else "He was killed by a single heavy blow to the head with something hard and blunt.")),
         ("dagger_found", "p4", "The dagger is found",
          f"The missing ceremonial dagger has been found pushed under the cushion of {name(decoy)}'s chair. "
          f"There is no blood on it, and its blade is far too blunt to have done this. Somebody wanted it found there."),
-        ("wound", "p5", "The doctor's closer look",
-         f"Having examined the wound properly, the doctor is now certain of the weapon's kind: {group['detail']}."),
-        ("weapon", "bridge", "The weapon is found",
-         f"Found hidden {case['hidden']}: {it['owner']}, with Silas's blood still on it."),
+        ("medical", "bridge", "The doctor's report",
+         "Silas was not killed with the ceremonial dagger. "
+         + ("He was stabbed once, with something narrow and sharp." if sharp
+            else "He was killed by a single heavy blow to the head with something hard and blunt.")),
     ]
     for pid, at, t, text in extra:
         public[pid] = {"id": pid, "title": t, "text": text, "at": PUBLIC_AT[at]}
@@ -214,20 +261,21 @@ def build(data, story, culprit):
     reconstruction = [
         f"{name(culprit)}. It was you.",
         f"I knew what you had done, {nick(culprit)}. '{secret['title']}'. I had the proof, and tonight I meant to read it "
-        f"aloud. So when the lightning took the lights, you crossed the chapel in the dark and struck me down with "
+        f"aloud. So when the lightning took the lights, you slipped through the dark and struck me down with "
         f"your own {it['short']}.",
-        f"You took the dagger to hang the blame on {nick(decoy)}, and you hid your {it['short']} {case['hidden']}. "
-        f"But a dagger that blunt never killed anyone, and the wound told the doctor exactly what kind of thing you carried.",
+        f"You hid the dagger under {nick(decoy)}'s chair, and you told everyone you had been by the window with "
+        f"{nick(x)}. But {nick(x)} was alone, and {nick(w)} saw it in the lightning. A lie needs a witness, my dear. Yours had one.",
     ]
     return {
         "culprit": culprit, "memories": memories, "blackout": blackout, "public": public,
-        "reconstruction": reconstruction, "decoy": decoy, "dagger_witness": dagger_witness(culprit),
+        "reconstruction": reconstruction, "decoy": decoy, "alibi": al,
         "truth": {
             "title": "Your terrible truth",
             "why": (f"Silas knew your darkest secret ('{secret['title']}') and had the proof. Tonight he was going to "
                     f"expose it in front of everyone, and take your family's fortune with it."),
             "tonight": kill,
-            "cover": "Tonight you never left your place. Keep to that.",
+            "cover": (f"Your story: you were {al['where'][x]} with {nick(x)} the whole time. {nick(x)} really was there, "
+                      f"alone in the dark, so {nick(x)} can't prove you weren't. Stick to it."),
             "goal": "Nobody must ever find out. Lie when you need to, deflect suspicion onto others, and make sure your family still inherits.",
         },
     }
@@ -239,15 +287,33 @@ def answer(data, case, target, qid, story):
     """The two scripted answers the target may choose from, as (truth, lie)."""
     base = data["by_id"][target]["answers"][qid]
     truth, lie = base["truth"], base["lie"]
-    if target != case["culprit"]:
+    if qid not in ("s1", "s2", "s5"):
         return truth, lie
-    decoy = story["by_id"][case["decoy"]]["name"] if case["decoy"] in story.get("by_id", {}) else case["decoy"]
-    over = {
-        "s1": ("I crossed the chapel in the dark, to Silas.", truth),
-        "s2": ("No one. I wasn't in my place.", truth),
-        "s5": (f"I took it from the stand and hid it under {decoy}'s cushion.", truth),
-    }
-    return over.get(qid, (truth, lie))
+    al = case["alibi"]
+    nick = lambda c: short(data, c)
+    x = al["alone"]
+    if target == case["culprit"]:
+        return {
+            "s1": ("At the altar. With Silas.", f"{al['claim'][0].upper()}{al['claim'][1:]}, with {nick(x)}."),
+            "s2": ("Nobody. I was with Silas, and then he was dead.", f"{nick(x)}. We were together by the window the whole time."),
+            "s5": ("Silas's last breath.", "Nothing at all. Just the thunder."),
+        }[qid]
+    where = al["where"][target]
+    partner = al["partner"].get(target)
+    seen = "Only the thunder, and my companion gripping my arm."
+    if target == x:
+        seen = "I heard quick footsteps somewhere in the dark, going toward the altar. I couldn't see whose."
+    if target == al["saw_alone"]:
+        seen = f"In one flash of lightning I saw the chapel window. {nick(x)} was standing there, alone. Nobody else near."
+    if target == al["heard"]:
+        seen = "Someone in a robe brushed hard past me just after the lights died, hurrying toward the altar. I never saw a face."
+    return {
+        "s1": (f"{where[0].upper()}{where[1:]}.", "I honestly don't know. It was pitch dark."),
+        "s2": ((f"{nick(partner)}. We held on to each other until the lights came back." if partner
+                else "Nobody. I was on my own by the window, I'm afraid."),
+               ("Nobody. I was alone." if partner else "I'm not sure. Someone may have been near me.")),
+        "s5": (seen, "Nothing at all."),
+    }[qid]
 
 
 CORROBORATION = {

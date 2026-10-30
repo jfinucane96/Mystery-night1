@@ -27,6 +27,7 @@ BALLOT_STEPS = {
 BALLOT_AT = {k: step for step, ks in BALLOT_STEPS.items() for k in ks}
 DEAL_STEPS = {"deals": ("protect", "protect_couple", "force"), "bribes4": ("bribe",), "temptation": ("bribe",)}
 BRIBE_ROUND = {"bribes4": 3, "temptation": 4}
+INTERROGATION_ROUNDS = 2
 REVEAL_AFTER = 60          # seconds an investigated guest has to respond before the clue can be opened
 MAX_AMOUNT = 12_000_000
 
@@ -177,6 +178,7 @@ def _on_enter(t, data, story, step):
     if step == "interrogations" and not s["turn_order"]:
         infl = influence(t, data)
         order = eng.ranking(infl, [c for c in data["order"] if c in players(t, data)])
+        order = order * INTERROGATION_ROUNDS              # everyone asks once per round
         t.run("UPDATE hollow_state SET turn_order = ? WHERE id = 1", (json.dumps(order),))
     if step == "revelations" and not s["ledger"]:
         t.run("UPDATE hollow_state SET ledger = ? WHERE id = 1", (json.dumps(ledger(t, data)),))

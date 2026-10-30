@@ -551,23 +551,23 @@
     "silas": [
       {
         "id": "s1",
-        "text": "Where were you during the blackout?"
+        "text": "Where were you when the lights went out?"
       },
       {
         "id": "s2",
-        "text": "Who can confirm it?"
+        "text": "Who was with you in the dark?"
       },
       {
-        "id": "s3",
-        "text": "What happened in your last conversation with Silas?"
+        "id": "s5",
+        "text": "Did you see or hear anything during the blackout?"
       },
       {
         "id": "s4",
         "text": "What were you doing last night?"
       },
       {
-        "id": "s5",
-        "text": "What did you see near the dagger?"
+        "id": "s3",
+        "text": "What did you and Silas last talk about?"
       }
     ]
   },
@@ -1291,7 +1291,8 @@
     },
     "interrogations": {
       "title": "The Order's Inquisition",
-      "text": "One interrogation each, in order of influence."
+      "text": "Two rounds. Everyone asks two questions, out loud, in order of influence. Ask the right person the right question.",
+      "silas": "Now, the questions.\n\nTwo rounds. Each of you will ask two questions, one at a time, in front of everyone.\n\nChoose carefully whom you ask, and what. Someone in this room is lying about where they were when the lights went out.\n\nAnd a lie, my dears, always needs a witness."
     },
     "investigations": {
       "title": "Private Investigations",
