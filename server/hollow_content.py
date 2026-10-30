@@ -33,7 +33,7 @@ STEPS = [
     ("deals_intro", 4, "Silas explains the deals"),
     ("deals", 4, "First deal window (offers open)"),
     ("interrogations", 4, "Public interrogations"),
-    ("investigations", 4, "Private investigations"),
+    ("investigations", 4, "Private questions (one per couple)"),
     ("bribes4", 4, "Inheritance bribes"),
     ("ballots3", 4, "Inheritance ballot 3 + suspicion ballot 2"),
     ("revelations", 5, "Silas's revenge: truth board and ledger"),
@@ -52,7 +52,7 @@ PLAN_MINUTES = {
     "lobby": 0, "reunion": 15, "polls": 8, "poll_results": 5,
     "covenant": 5, "covenant2": 6, "envelopes": 4, "covenant3": 4, "ballot1": 3,
     "blackout": 2, "murder": 12, "ghost": 4, "ballots2": 6,
-    "deals_intro": 3, "deals": 7, "interrogations": 28, "investigations": 10, "bribes4": 4, "ballots3": 4,
+    "deals_intro": 3, "deals": 7, "interrogations": 20, "investigations": 10, "bribes4": 4, "ballots3": 4,
     "revelations": 6, "confront": 5, "temptation": 5, "ballot4": 3, "hotseat": 10, "suspicion3": 3, "bridge": 4,
     "wagers": 5, "verdict": 6, "reveal": 10,
 }
@@ -339,7 +339,10 @@ SEEN = {
 
 
 def investigation_clue(data, case, story, target, category):
-    """Truthful but incomplete private intelligence."""
+    """A couple's private question: the guest's true answer, for that couple only."""
+    if category in {q["id"] for q in data["questions"]["silas"]}:
+        truth, _ = answer(data, case, target, category, story)
+        return f"{short(data, target)}, privately: “{truth}”"
     c = data["by_id"][target]
     n = short(data, target)
     culprit = target == case["culprit"]

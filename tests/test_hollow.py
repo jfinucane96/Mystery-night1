@@ -254,7 +254,7 @@ class Evening(unittest.TestCase):
         tried_reserved = False
         asked = {("grant", "s1")}                                   # reserved for Jonathan's forced question
         qids = ["s1", "s2", "s5", "s4", "s3"]
-        for turn in range(2 * len(order)):                           # two rounds of interrogations
+        for turn in range(len(order)):                               # one public question each
             asker = next(c for c in order if self.me(c)["action"].get("my_turn"))
             if asker == "jonathan" and ("grant", "s1") in asked and turn < len(order):
                 target, qid = "grant", "s1"
@@ -283,15 +283,15 @@ class Evening(unittest.TestCase):
         self.assertEqual(status["protect"], "broken")
         self.assertEqual(next(d for d in self.me("jonathan")["deals"] if d["kind"] == "force")["status"], "honored")
         # Blackthornes investigate Nanor and get paid to drop it; Pemberwicks investigate Griff and see the clue.
-        self.act("grant", "investigate", {"target": "nanor", "category": "physical"})
+        self.act("grant", "investigate", {"target": "nanor", "category": "s2"})
         self.act("nanor", "inv_target", {"family": "blackthorne", "action": "offer", "amount": 200_000})
         self.act("caroline", "inv_decide", {"action": "counter", "amount": 400_000})
         self.act("nanor", "inv_target", {"family": "blackthorne", "action": "accept"})
         self.assertEqual(self.me("grant")["clues"], [])
-        self.act("jonathan", "investigate", {"target": "griff", "category": "motive"})
+        self.act("jonathan", "investigate", {"target": "griff", "category": "s4"})
         self.act("griff", "inv_target", {"family": "pemberwick", "action": "decline"})
-        self.assertIn("Okafor", self.me("danielle")["clues"][0]["text"])
-        self.act("danielle", "investigate", {"target": "grace", "category": "motive"}, 409)
+        self.assertIn("instruments", self.me("danielle")["clues"][0]["text"])   # Griff's true answer about last night
+        self.act("danielle", "investigate", {"target": "grace", "category": "s1"}, 409)
         self.step("bribes4")
         self.act("nanor", "offer", {"kind": "bribe", "recipient": "griff", "amount": 100_000,
                                     "terms": {"subject": "nanor", "position": 1}})

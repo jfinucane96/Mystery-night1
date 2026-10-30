@@ -88,7 +88,7 @@ const H_SECTIONS = {
   memories: { title: "The Night Eleanor Died", blurb: "Your part in the fire of 1867" },
   evidence: { title: "Evidence", blurb: "Everything the Order has made public" },
   deals: { title: "Deals & Ledger", blurb: "Your offers, deals and payments" },
-  clues: { title: "Private Intelligence", blurb: "What your family's investigation found" },
+  clues: { title: "Private Intelligence", blurb: "The answer to your couple's private question" },
 };
 
 function hSection() {
@@ -285,7 +285,7 @@ function interrogationAction(h, a) {
     out.push(el("div", { class: "questioned" },
       el("p", { class: "eyebrow" }, `${q.by} is questioning you, out loud`),
       el("p", { class: "spoken" }, `“${q.question}”`),
-      el("p", { class: "small muted" }, "Choose your answer, then say it to the room. Nobody sees which you chose, but the Truth & Lies board will."),
+      el("p", { class: "small muted" }, "Choose your answer, then say it out loud. You may lie, but it may cost you later: Silas keeps score, and later tonight he reveals to everyone who lied."),
       el("button", { class: "choice", onclick: () => hAct("answer", { choice: "truth" }) }, el("span", {}, el("strong", {}, "The truth: "), q.truth)),
       el("button", { class: "choice", onclick: () => confirm("Lie? The board will show you LIED.") && hAct("answer", { choice: "lie" }) }, el("span", {}, el("strong", {}, "A lie: "), q.lie))));
   }
@@ -317,41 +317,42 @@ function investigationAction(h, a) {
     const taken = new Set(a.taken.map((x) => x.join("|")));
     const cats = a.categories.filter((c) => !taken.has(`${target}|${c.id}`));
     const spouseName = me.hollow.dossier.spouse;
-    out.push(el("p", { class: "small muted" }, `One investigation per couple. Agree it with ${spouseName} first.`),
-      el("label", { class: "h-field" }, el("span", {}, "Investigate"), select("vtarget",
+    out.push(el("p", { class: "small muted" }, `One private question per couple. Agree it with ${spouseName} first. Only your couple will hear the answer, and it will be the truth.`),
+      el("label", { class: "h-field" }, el("span", {}, "Ask"), select("vtarget",
         h.others.filter((o) => o.id !== me.hollow.dossier.spouse_id).map((o) => [o.id, o.name]), "Choose…")),
-      el("label", { class: "h-field" }, el("span", {}, "Looking into"), select("vcat", cats.map((c) => [c.id, `${c.name}: ${c.blurb}`]), "Choose…")),
+      el("label", { class: "h-field" }, el("span", {}, "Your question"), select("vcat", cats.map((c) => [c.id, c.name]), "Choose…")),
       el("button", { class: "wide", disabled: !target || !draft("vcat") || hBusy,
-        onclick: () => hAct("investigate", { target, category: draft("vcat") }, ["vtarget", "vcat"]) }, "Begin investigation"));
+        onclick: () => hAct("investigate", { target, category: draft("vcat") }, ["vtarget", "vcat"]) }, "Ask privately"));
   } else {
     const m = a.mine;
-    out.push(el("p", {}, `Your family is investigating ${m.target}: ${m.category}.`));
+    out.push(el("p", {}, `Your private question to ${m.target}: “${m.category}”`));
     if (m.status === "waiting") {
-      out.push(el("p", { class: "muted" }, `${m.target} has been told what you are looking into (not who you are) and may try to buy your silence.`),
-        m.can_open && el("button", { class: "wide", onclick: () => hAct("inv_decide", { action: "open" }) }, "They're stalling: open the file"));
+      out.push(el("p", { class: "muted" }, `${m.target} has been told the question (not who is asking) and may offer money for you to drop it.`),
+        m.can_open && el("button", { class: "wide", onclick: () => hAct("inv_decide", { action: "open" }) }, "They're stalling: get the answer"));
     }
     if (m.status === "offered") {
-      out.push(el("p", {}, `${m.target} offers ${money(m.offer)} for you to drop it. If you accept, you never see the evidence.`),
+      out.push(el("p", {}, `${m.target} offers ${money(m.offer)} for you to drop the question. If you accept, you never hear the answer.`),
         el("div", { class: "row" },
           el("button", { class: "grow small", onclick: () => hAct("inv_decide", { action: "accept" }) }, "Take the money"),
-          el("button", { class: "grow small quiet", onclick: () => hAct("inv_decide", { action: "reject" }) }, "Refuse, open it")),
+          el("button", { class: "grow small quiet", onclick: () => hAct("inv_decide", { action: "reject" }) }, "Refuse, get the answer")),
         amountInput("vcounter"),
         el("button", { class: "wide quiet", onclick: () => hAct("inv_decide", { action: "counter", amount: parseInt(draft("vcounter", "0"), 10) || 0 }, ["vcounter"]) }, "Counter-offer (once)"));
     }
     if (m.status === "countered") out.push(el("p", { class: "muted" }, `You asked for ${money(m.counter)}. Waiting for their answer.`));
-    if (m.status === "suppressed") out.push(el("p", {}, "You were paid to drop it. The file stays closed."));
-    if (m.status === "delivered") out.push(el("p", {}, el("a", { href: "#clues" }, "The file is open: read it in Private Intelligence.")));
+    if (m.status === "suppressed") out.push(el("p", {}, "You were paid to drop the question. You'll never know the answer."));
+    if (m.status === "delivered") out.push(el("p", {}, el("a", { href: "#clues" }, "Their answer is in Private Intelligence.")));
   }
   for (const r of a.about_me) {
     out.push(el("div", { class: "questioned" },
-      el("p", { class: "eyebrow" }, "Someone is investigating you"),
-      el("p", {}, `They are looking into: ${r.category}.`),
+      el("p", { class: "eyebrow" }, "Someone is asking you a private question"),
+      el("p", {}, `“${r.category}”`),
+      el("p", { class: "small muted" }, "If you let them, they get your true answer, privately."),
       r.status === "waiting" ? [
-        el("p", { class: "small muted" }, "Offer money for them to drop it, or let them see it."),
+        el("p", { class: "small muted" }, "Offer money for them to drop the question, or let them have the answer."),
         amountInput(`hush-${r.family}`, h.available),
         el("div", { class: "row" },
           el("button", { class: "grow small", onclick: () => hAct("inv_target", { family: r.family, action: "offer", amount: parseInt(draft(`hush-${r.family}`, "0"), 10) || 0 }) }, "Offer money"),
-          el("button", { class: "grow small quiet", onclick: () => hAct("inv_target", { family: r.family, action: "decline" }) }, "Let them look")),
+          el("button", { class: "grow small quiet", onclick: () => hAct("inv_target", { family: r.family, action: "decline" }) }, "Let them have the answer")),
       ] : [
         el("p", {}, `They want ${money(r.counter)} instead.`),
         el("div", { class: "row" },

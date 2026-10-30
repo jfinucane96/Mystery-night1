@@ -27,7 +27,7 @@ BALLOT_STEPS = {
 BALLOT_AT = {k: step for step, ks in BALLOT_STEPS.items() for k in ks}
 DEAL_STEPS = {"deals": ("protect", "protect_couple", "force"), "bribes4": ("bribe",), "temptation": ("bribe",)}
 BRIBE_ROUND = {"bribes4": 3, "temptation": 4}
-INTERROGATION_ROUNDS = 2
+INTERROGATION_ROUNDS = 1
 REVEAL_AFTER = 60          # seconds an investigated guest has to respond before the clue can be opened
 MAX_AMOUNT = 12_000_000
 

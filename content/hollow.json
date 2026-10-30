@@ -573,28 +573,34 @@
   },
   "categories": [
     {
-      "id": "motive",
+      "id": "s1",
       "track": "silas",
-      "name": "Silas's file",
-      "blurb": "What Silas held over them"
+      "name": "Where were you when the lights went out?",
+      "blurb": ""
     },
     {
-      "id": "last_night",
+      "id": "s2",
       "track": "silas",
-      "name": "Last night",
-      "blurb": "Where they went last night and why"
+      "name": "Who was with you in the dark?",
+      "blurb": ""
     },
     {
-      "id": "belongings",
+      "id": "s5",
       "track": "silas",
-      "name": "Belongings",
-      "blurb": "Whether their personal item is where it should be"
+      "name": "Did you see or hear anything during the blackout?",
+      "blurb": ""
     },
     {
-      "id": "physical",
+      "id": "s4",
       "track": "silas",
-      "name": "Physical evidence",
-      "blurb": "Their robe, hands and belongings after the blackout"
+      "name": "What were you doing last night?",
+      "blurb": ""
+    },
+    {
+      "id": "s3",
+      "track": "silas",
+      "name": "What did you and Silas last talk about?",
+      "blurb": ""
     }
   ],
   "public": {
@@ -1291,12 +1297,12 @@
     },
     "interrogations": {
       "title": "The Order's Inquisition",
-      "text": "Two rounds. Everyone asks two questions, out loud, in order of influence. Ask the right person the right question.",
-      "silas": "Now, the questions.\n\nTwo rounds. Each of you will ask two questions, one at a time, in front of everyone.\n\nChoose carefully whom you ask, and what. Someone in this room is lying about where they were when the lights went out.\n\nAnd a lie, my dears, always needs a witness."
+      "text": "One question each, out loud, in order of influence. Ask the right person the right question.",
+      "silas": "Now, the questions.\n\nEach of you may ask one question, out loud, in front of everyone.\n\nAnd you may answer however you like. Even with a lie.\n\nBut do remember: I keep score. Later tonight, I shall tell everyone exactly who lied to them.\n\nChoose carefully whom you ask, and what. Someone in this room is lying about where they were when the lights went out.\n\nAnd a lie, my dears, always needs a witness."
     },
     "investigations": {
       "title": "Private Investigations",
-      "text": "Each couple may investigate one guest in secret. The guest will be told only what is being looked into."
+      "text": "Each couple may ask one guest one question in private. The guest will be told the question, but not who is asking."
     },
     "bribes4": {
       "title": "A Word in Your Ear",
