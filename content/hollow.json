@@ -708,6 +708,14 @@
       "direction": "Controlled, wounded, occasionally wickedly funny. He blames all eight for Eleanor's accidental death. He is still alive.",
       "sequence": [
         {
+          "show": "crest",
+          "text": "THE CEREMONY OF THE COVENANT",
+          "sub": "All eight heirs must don their ceremonial robes before the reading of the will can begin."
+        },
+        {
+          "wait": 30000
+        },
+        {
           "show": "black"
         },
         {
