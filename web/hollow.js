@@ -230,7 +230,7 @@ function hollowAction(h) {
 }
 
 function dealForm(h, a) {
-  const kinds = { protect: "Protect me: pay them not to interrogate me", protect_couple: "Protect me & my spouse",
+  const kinds = { protect: "Protect me: pay them not to interrogate me", protect_couple: "Protect us: pay them not to interrogate us (me & my spouse)",
     force: "Force an interrogation: pay them to ask a set question", bribe: `Buy an inheritance vote (ballot ${a.round})` };
   const kind = draft("dk", a.allowed[0]);
   const everyone = h.others.map((o) => [o.id, o.name]);

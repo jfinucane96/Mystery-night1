@@ -884,7 +884,7 @@ def _deal_summary(data, story, kind, tm, d):
     if kind == "protect":
         return f"{payer} pays {rec} not to interrogate {payer}."
     if kind == "protect_couple":
-        return f"{payer} pays {rec} not to interrogate {payer} or their spouse."
+        return f"{payer} pays {rec} not to interrogate {payer} or {nick(story, data, spouse(data, d['payer']))}."
     if kind == "force":
         return (f"{payer} pays {rec} to ask {nick(story, data, tm['target'])}: "
                 f"“{question_text(data, tm['track'], tm['qid'])}”")
