@@ -565,21 +565,18 @@
   },
   "categories": [
     {
-      "id": "s1",
-      "track": "silas",
-      "name": "Where were you when the lights went out?",
+      "id": "where",
+      "name": "Where were you at the time of the murder?",
       "blurb": ""
     },
     {
-      "id": "s2",
-      "track": "silas",
-      "name": "Who was with you in the dark?",
+      "id": "motive",
+      "name": "What secret did Silas have on you in your envelope?",
       "blurb": ""
     },
     {
-      "id": "s5",
-      "track": "silas",
-      "name": "Did you see or hear anything during the blackout?",
+      "id": "last_night",
+      "name": "What were you really doing last night?",
       "blurb": ""
     }
   ],
@@ -1282,7 +1279,7 @@
     },
     "investigations": {
       "title": "Private Investigations",
-      "text": "Each couple may ask one guest one question in private. The guest will be told the question, but not who is asking."
+      "text": "Each couple may ask one guest one question in private. The guest is told the question, but not who is asking. They may pay you to drop it, or answer. And they may lie... but lies have a way of coming back to haunt you."
     },
     "bribes4": {
       "title": "A Word in Your Ear",

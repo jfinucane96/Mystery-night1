@@ -499,3 +499,4 @@ button.h-tab.on { background: var(--accent); color: #1b1408; border-color: var(-
 .h-steptime { font-weight: normal; }
 .alert.h-killer { background: #4a0f18; border: 2px solid var(--danger); color: #fbe9ec; }
 .h-private .overlay-inner h1 { color: var(--danger); }
+.h-haunt { color: #c9b8ff; font-style: italic; }

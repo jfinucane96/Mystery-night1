@@ -297,7 +297,7 @@ def answer(data, case, target, qid, story):
     x = al["alone"]
     if target == case["culprit"]:
         return {
-            "s1": ("In the Great Hall. With Silas.", f"{al['claim'][0].upper()}{al['claim'][1:]}, with {nick(x)}."),
+            "s1": ("In the Great Hall. With Silas.", "Downstairs, nowhere near the Great Hall."),
             "s2": ("Nobody. I was with Silas, and then he was dead.", f"{nick(x)}. We were together {al['claim']} the whole time."),
             "s5": ("Silas's last breath.", "Nothing at all. Just the thunder."),
         }[qid]
@@ -311,7 +311,7 @@ def answer(data, case, target, qid, story):
     if target == al["heard"]:
         seen = "Someone in a robe brushed hard past me in the doorway just after the lights died, hurrying toward the Great Hall. I never saw a face."
     return {
-        "s1": (f"{where[0].upper()}{where[1:]}.", "I honestly don't know. It was pitch dark."),
+        "s1": ("Downstairs, nowhere near the Great Hall.", "Upstairs, fetching something from my room."),
         "s2": ((f"{nick(partner)}. We held on to each other until the lights came back." if partner
                 else f"Nobody. I was on my own {where}, I'm afraid."),
                ("Nobody. I was alone." if partner else "I'm not sure. Someone may have been near me.")),
@@ -341,29 +341,40 @@ SEEN = {
 }
 
 
-def investigation_clue(data, case, story, target, category):
-    """A couple's private question: the guest's true answer, for that couple only."""
-    if category in {q["id"] for q in data["questions"]["silas"]}:
-        truth, _ = answer(data, case, target, category, story)
-        return f"{short(data, target)}, privately: “{truth}”"
-    c = data["by_id"][target]
+def private_answer(data, case, story, target, category):
+    """A couple's private question: (truth, lie) as the couple will read them. Every lie is
+    fixed in advance and contradicts someone else's evidence, so it can come back to haunt them."""
     n = short(data, target)
-    culprit = target == case["culprit"]
-    it = c["item"]
+    nick = lambda c: short(data, c)
+    cap = lambda s: s[0].upper() + s[1:]
+    if category == "where":
+        al = case["alibi"]
+        x = al["alone"]
+        if target == case["culprit"]:
+            truth = "In the Great Hall, with Silas. When the lights came back, he was dead."
+            lie = f"{cap(al['claim'])}, with {nick(x)}. We never left each other's side."
+        elif target == x:
+            truth = f"{cap(al['where'][x])}, on my own. Nobody can vouch for me."
+            lie = f"{cap(LOCATIONS[2])}, with the others."
+        else:
+            truth = f"{cap(al['where'][target])}, with {nick(al['partner'][target])}. We held on to each other until the lights came back."
+            lie = f"{cap(LOCATIONS[0])}, on my own."
+        return f"{n}, privately: “{truth}”", f"{n}, privately: “{lie}”"
     if category == "motive":
-        s = c["secret"]
-        return f"Silas's file on {n}, marked '{s['title']}': {s['proof']} Silas had evidence that could ruin them."
+        sec = data["by_id"][target]["secret"]
+        truth = f"{n} shows you their envelope, marked '{sec['title']}'. It reads: “{sec['text']}” Silas's proof: {sec['proof']}"
+        lie = f"{n}, privately: “Silas had nothing on me. My envelope was empty. He was bluffing.”"
+        return truth, lie
     if category == "last_night":
-        return f"{SEEN[target]} What really happened: {CORROBORATION[target]}"
-    if category == "belongings":
-        if culprit:
-            return f"{n}'s {it['short']} is nowhere to be seen. {n} says it was left with their coat. It isn't with their coat."
-        return f"{n}'s {it['short']} is with them, clean, exactly where it should be."
-    if category == "physical":
-        if culprit:
-            return f"There are tiny dark spots on the cuff of {n}'s robe, hastily dabbed with water. They might be wine. They might not."
-        return f"{n}'s robe and hands are spotless. Nothing out of place."
+        truth = f"{n} admits it. {SEEN[target]} {n}'s explanation: {CORROBORATION[target]}"
+        lie = f"{n}, privately: “I was in bed by ten last night and never left my room.”"
+        return truth, lie
     raise HollowError("unknown category")
+
+
+def investigation_clue(data, case, story, target, category, lied=False):
+    truth, lie = private_answer(data, case, story, target, category)
+    return lie if lied else truth
 
 
 def defend_card(data, cid):

@@ -283,15 +283,21 @@ class Evening(unittest.TestCase):
         self.assertEqual(status["protect"], "broken")
         self.assertEqual(next(d for d in self.me("jonathan")["deals"] if d["kind"] == "force")["status"], "honored")
         # Blackthornes investigate Nanor and get paid to drop it; Pemberwicks investigate Griff and see the clue.
-        self.act("grant", "investigate", {"target": "nanor", "category": "s2"})
+        self.act("grant", "investigate", {"target": "nanor", "category": "where"})
         self.act("nanor", "inv_target", {"family": "blackthorne", "action": "offer", "amount": 200_000})
         self.act("caroline", "inv_decide", {"action": "counter", "amount": 400_000})
         self.act("nanor", "inv_target", {"family": "blackthorne", "action": "accept"})
         self.assertEqual(self.me("grant")["clues"], [])
-        self.act("jonathan", "investigate", {"target": "griff", "category": "s5"})
+        self.act("jonathan", "investigate", {"target": "griff", "category": "last_night"})
         self.act("griff", "inv_target", {"family": "pemberwick", "action": "decline"})
-        self.assertIn("Griff, privately", self.me("danielle")["clues"][0]["text"])   # Griff's true answer, to the couple
-        self.act("danielle", "investigate", {"target": "grace", "category": "s1"}, 409)
+        self.assertIn("instruments", self.me("danielle")["clues"][0]["text"])   # Griff's true answer, to the couple
+        self.act("danielle", "investigate", {"target": "grace", "category": "motive"}, 409)
+        # Griff's couple asks Taylor; Taylor lies. The couple can't tell, but the truth board will.
+        self.act("grace", "investigate", {"target": "taylor", "category": "motive"})
+        self.assertTrue(self.me("taylor")["action"]["about_me"][0]["lie"])
+        self.act("taylor", "inv_target", {"family": "wraithmore", "action": "lie"})
+        self.assertIn("envelope was empty", self.me("griff")["clues"][0]["text"])
+        self.assertEqual(self.me("grace")["action"]["mine"]["status"], "delivered")
         self.step("bribes4")
         self.act("nanor", "offer", {"kind": "bribe", "recipient": "griff", "amount": 100_000,
                                     "terms": {"subject": "nanor", "position": 1}})

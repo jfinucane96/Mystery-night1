@@ -353,7 +353,7 @@ function investigationAction(h, a) {
     const taken = new Set(a.taken.map((x) => x.join("|")));
     const cats = a.categories.filter((c) => !taken.has(`${target}|${c.id}`));
     const spouseName = me.hollow.dossier.spouse;
-    out.push(el("p", { class: "small muted" }, `One private question per couple. Agree it with ${spouseName} first. Only your couple will hear the answer, and it will be the truth.`),
+    out.push(el("p", { class: "small muted" }, `One private question per couple. Agree it with ${spouseName} first. Only your couple will hear the answer. They may pay you to drop it, or they may lie.`),
       el("label", { class: "h-field" }, el("span", {}, "Ask"), select("vtarget",
         h.others.filter((o) => o.id !== me.hollow.dossier.spouse_id).map((o) => [o.id, o.name]), "Choose…")),
       el("label", { class: "h-field" }, el("span", {}, "Your question"), select("vcat", cats.map((c) => [c.id, c.name]), "Choose…")),
@@ -381,14 +381,15 @@ function investigationAction(h, a) {
   for (const r of a.about_me) {
     out.push(el("div", { class: "questioned" },
       el("p", { class: "eyebrow" }, "Someone is asking you a private question"),
-      el("p", {}, `“${r.category}”`),
-      el("p", { class: "small muted" }, "If you let them, they get your true answer, privately."),
+      el("p", { class: "spoken" }, `“${r.category}”`),
       r.status === "waiting" ? [
-        el("p", { class: "small muted" }, `Offer money for them to drop the question (up to ${money(h.available)}), or let them have the answer.`),
+        el("p", { class: "small muted" }, "Three ways out: pay them to drop it, tell the truth, or lie."),
+        el("p", { class: "eyebrow" }, "Pay them to drop it"),
+        el("p", { class: "small muted" }, `Your family can offer up to ${money(h.available)}. If they refuse, they get the truth.`),
         amountInput(`hush-${r.family}`, h.available),
-        el("div", { class: "row" },
-          el("button", { class: "grow small", onclick: () => hAct("inv_target", { family: r.family, action: "offer", amount: parseInt(draft(`hush-${r.family}`, "0"), 10) || 0 }) }, "Offer money"),
-          el("button", { class: "grow small quiet", onclick: () => hAct("inv_target", { family: r.family, action: "decline" }) }, "Let them have the answer")),
+        el("button", { class: "wide", disabled: hBusy, onclick: () => hAct("inv_target", { family: r.family, action: "offer", amount: parseInt(draft(`hush-${r.family}`, "0"), 10) || 0 }) }, "Offer hush money"),
+        el("p", { class: "eyebrow" }, "Or answer"),
+        privateAnswer(r),
       ] : [
         el("p", {}, `They want ${money(r.counter)} instead. Your family can offer up to ${money(h.available)}.`),
         el("div", { class: "row" },
@@ -397,6 +398,24 @@ function investigationAction(h, a) {
       ]));
   }
   return out;
+}
+
+function privateAnswer(r) {
+  const key = `pans-${r.family}`;
+  const pick = draft(key);
+  const own = (text) => text.replace(/^\S+, privately: /, "");   // their own phone: just the words
+  const choice = (kind, label, text) => el("button", {
+    class: "choice" + (pick === kind ? " chosen" : ""),
+    onclick: () => { hDraft[key] = kind; redrawQuietly(renderGuest); },
+  }, el("span", {}, el("strong", {}, label), text));
+  return [
+    choice("truth", "The truth: ", own(r.truth)),
+    choice("lie", "A lie: ", own(r.lie)),
+    pick === "lie" && el("p", { class: "small h-haunt" }, "Choose to lie if you dare... but lies have a way of coming back to haunt you."),
+    pick && el("button", { class: "wide", disabled: hBusy,
+      onclick: () => hAct("inv_target", { family: r.family, action: pick === "lie" ? "lie" : "decline" }, [key]) },
+      pick === "lie" ? "Send the lie" : "Send the truth"),
+  ];
 }
 
 function hotseatAction(h, a) {

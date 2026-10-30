@@ -491,7 +491,9 @@ def truth_board(t, data):
     out = {}
     for c in data["order"]:
         rows = t.all("SELECT answer FROM h_interrogations WHERE target = ? AND answer IN ('truth', 'lie')", (c,))
-        out[c] = "NOT QUESTIONED" if not rows else ("LIED" if any(r["answer"] == "lie" for r in rows) else "TOLD THE TRUTH")
+        private = t.all("SELECT status FROM h_investigations WHERE target = ? AND status IN ('delivered', 'lied')", (c,))
+        lied = any(r["answer"] == "lie" for r in rows) or any(r["status"] == "lied" for r in private)
+        out[c] = "NOT QUESTIONED" if not rows and not private else ("LIED" if lied else "TOLD THE TRUTH")
     return out
 
 
@@ -534,6 +536,8 @@ def target_respond(t, data, cid, family, action, amount=0):
         raise GameError(403, "That investigation isn't about you.")
     if inv["status"] == "waiting" and action == "decline":
         t.run("UPDATE h_investigations SET status = 'delivered' WHERE family = ?", (family,))
+    elif inv["status"] == "waiting" and action == "lie":
+        t.run("UPDATE h_investigations SET status = 'lied' WHERE family = ?", (family,))
     elif inv["status"] == "waiting" and action == "offer":
         _check_amount(t, data, cid, amount)
         t.run("UPDATE h_investigations SET status = 'offered', offer = ? WHERE family = ?", (amount, family))
@@ -901,10 +905,11 @@ def _deal_summary(data, story, kind, tm, d):
 def _my_clues(t, data, story, cid, case):
     out = []
     fam = data["family_of"][cid]
-    for inv in t.all("SELECT * FROM h_investigations WHERE family = ? AND status = 'delivered'", (fam,)):
+    for inv in t.all("SELECT * FROM h_investigations WHERE family = ? AND status IN ('delivered', 'lied')", (fam,)):
         cat = next(c for c in data["categories"] if c["id"] == inv["category"])
         out.append({"title": f"{cat['name']}: {nick(story, data, inv['target'])}",
-                    "text": hc.investigation_clue(data, case, story, inv["target"], inv["category"])})
+                    "text": hc.investigation_clue(data, case, story, inv["target"], inv["category"],
+                                                  lied=inv["status"] == "lied")})
     return out
 
 
@@ -942,12 +947,14 @@ def _action(t, data, story, cid, s, case):
         return {
             "kind": "investigations", "categories": data["categories"],
             "mine": mine and {"target": nick(story, data, mine["target"]), "category": cats[mine["category"]]["name"],
-                              "status": mine["status"], "offer": mine["offer"], "counter": mine["counter"],
+                              "status": "delivered" if mine["status"] == "lied" else mine["status"],   # they can't tell "offer": mine["offer"], "counter": mine["counter"],
                               "can_open": mine["status"] == "waiting" and
                               (_now() - datetime.fromisoformat(mine["created_at"])).total_seconds() >= REVEAL_AFTER},
             "taken": [[r["target"], r["category"]] for r in t.all("SELECT * FROM h_investigations")],
             "about_me": [{"family": r["family"], "category": cats[r["category"]]["name"], "status": r["status"],
-                          "counter": r["counter"]} for r in about_me],
+                          "counter": r["counter"],
+                          **dict(zip(("truth", "lie"), hc.private_answer(data, case, story, cid, r["category"])))}
+                         for r in about_me],
         }
     if step == "hotseat":
         pair = s["extra"].get("hotseat", [])
