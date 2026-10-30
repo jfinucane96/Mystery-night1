@@ -500,3 +500,4 @@ button.h-tab.on { background: var(--accent); color: #1b1408; border-color: var(-
 .alert.h-killer { background: #4a0f18; border: 2px solid var(--danger); color: #fbe9ec; }
 .h-private .overlay-inner h1 { color: var(--danger); }
 .h-haunt { color: #c9b8ff; font-style: italic; }
+.h-letter-last { margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--danger); }

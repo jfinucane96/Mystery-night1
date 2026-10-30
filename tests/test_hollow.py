@@ -145,9 +145,10 @@ class Evening(unittest.TestCase):
         return json.loads(text)["hollow"]
 
     def culprit(self):
-        found = [c for c in self.data["order"] if self.me(c)["dossier"].get("truth")]
-        self.assertEqual(len(found), 1)
-        return found[0]
+        with self.s.db.tx() as t:
+            found = t.one("SELECT culprit FROM hollow_state WHERE id = 1")["culprit"]
+        self.assertIn(found, self.data["order"])
+        return found
 
     def heirs(self, cid):
         """Three inheritance picks round the table, skipping yourself and your spouse."""
@@ -161,6 +162,11 @@ class Evening(unittest.TestCase):
         o = self.data["order"]
         i = o.index(cid)
         return [o[(i + k) % len(o)] for k in range(1, n + 1)]
+
+    def test_the_murderer_is_never_jonathan_or_dani(self):
+        for _ in range(12):
+            self.s.host("POST", "/api/host/hollow/restart", {})
+            self.assertNotIn(self.culprit(), ("jonathan", "danielle"))
 
     def test_the_host_and_room_never_learn_the_murderer(self):
         culprit = self.culprit()
@@ -177,7 +183,13 @@ class Evening(unittest.TestCase):
             for other in self.data["order"]:
                 if other != c:
                     self.assertNotIn(self.data["by_id"][other]["secret"]["text"], raw)
-        self.assertTrue(self.me(culprit)["dossier"]["truth"]["tonight"])
+        # the murderer learns it from their letter, not before
+        self.assertNotIn("truth", self.me(culprit)["dossier"])
+        for step in ("reunion", "polls", "poll_results", "covenant", "covenant2", "envelopes"):
+            self.step(step)
+        mine = self.me(culprit)
+        self.assertTrue(mine["envelope"]["murderer"] and mine["dossier"]["truth"]["tonight"].startswith("Silas means"))
+        self.assertEqual(sum(self.me(c)["envelope"]["murderer"] for c in self.data["order"]), 1)
 
     def test_released_before_this_version_still_gets_a_secret_murderer(self):
         with self.s.db.tx() as t:

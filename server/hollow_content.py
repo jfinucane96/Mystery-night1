@@ -277,6 +277,12 @@ def build(data, story, culprit):
             "why": (f"Silas knew your darkest secret ('{secret['title']}') and had the proof. Tonight he was going to "
                     f"expose it in front of everyone, and take your family's fortune with it."),
             "tonight": kill,
+            # before the blackout the murder hasn't happened yet: the letter tells them what they will do
+            "plan": (f"Silas means to expose you tonight. You will not let him. When the lights go out, slip into "
+                     f"the Great Hall, where Silas will be alone, and strike him down with {weapon_you}. Push the "
+                     f"ceremonial dagger under the cushion of {name(decoy)}'s chair to throw suspicion their way, hide "
+                     f"your {it['short']} {case['hidden']}, and be back before the lights return. Nobody acts it "
+                     f"out: the screen and the lights do it. You just have to keep your nerve."),
             "cover": (f"Your story: you were {al['where'][x]} with {nick(x)} the whole time. {nick(x)} really was there, "
                       f"alone in the dark, so {nick(x)} can't prove you weren't. Never admit you went into the Great Hall."),
             "goal": "Nobody must ever find out. Lie when you need to, deflect suspicion onto others, and make sure your family still inherits.",

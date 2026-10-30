@@ -11,7 +11,11 @@
       "extra_yes_penalty": 0,
       "nominee_change_by_motion": false,
       "wager_pot": "losers_fund_winners"
-    }
+    },
+    "never_culprit": [
+      "jonathan",
+      "danielle"
+    ]
   },
   "families": {
     "blackthorne": {

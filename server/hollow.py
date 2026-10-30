@@ -63,10 +63,12 @@ def _save_extra(t, extra):
 
 
 def ensure_culprit(t, data):
-    """Pick the murderer, once, in secret. Anybody may be chosen, the host included."""
+    """Pick the murderer, once, in secret, from everyone not listed in game.never_culprit."""
     s = state(t)
     if not s["culprit"]:
-        t.run("UPDATE hollow_state SET culprit = ? WHERE id = 1", (secrets.choice(data["order"]),))
+        never = set(data["game"].get("never_culprit", []))
+        t.run("UPDATE hollow_state SET culprit = ? WHERE id = 1",
+              (secrets.choice([c for c in data["order"] if c not in never]),))
 
 
 def get_case(t, data, story):
@@ -848,8 +850,11 @@ def guest_view(t, data, story, guest):
         "spouse": nick(story, data, spouse(data, cid)),
         "spouse_id": spouse(data, cid),
     }
-    if me_culprit:
-        dossier["truth"] = case["truth"]
+    if me_culprit and hc.reached(step, "envelopes"):   # they learn it from their letter, not before
+        truth = dict(case["truth"])
+        if not hc.reached(step, "blackout"):
+            truth["tonight"] = truth["plan"]
+        dossier["truth"] = truth
     view = {
         "me": cid, "step": step, "step_name": hc.STEP_NAME[step], "phase": hc.PHASE_NAMES[hc.PHASE_OF[step]],
         "paused": bool(s["paused"]), "timer_end": s["timer_end"], "others": others,
@@ -867,7 +872,8 @@ def guest_view(t, data, story, guest):
     if hc.reached(step, "covenant"):
         dossier["silas_holds"] = c["secret"]["proof"]
     if hc.reached(step, "envelopes"):              # the moment Silas tells them to open their envelopes
-        view["envelope"] = {"title": c["secret"]["title"], "text": c["secret"]["text"], "proof": c["secret"]["proof"]}
+        view["envelope"] = {"title": c["secret"]["title"], "text": c["secret"]["text"], "proof": c["secret"]["proof"],
+                            "murderer": me_culprit}
     view["action"] = _action(t, data, story, cid, s, case)
     view["deals"] = _my_deals(t, data, story, cid)
     view["clues"] = _my_clues(t, data, story, cid, case)
