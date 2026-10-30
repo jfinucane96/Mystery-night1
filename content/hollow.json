@@ -660,6 +660,36 @@
           "say": "I was the under-footman, once, when you were all considerably shorter, and considerably louder.\n\nFor twenty-five years I have served your families.\n\nI have polished your silver, decanted your port, and fished at least two of you out of the ornamental lake."
         },
         {
+          "wait": 1200
+        },
+        {
+          "say": "Twenty-five years ago, the eight of you spent your summers here.\n\nFour old families. Eight children.\n\nRunning wild through the gardens, the library, and every corridor you were told never to enter."
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "say": "Those summers ended suddenly.\n\nOn the last night of the last summer, a fire swept through the east wing.\n\nAnd a child died in it."
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "say": "Eleanor Vale.\n\nMy little sister."
+        },
+        {
+          "wait": 2500
+        },
+        {
+          "say": "The inquest called it a tragic accident.\n\nThe east wing was sealed. You were all sent home.\n\nAnd nobody has spoken of that night since."
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "say": "But that was a long time ago.\n\nYou grew up. Four of you married the other four, which I gather surprised nobody but yourselves.\n\nAnd now Sir Jonathan has inherited Hollowmere, and invited you all home.\n\nTo celebrate. To reminisce.\n\nAnd to hear his plans for the estate."
+        },
+        {
           "wait": 1000
         },
         {
