@@ -1642,6 +1642,7 @@ function voiceOut() {
 let echo = null;
 
 function setVoiceEcho(on) {
+  on = false;                            // echo switched off: too much in the room
   if (!audioCtx) return;
   if (!echo) {
     const delay = audioCtx.createDelay(1);
