@@ -72,15 +72,17 @@ def apply_transfers(shares, transfers, eligible):
     return result, settled
 
 
-def projection(total, families, infl, transfers, order_families, exclude=None):
+def projection(total, families, infl, transfers, order_families, exclude=None, pittance=0):
     """Provisional projection before the tribunal, honoured deals applied, never below zero.
-    `exclude`: a family shown inheriting nothing (last place on the TV board)."""
+    `exclude`: a family shown in last place on the TV board, given only `pittance`."""
     eligible = [f for f in order_families if f != exclude]
-    shares = split(total, {f: v for f, v in family_influence(infl, families).items() if f in eligible}, eligible)
+    if not exclude:
+        pittance = 0
+    shares = split(total - pittance, {f: v for f, v in family_influence(infl, families).items() if f in eligible}, eligible)
     shares, _ = apply_transfers(shares, transfers, set(eligible))
     out = {f: max(0, v) for f, v in shares.items()}
     if exclude:
-        out[exclude] = 0
+        out[exclude] = pittance
     return out
 
 

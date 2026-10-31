@@ -313,7 +313,8 @@ def projection(t, data, last_place_out=False):
     if last_place_out:
         fam_order = list(fams)
         _, out = eng.eliminate(0, None, data["family_of"], eng.family_influence(infl, fams), fam_order)
-    return eng.projection(data["game"]["total_estate"], fams, infl, transfers(t, data), list(fams), exclude=out)
+    return eng.projection(data["game"]["total_estate"], fams, infl, transfers(t, data), list(fams), exclude=out,
+                          pittance=data["game"].get("last_place_pittance", 0))
 
 
 def available(t, data, cid):
